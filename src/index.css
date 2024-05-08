@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Lobster&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,*{
+  font-family: "lato";
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+.swiper-button-next {
+  right: 10px !important;
+  left: auto !important; /* Adjust this value as needed */
+  z-index: 10; /* Ensure the button is above the carousel */
+
+
+}
+@media (max-width: 768px) {
+  .swiper-button-next {
+    right: 10px !important;
+    left: auto !important; /* Adjust this value as needed */
+    z-index: 10; /* Ensure the button is above the carousel */
+    display:none !important;
+  }
+}
+
+.swiper-button-prev {
+  /* right: auto !important; */
+  left: -10px !important; /* Adjust this value as needed */
+  z-index: 10; /* Ensure the button is above the carousel */
+}
+@media (max-width: 768px){
+  .swiper-button-prev {
+      /* right: auto !important; */
+      left: -10px !important; /* Adjust this value as needed */
+      z-index: 10; /* Ensure the button is above the carousel */
+      display:none !important;
+    }
+
+}
+
+.swiper {
+  margin-right: 10rem !important;
+  padding: 50px !important;
+  width: 90%;
+}

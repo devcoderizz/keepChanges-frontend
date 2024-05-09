@@ -4,13 +4,13 @@ const ViewCard = ({ title, imageSrc, raisedAmount, goalAmount, by, Suppoters, da
 
   const completionPercentage = (raisedAmount / goalAmount) * 100;
 
-  const truncatedTitle = title.length > 72 ? title.substring(0, 72) + ' ...' : title;
+  const truncatedTitle = title.length > 70 ? title.substring(0, 70) + ' ...' : title;
 
   return (
-      <div className="md:w-[80%] w-[120%] h-[60vh]  mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="md:w-[80%] w-[80vw] h-[70vh]  mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
           <img className="w-full h-54 object-fill  object-center" src={imageSrc} alt="Donation" />
           <div className="px-6 py-4">
-              <div className="flex flex-row font-bold text-lg mb-2 truncate w-[315px] text-wrap ">{truncatedTitle}</div>
+              <h1 className="  flex flex-row font-bold text-lg mb-2 truncate w-[290px] md:w-[350px] text-wrap ">{truncatedTitle}</h1>
               <span className=' my-1  text-gray-500 font-semibold'>{by}</span> <br/>
               <div className='mt-4'>
                 <div className='flex flex-row gap-28'>

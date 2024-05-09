@@ -85,7 +85,7 @@ const Hero = () => {
             meaningful change. Thank you for your invaluable contribution to our
             mission together, we&apos;re forging lasting impact.
           </p>
-          <div className="mt-6 ml-16 md:ml-1  ">
+          <div className="mt-6 ml-6 md:ml-1  ">
             <button className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
               Start a Fundraiser
             </button>
@@ -96,7 +96,7 @@ const Hero = () => {
           <img
             src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067696/Group_4_wfvpsb.png"
             alt=""
-            className="h-[40vh] w-[60vw]  md:h-[60vh] md:w-[28vw]"
+            className="h-[40vh] w-[70vw]  md:h-[60vh] md:w-[28vw]"
           />
         </div>
       </div>
@@ -177,7 +177,7 @@ const Hero = () => {
         </p>
       </div>
 
-<div className=" mx-20 ">
+<div className=" mx-10 ">
       <div
         className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16 `}
       >

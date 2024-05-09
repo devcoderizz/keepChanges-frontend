@@ -15,12 +15,47 @@ import "swiper/css/autoplay";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 import React from "react";
 import "../index.css";
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
+import ViewCard from "./ViewCard";
 
 const Hero = () => {
-  const isSmallScreen = useMediaQuery({ query: '(max-width: 768px)' });
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const swiperRef = React.useRef(null);
+  const [donationData, setDonationData] = React.useState([
+    {
+      title:
+        "help to brighten the lives of abandon children and their family by giving ",
+      by: "by Maitri",
+      imageSrc:
+        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 4000,
+      goalAmount: 5000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Supporting Elderly Care",
+      by: "by Maitri",
+      imageSrc:
+        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 3000,
+      goalAmount: 6000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc:
+        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+ 
+  ]);
 
   const goNext = () => {
     if (swiperRef.current) {
@@ -37,7 +72,7 @@ const Hero = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 my-12">
-        <div className="w-[50%] flex flex-col items-start justify-center">
+        <div className="w-[70%] md:w-[50%] flex flex-col items-start justify-center">
           <span className="text-4xl text-[#FF5C5C] font-bold">
             Greetings, Change Agent
           </span>
@@ -50,8 +85,8 @@ const Hero = () => {
             meaningful change. Thank you for your invaluable contribution to our
             mission together, we&apos;re forging lasting impact.
           </p>
-          <div className="mt-6">
-            <button className="p-2 border-1 border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          <div className="mt-6 ml-16 md:ml-1  ">
+            <button className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
               Start a Fundraiser
             </button>
           </div>
@@ -131,15 +166,72 @@ const Hero = () => {
           </Swiper>
         </div>
       </div>
-    <div className="flex flex-col ml-5   md:justify-end md:items-end my-10 mr-40">
-    <span className="text-4xl text-[#FF5C5C] font-bold  ">Support a Fundraiser Today!</span>
-    <p className="mt-2 text-nowrap">
-      Your contribution can make an impact.&nbsp; 
-      {isSmallScreen && <br/>}
-       Join us in making a difference.
-    </p>
+      <div className="flex flex-col ml-5   md:justify-end md:items-end my-10 mr-40">
+        <span className="text-4xl text-[#FF5C5C] font-bold  ">
+          Support a Fundraiser Today!
+        </span>
+        <p className="mt-2 text-nowrap">
+          Your contribution can make an impact.&nbsp;
+          {isSmallScreen && <br />}
+          Join us in making a difference.
+        </p>
+      </div>
+
+<div className=" mx-20 ">
+      <div
+        className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16 `}
+      >
+        {donationData.map((data, index) => (    
+          <div key={index}>
+            <ViewCard {...data} />
+          </div>
+        ))}
+      </div>
+      <div
+        className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16`}
+      >
+        {donationData.map((data, index) => (
+          <div key={index}>
+            <ViewCard {...data} />
+          </div>
+        ))}
+      </div>
+
+      </div>
+
+      {/* <div className={`flex flex-col md:flex-row ${isSmallScreen ? 'flex-col ' : 'flex-row'} md:ml-8 gap-8 ml-6 mr-8 my-16`}>
+        {donationData.map((data, index) => (
+          <div key={index}>
+            <ViewCard {...data} />
+          </div>
+        ))}
+      </div> */}
+
+      <div className="flex flex-col justify-center items-center my-12 ">
+        <h1 className="text-2xl md:text-4xl  text-[#FF5C5C] font-bold">
+          Start Your Fundraiser in three simple steps:
+        </h1>
+        <img
+          className="w-[80vw] md:w-[40vw] mt-10"
+          src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715239260/Group_77_nglmhu.svg"
+          alt=""
+        />
+        <div className="mt-16 ml-4">
+            <button className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+              Start a Fundraiser
+            </button>
+          </div>
+      </div>
+
+    <div className="flex justify-center my-28">
+
+      <img  className="  w-[80vw] md:w-[50vw]"
+       src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715070580/Group_22_af2hke.png" alt=""  />
+      
+
     </div>
-    
+
+
 
 
 

@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import Fundraisers from './pages/Fundraisers'
 import AuthPage from './pages/AuthPage'
+import Footer from "./components/Footer"
 
 function App() {
   
@@ -23,7 +24,7 @@ function App() {
 
 
   </Routes>
-
+  <Footer/>
   </div>
   )
 }

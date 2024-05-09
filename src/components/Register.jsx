@@ -8,26 +8,104 @@ import { registerSchema } from "../Yup schema/Schema";
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
-  const initialValues = {
-    name: "",
-    email: "",
-    number:"",
-    otp:"",
-    password: "",
+  const [formData, setFormData] = useState({});
+  const [otp, setOtp] = useState(null)
+  const {password, ...otpData} = formData  
+  console.log(otpData);
+
+  const APIBASEURL= import.meta.env.VITE_API_BASEURL
+  // const initialValues = {
+  //   name: "",
+  //   email: "",
+  //   number:"",
+  //   password: "",
     
+  // };
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
   };
 
-  const { values, errors, handleChange, handleSubmit, handleBlur } = useFormik({
-    initialValues: initialValues,
+  const handleOtp = (e) => {
+    setOtp({
+      ...otp,
+      [e.target.id]: e.target.value,
+    });
+  };
+console.log(otp);
+  const {   errors,   handleBlur } = useFormik({
+    // initialValues: initialValues,
     validationSchema: registerSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
+    // onSubmit: (values) => {
+    //   console.log(values);
+    //   setVerify(!Verify)
 
-  const handleVerify = () => {
-    setVerify(!Verify);
-  };
+
+
+
+    // },
+  });
+  const handleSubmit = async (e)=>{
+    e.preventDefault();
+    setVerify(!Verify)
+    console.log(formData);
+    try {
+      const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(otpData),
+        
+  
+      });
+      console.log(otpData);
+      const data = await res.json();
+      console.log(data);
+      if(data.error){
+        console.log("error");
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
+
+  const handleVerifyOtp =async(e)=>{
+    e.preventDefault();
+    try {
+
+      const res = await fetch(`${APIBASEURL}/api/auth/verification/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+         body: JSON.stringify(otp,formData.email),
+         
+        });
+         
+      const data = await res.json();
+      console.log(data);
+      if(data.error){
+        console.log("error");
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
+ 
 
   return (
     <div className=" w-full h-[89.5vh] flex items-center justify-center">
@@ -59,8 +137,9 @@ const Register = () => {
                 type="text"
                 placeholder="Name"
                 name="name"
+                id="name"
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                value={values.name}
+                 
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -71,48 +150,23 @@ const Register = () => {
                   type="email"
                   placeholder="Email"
                   name="email"
-                  className="w-[270px] py-2.5 pl-2.5 pr-24 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                  value={values.email}
+                  id="email"
+                  className="w-[270px] py-2.5 pl-2.5   rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                  <p className="absolute -bottom-5 left-20 text-[12px] text-rose-400 font-bold ">{errors.email}</p>
-                {!Verify && (
-                  <p
-                    className="absolute text-end mr-5 bottom-3.5 right-0 text-[12px] font-bold hover:underline cursor-pointer hover:text-[#ff5c5c]"
-                    onClick={handleVerify}
-                  >
-                    Verify Email
-                  </p>
-                )}
+                
               </div>
-              {Verify && (
-                <div className="relative">
-                  <input
-                    type="number"
-                    placeholder="OTP"
-                    name="otp"
-                    className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                    value={values.otp}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                   <p className="absolute -bottom-5 left-16 text-[12px] text-rose-400 font-bold ">{errors.otp}</p>
-                  <p className="absolute text-end mr-5 bottom-3.5 right-16  text-[12px] font-bold hover:underline cursor-pointer hover:text-[#ff5c5c]">
-                    Verify
-                  </p>
-                  <p className="absolute text-end mr-5 bottom-3.5 -right-2  text-[12px] font-bold hover:underline cursor-pointer hover:text-[#ff5c5c]">
-                    Resend OTP
-                  </p>
-                </div>
-              )}
               <div className="relative">
               <input
                 type="number"
                 placeholder="Mobile No."
-                name="number"
+                name="phone"
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                value={values.number}
+              
+                id="number"
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -124,7 +178,8 @@ const Register = () => {
                 placeholder="Password"
                 name="password"
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                value={values.password}
+           
+                id="password"
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -148,6 +203,53 @@ const Register = () => {
             </h1>
           </form>
         </div>
+              {Verify && <div className="absolute w-screen h-[100vh] z-10 flex items-center top-0  ">
+                <div className="absolute bg-gray-500 w-screen h-[100vh] z-10   opacity-50    ">
+                </div>
+                <div className="absolute bg-white md:w-[500px] md:h-[400px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5     ">
+                <h1 className="  text-xl font-bold text-[#FF5C5C] ">
+                Enter OTP
+                </h1>
+                <form action="" onSubmit={handleVerifyOtp} className=" flex flex-col gap-5 items-center ">
+                  <div>
+
+                <input
+                type="number"
+                placeholder="OTP"
+                name="otp"
+                 id="otp"
+                 maxLength={6}
+                onChange={handleOtp}
+                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                
+                />
+                <input
+                type="email"
+                placeholder="email"
+                name="email"
+                 id="email"
+                 
+                onChange={handleOtp}
+                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                
+                />
+              <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">Resend OTP</p>
+                </div>
+
+                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+                  Verify OTP
+                </button>
+                <button  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+                  Signup
+                </button>
+                <p className={`text-red-600 font-bold `}>Incorrect OTP</p>
+                </form>
+
+                </div>
+                  
+                </div>
+              }
+
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import HomePage from './pages/HomePage'
 import Fundraisers from './pages/Fundraisers'
 import AuthPage from './pages/AuthPage'
 import StartFundraiser from "./pages/StartFundraiser"
+import Footer from "./components/Footer"
+
 
 function App() {
   
@@ -25,7 +27,7 @@ function App() {
 
 
   </Routes>
-
+  <Footer/>
   </div>
   )
 }

@@ -33,7 +33,7 @@ input::-webkit-inner-spin-button {
 
 .swiper-button-prev {
   /* right: auto !important; */
-  left: 0px !important; /* Adjust this value as needed */
+  left: 0 !important; /* Adjust this value as needed */
   z-index: 10; /* Ensure the button is above the carousel */
 }
 @media (max-width: 768px){

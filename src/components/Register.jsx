@@ -1,6 +1,6 @@
 import { useSetRecoilState } from "recoil";
 import { authScreenAtom } from "../atom/authAtom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
@@ -11,7 +11,8 @@ const Register = () => {
   const [formData, setFormData] = useState({});
   const [otp, setOtp] = useState(null)
   const {password, ...otpData} = formData  
-  console.log(otpData);
+  // console.log(otpData);
+  const navigate = useNavigate();
 
   const APIBASEURL= import.meta.env.VITE_API_BASEURL
   // const initialValues = {
@@ -74,18 +75,16 @@ console.log(otp);
     }
   }
 
-  
-
-  const handleVerifyOtp =async(e)=>{
+  const handleRegister =async(e)=>{
     e.preventDefault();
     try {
 
-      const res = await fetch(`${APIBASEURL}/api/auth/verification/verify-otp`, {
+      const res = await fetch(`${APIBASEURL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-         body: JSON.stringify(otp,formData.email),
+         body: JSON.stringify(formData),
          
         });
          
@@ -96,11 +95,39 @@ console.log(otp);
         return;
       }
       console.log(data);
+      navigate('/')
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+  const handleVerifyOtp =async(e)=>{
+    e.preventDefault();
+    try {
+
+      const res = await fetch(`${APIBASEURL}/api/auth/verification/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+         body: JSON.stringify(otp),
+         
+        });
+         
+      const data = await res.json();
+      // console.log(data);
+      if(data.error){
+        console.log("error");
+        return;
+      }
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
   }
 
+  
 
 
 
@@ -138,6 +165,7 @@ console.log(otp);
                 placeholder="Name"
                 name="name"
                 id="name"
+                required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                  
                 onChange={handleChange}
@@ -151,6 +179,7 @@ console.log(otp);
                   placeholder="Email"
                   name="email"
                   id="email"
+                  required
                   className="w-[270px] py-2.5 pl-2.5   rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   
                   onChange={handleChange}
@@ -164,19 +193,21 @@ console.log(otp);
                 type="number"
                 placeholder="Mobile No."
                 name="phone"
+                required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
               
-                id="number"
+                id="phone"
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-               <p className="absolute -bottom-5 left-16 text-[12px] text-rose-400 font-bold ">{errors.number}</p>
+               <p className="absolute -bottom-5 left-16 text-[12px] text-rose-400 font-bold ">{errors.phone}</p>
                </div>
                <div className="relative h-[70px]">
               <input
                 type="password"
                 placeholder="Password"
                 name="password"
+                required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
            
                 id="password"
@@ -221,25 +252,16 @@ console.log(otp);
                  maxLength={6}
                 onChange={handleOtp}
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                
                 />
-                <input
-                type="email"
-                placeholder="email"
-                name="email"
-                 id="email"
                  
-                onChange={handleOtp}
-                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                
-                />
               <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">Resend OTP</p>
                 </div>
 
                 <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
                   Verify OTP
                 </button>
-                <button  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+      
+                <button onClick={handleRegister}  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
                   Signup
                 </button>
                 <p className={`text-red-600 font-bold `}>Incorrect OTP</p>

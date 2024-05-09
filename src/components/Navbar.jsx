@@ -146,9 +146,9 @@ const Navbar = () => {
 
 
         <div ref={profileRef} className="hidden md:flex items-center space-x-3 md:space-x-0 gap-4">
-          <button className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          <Link to={'/startFundraiser'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
-          </button>
+          </Link>
           <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"
@@ -159,9 +159,9 @@ const Navbar = () => {
         </div>
 
         {isProfileOpen && (
-          <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
+          <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10 ">
             <div className="py-1">
-              <Link to="/auth"  onClick={console.log("hello")}  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+              <Link to="/auth"  onClick={console.log("hello")}  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 Login
               </Link>
               <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">

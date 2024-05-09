@@ -89,7 +89,7 @@ const Hero = () => {
         <p className="mt-2">
           Empower positive change by supporting a cause close to your heart.
         </p>
-        <div className="mt-4 ">
+        <div className="mt-4  ">
           <Swiper
             className=""
             modules={[Navigation, Pagination, Scrollbar, A11y]}

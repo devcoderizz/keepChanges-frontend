@@ -10,7 +10,7 @@ export const registerSchema = yup.object({
     .email('Invalid email address')
     .required('Email is required'),
 
-    number: yup.string()
+    phone: yup.string()
     .matches(/^[1-9][0-9]{9}$/, 'Invalid mobile number')
     .required('Mobile number is required'),
 
@@ -19,7 +19,7 @@ export const registerSchema = yup.object({
     .matches(/^(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/, 'Password must contain at least one number, and one special character')
     .required('Password is required'),
 
-    otp: yup.string()
-    .matches(/^\d{6}$/, 'OTP must be exactly 6 digits')
+    // otp: yup.string()
+    // .matches(/^\d{6}$/, 'OTP must be exactly 6 digits')
    
 }) 

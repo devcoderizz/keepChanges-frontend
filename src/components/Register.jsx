@@ -8,6 +8,7 @@ import { registerSchema } from "../Yup schema/Schema";
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
+  const [verifying, setVerifying] = useState(false)
   const [formData, setFormData] = useState({});
   const [otp, setOtp] = useState(null)
   const {password, ...otpData} = formData  
@@ -48,35 +49,70 @@ console.log(otp);
 
     // },
   });
-  const handleSubmit = async (e)=>{
-    e.preventDefault();
-    setVerify(!Verify)
-    console.log(formData);
-    try {
-      const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(otpData),
+  // const handleSubmit = async (e)=>{
+  //   e.preventDefault();
+  //   setVerify(!Verify)
+  //   console.log(formData);
+  //   try {
+  //     const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(otpData),
         
   
-      });
-      console.log(otpData);
-      const data = await res.json();
-      console.log(data);
-      if(data.error){
-        console.log("error");
-        return;
-      }
-      console.log(data);
+  //     });
+  //     console.log(otpData);
+  //     const data = await res.json();
+  //     console.log(data);
+  //     if(data.error){
+  //       console.log("error");
+  //       return;
+  //     }
+  //     console.log("LOda");
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setVerify(prevVerify => !prevVerify); // If `setVerify` is a state setter from useState, use a function for safety
+
+    console.log('Form Data:', formData); // Assuming formData is defined somewhere globally
+    console.log('OTP Data being sent:', otpData);
+
+    try {
+        const response = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(otpData)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            console.log("Success:", data);
+            console.log("LODA");
+            return data; // Return data on success for further handling
+        } else {
+            console.error("Error:", data.error);
+            return null; // Return null or throw an error if you want to handle it in the calling code
+        }
+
     } catch (error) {
-      console.log(error);
+        console.error("Network or other error:", error);
+        return null; // Return null or handle the error as needed
     }
-  }
+};
 
   const handleRegister =async(e)=>{
     e.preventDefault();
+    
     try {
 
       const res = await fetch(`${APIBASEURL}/api/auth/register`, {
@@ -94,6 +130,7 @@ console.log(otp);
         console.log("error");
         return;
       }
+      
       console.log(data);
       navigate('/')
     } catch (error) {
@@ -121,9 +158,15 @@ console.log(otp);
         console.log("error");
         return;
       }
+      
+      console.log("ho haya verified");
       console.log(data);
+      setVerifying(true)
+      console.log(verifying);
     } catch (error) {
       console.log(error);
+    } finally{
+      setVerifying(false)
     }
   }
 
@@ -135,7 +178,7 @@ console.log(otp);
  
 
   return (
-    <div className=" w-full h-[89.5vh] flex items-center justify-center">
+    <div className=" w-full h-full py-10 flex items-center justify-center">
       <div className=" md:w-[900px] md:h-[85vh] flex flex-col items-center justify-center md:flex-row border-2 border-[#FF5C5C] ">
         <div className="w-full md:w-1/2 h-full bg-[#FF5C5C] flex flex-col items-center justify-start gap-5 p-10">
           <h1 className="h-10 text-xl font-bold text-white text-center">
@@ -165,7 +208,7 @@ console.log(otp);
                 placeholder="Name"
                 name="name"
                 id="name"
-                required
+                // required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                  
                 onChange={handleChange}
@@ -179,7 +222,7 @@ console.log(otp);
                   placeholder="Email"
                   name="email"
                   id="email"
-                  required
+                  // required
                   className="w-[270px] py-2.5 pl-2.5   rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   
                   onChange={handleChange}
@@ -193,7 +236,7 @@ console.log(otp);
                 type="number"
                 placeholder="Mobile No."
                 name="phone"
-                required
+                // required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
               
                 id="phone"
@@ -207,7 +250,7 @@ console.log(otp);
                 type="password"
                 placeholder="Password"
                 name="password"
-                required
+                // required
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
            
                 id="password"
@@ -257,13 +300,14 @@ console.log(otp);
               <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">Resend OTP</p>
                 </div>
 
-                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
-                  Verify OTP
-                </button>
-      
-                <button onClick={handleRegister}  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+
+                  <button onClick={handleRegister}  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
                   Signup
-                </button>
+                </button> 
+
+                 <button  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white "> Verify OTP </button>  
+
+                
                 <p className={`text-red-600 font-bold `}>Incorrect OTP</p>
                 </form>
 

@@ -168,7 +168,8 @@ const Navbar = () => {
           </button>
         </div>
 
-        {isProfileOpen && (
+        {isProfileOpen && (<>
+        <div onClick={handleProfileClick} className="absolute w-[90vw] h-screen  -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2  "></div>
           <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10 ">
             <div className="py-1">
               <button onClick={()=>navigate('/auth')
@@ -183,6 +184,7 @@ const Navbar = () => {
               </button>
             </div>
           </div>
+          </>
         )}
       </div>
     </nav>

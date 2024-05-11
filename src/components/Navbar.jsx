@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaCircleUser } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import Hamburger from "hamburger-react";
+import { useLocation } from 'react-router-dom';
 
 const items = [
   {
@@ -47,31 +48,40 @@ const items = [
 ];
 
 const Navbar = () => {
+ 
   const [isBurgerOpen, setBurgerOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const navigate = useNavigate()
 
 
-  const handleClickOutside = (event) => {
-    if (
-      profileRef.current &&
-      !profileRef.current.contains(event.target) &&
-      !event.target.classList.contains("profile-button")
-    ) {
-      setProfileOpen(false);
-    }
-  };
+  // const handleClickOutside = (event) => {
+  //   if (
+  //     profileRef.current &&
+  //     !profileRef.current.contains(event.target) &&
+  //     !event.target.classList.contains("profile-button")
+  //   ) {
+  //     setProfileOpen(false);
+  //   }
+  // };
 
   const handleProfileClick = () => {
     setProfileOpen(!isProfileOpen);
   };
 
+  // useEffect(() => {
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    if (location.pathname === "/auth") {
+      handleProfileClick();
+    }
+  }, [location.pathname]);
+
 
   return (
     <nav className=" bg-white border-gray-200 w-full py-5 md:py-0 px-10 md:px-20
@@ -161,10 +171,14 @@ const Navbar = () => {
         {isProfileOpen && (
           <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10 ">
             <div className="py-1">
-              <Link to="/auth"  onClick={console.log("hello")}  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
+              <button onClick={()=>navigate('/auth')
+
+              } >
+              <Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 Login
               </Link>
-              <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+              </button>
+              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
                 Logout
               </button>
             </div>

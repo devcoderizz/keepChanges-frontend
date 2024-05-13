@@ -4,32 +4,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
-import toast, { Toaster } from "react-hot-toast";
 
+ 
 
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
+
   const [formData, setFormData] = useState({});
   const [otp, setOtp] = useState(null);
-  const { password, ...otpData } = formData;
-  const [error, setError] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  
+  // console.log(otpData);
+
   // console.log(otpData);
   const navigate = useNavigate();
 
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
-  // const initialValues = {
-  //   name: "",
-  //   email: "",
-  //   number:"",
-  //   password: "",
-
-  // };
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+  const initialValues = {
+    name: "",
+    email: "",
+    password: "",
+    phone:""
   };
 
   const handleOtp = (e) => {
@@ -39,45 +35,58 @@ const Register = () => {
     });
   };
   console.log(otp);
-  const { errors, handleBlur } = useFormik({
-    // initialValues: initialValues,
+  const {values,errors, handleChange,handleSubmit, handleBlur } = useFormik({
+    initialValues: initialValues,
     validationSchema: registerSchema,
-    // onSubmit: (values) => {
-    //   console.log(values);
-    //   setVerify(!Verify)
+    onSubmit: (values )=>{
+      const sendotp = async () => {
+        setFormData(values);
+        // eslint-disable-next-line no-unused-vars
+        const { password, ...otpData } = values;
+        setVerify((prevVerify) => !prevVerify);
+        try {
+          const response = await fetch(
+            `${APIBASEURL}/api/auth/verification/send-otp`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(otpData), // Pass values instead of otpData
+            }
+          );
+      
+          const data = await response.json();
+      
+          if (response.ok) {
+            console.log("Success:", data);
+            console.log("LODA");
+            return data;
+          } else {
+            console.error("Error:", data.error);
+            return null;
+          }
+        } catch (error) {
+          console.error("Network or other error:", error);
+          return null;
+        }
+      };
 
-    // },
+      sendotp()
+
+    
+  },
+    
   });
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setVerify(!Verify);
-    console.log(formData);
-    console.log("otpdata", otpData)
-    try {
-      const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(otpData),
-      });
-      console.log(otpData);
-      const data = await res.json();
-      console.log(data);
-      if (data.error) {
-        console.log("error");
-        return;
-      }
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  console.log(formData);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  
+
+  const handleRegister = async () => {
+     
+
     try {
-      const response = await fetch(`${APIBASEURL}/api/auth/register`, {
+      const res = await fetch(`${APIBASEURL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,32 +94,26 @@ const Register = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      console.log(data);
-
-      if (!response.ok) {
-        // Display toast message with error from the server
-    
-        toast.error(data.error);
-        
-        
-        return;
-      }
-
+      const data = await res.json();
+      // console.log(data.id);
+      // const decode = jwt.decode(data)
+      // console.log(decode);
       if (data.error) {
-        console.error("Error:", data.error);
+        console.log("error");
         return;
+      }else{
+        navigate("/");
+        return
       }
 
-      console.log(data);
-      navigate("/");
     } catch (error) {
-      console.log("Error:", error);
+      console.log(error);
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+
     try {
       const res = await fetch(
         `${APIBASEURL}/api/auth/verification/verify-otp`,
@@ -124,48 +127,20 @@ const Register = () => {
       );
 
       const data = await res.json();
-      
-      if (res.status === 200) {
-        toast.success(res.message);
-      }
-
-      // console.log(data);
       if (data.error) {
         console.log("error");
+
         return;
+      }else{
+        handleRegister()
       }
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // const handleServerResponse = async () => {
-  //   try {
-  //     // Your API call here
-  //     const response = await fetch(
-  //       `${APIBASEURL}/api/auth/verification/verify-otp`
-  //     );
-
-  //     if (!response.ok) {
-  //       const responseData = await response.json();
-
-  //       if (response.status === 409) {
-  //         toast.error(responseData.message);
-  //       } else {
-  //         setError(responseData.message);
-  //       }
-  //     } else {
-  //       // Handle success
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     setError("An error occurred, please try again.");
-  //   }
-  // };
-
   return (
-    <div className=" w-full h-[89.5vh] flex items-center justify-center">
+    <div className=" w-full h-full py-10 flex items-center justify-center">
       <div className=" md:w-[900px] md:h-[85vh] flex flex-col items-center justify-center md:flex-row border-2 border-[#FF5C5C] ">
         <div className="w-full md:w-1/2 h-full bg-[#FF5C5C] flex flex-col items-center justify-start gap-5 p-10">
           <h1 className="h-10 text-xl font-bold text-white text-center">
@@ -192,8 +167,9 @@ const Register = () => {
                   type="text"
                   placeholder="Name"
                   name="name"
+                  value={values.name}
                   id="name"
-                  required
+                  // required
                   className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -206,10 +182,11 @@ const Register = () => {
                 <input
                   type="email"
                   placeholder="Email"
+                  value={values.email}
                   name="email"
                   id="email"
-                  required
-                  className="w-[270px] py-2.5 pl-2.5   rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  // required
+                  className="w-[270px] py-2.5 pl-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -222,7 +199,8 @@ const Register = () => {
                   type="number"
                   placeholder="Mobile No."
                   name="phone"
-                  required
+                  value={values.phone}
+                  // required
                   className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   id="phone"
                   onChange={handleChange}
@@ -237,7 +215,8 @@ const Register = () => {
                   type="password"
                   placeholder="Password"
                   name="password"
-                  required
+                  value={values.password}
+                  // required
                   className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   id="password"
                   onChange={handleChange}
@@ -249,7 +228,7 @@ const Register = () => {
               </div>
 
               <div className="flex flex-col items-start">
-                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
+                <button type="submit" className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
                   Signup
                 </button>
               </div>
@@ -266,8 +245,8 @@ const Register = () => {
           </form>
         </div>
         {Verify && (
-          <div className="absolute w-screen h-[100vh] z-10 flex items-center top-0  ">
-            <div className="absolute bg-gray-500 w-screen h-[100vh] z-10   opacity-50    "></div>
+          <div className="absolute w-full h-[100vh] z-10 flex items-center top-0  ">
+            <div className="absolute bg-gray-500 w-full h-[200vh] z-10   opacity-50     "></div>
             <div className="absolute bg-white md:w-[500px] md:h-[400px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5     ">
               <h1 className="  text-xl font-bold text-[#FF5C5C] ">Enter OTP</h1>
               <form
@@ -291,18 +270,20 @@ const Register = () => {
                   </p>
                 </div>
 
-                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
-                  Verify OTP
-                </button>
-
-                <button
+                {/* <button
                   onClick={handleRegister}
                   className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white "
                 >
                   Signup
+                </button> */}
+
+                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+                  {" "}
+                  Verify OTP{" "}
                 </button>
-               
+
                 <p className={`text-red-600 font-bold `}>Incorrect OTP</p>
+                <p className={`text-green-600 font-bold `}>sdvs</p>
               </form>
             </div>
           </div>

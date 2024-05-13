@@ -8,13 +8,16 @@ import StartFundraiser from "./pages/StartFundraiser"
 import Footer from "./components/Footer"
 
 
+
 function App() {
 
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
     <Navbar />
+
   <Routes>
+    
       <Route path="/" element={  <HomePage/> } ></Route>
       <Route path="/fundraisers" element={<Fundraisers/> } ></Route>
       <Route path='/auth' element={<AuthPage/>} />
@@ -28,7 +31,9 @@ function App() {
 
 
   </Routes>
+  
   <Footer/>
+  
   </div>
   )
 }

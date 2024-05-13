@@ -1,3 +1,4 @@
+
 import PropTypes from 'prop-types';
 import { MdPeopleAlt } from "react-icons/md";
 const ViewCard = ({ title, imageSrc, raisedAmount, goalAmount, by, Suppoters, daysLeft}) => {

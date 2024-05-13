@@ -9,7 +9,7 @@ import Footer from "./components/Footer"
 
 
 function App() {
-  
+
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
@@ -19,6 +19,7 @@ function App() {
       <Route path="/fundraisers" element={<Fundraisers/> } ></Route>
       <Route path='/auth' element={<AuthPage/>} />
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
+      <Route path='/fundraiser/:id' element={<Fundraisers/>} />
       
 
 

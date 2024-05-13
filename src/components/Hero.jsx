@@ -29,7 +29,7 @@ const Hero = () => {
       by: "by Maitri",
       imageSrc:
         "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 4000,
+      raisedAmount: 1000,
       goalAmount: 5000,
       daysLeft: 5,
       Suppoters: 2203,

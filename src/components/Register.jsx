@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
 import toast, { Toaster } from "react-hot-toast";
-import { log } from "console";
+
 
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
@@ -52,6 +52,7 @@ const Register = () => {
     e.preventDefault();
     setVerify(!Verify);
     console.log(formData);
+    console.log("otpdata", otpData)
     try {
       const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
         method: "POST",
@@ -123,6 +124,11 @@ const Register = () => {
       );
 
       const data = await res.json();
+      
+      if (res.status === 200) {
+        toast.success(res.message);
+      }
+
       // console.log(data);
       if (data.error) {
         console.log("error");

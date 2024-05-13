@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
+import toast from "react-hot-toast";
 
  
 
@@ -52,18 +53,19 @@ const Register = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(otpData), // Pass values instead of otpData
+              body: JSON.stringify(otpData),  
             }
           );
       
           const data = await response.json();
       
           if (response.ok) {
-            console.log("Success:", data);
-            console.log("LODA");
+            toast.success(response.message)
+            
             return data;
           } else {
             console.error("Error:", data.error);
+            toast.error(data.error)
             return null;
           }
         } catch (error) {
@@ -100,6 +102,7 @@ const Register = () => {
       // console.log(decode);
       if (data.error) {
         console.log("error");
+        toast.error(data.error)
         return;
       }else{
         navigate("/");
@@ -114,7 +117,8 @@ const Register = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
-    try {
+    try { 
+
       const res = await fetch(
         `${APIBASEURL}/api/auth/verification/verify-otp`,
         {
@@ -127,8 +131,13 @@ const Register = () => {
       );
 
       const data = await res.json();
+      if(res.status ==200){
+        toast.success(res.message)
+      }
+
       if (data.error) {
         console.log("error");
+        toast.error(data.error)
 
         return;
       }else{

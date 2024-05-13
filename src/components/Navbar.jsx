@@ -4,6 +4,8 @@ import { FaCircleUser } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import Hamburger from "hamburger-react";
+
+import { useLocation } from 'react-router-dom';
 import { Toaster } from "react-hot-toast";
 
 
@@ -89,6 +91,7 @@ const Navbar = () => {
     ">
       
       <div className="flex items-center justify-between mx-auto md:py-4">
+
        <Toaster position="top-right"  toastOptions={{duration:10000, style: {
 
       
@@ -97,6 +100,7 @@ const Navbar = () => {
       top: '20px', 
       right: '20px',
     }, }}   /> 
+
 
       <div className="flex items-center space-x-3    mt-1 gap-3">
           <Link to="/" className="text-2xl font-extrabold text-red-500 text-nowrap">

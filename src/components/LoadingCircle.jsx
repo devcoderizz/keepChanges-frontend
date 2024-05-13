@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+
+import { useState } from "react";
+
+ 
 
 const DonationCircle = ({ percentage }) => {
   const [progress, setProgress] = useState(percentage);

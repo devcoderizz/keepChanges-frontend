@@ -5,29 +5,27 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
 
+ 
+
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
-  const [verifying, setVerifying] = useState(false)
+
   const [formData, setFormData] = useState({});
-  const [otp, setOtp] = useState(null)
-  const {password, ...otpData} = formData  
+  const [otp, setOtp] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  
+  // console.log(otpData);
+
   // console.log(otpData);
   const navigate = useNavigate();
 
-  const APIBASEURL= import.meta.env.VITE_API_BASEURL
-  // const initialValues = {
-  //   name: "",
-  //   email: "",
-  //   number:"",
-  //   password: "",
-    
-  // };
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
+  const initialValues = {
+    name: "",
+    email: "",
+    password: "",
+    phone:""
   };
 
   const handleOtp = (e) => {
@@ -36,146 +34,111 @@ const Register = () => {
       [e.target.id]: e.target.value,
     });
   };
-console.log(otp);
-  const {   errors,   handleBlur } = useFormik({
-    // initialValues: initialValues,
+  console.log(otp);
+  const {values,errors, handleChange,handleSubmit, handleBlur } = useFormik({
+    initialValues: initialValues,
     validationSchema: registerSchema,
-    // onSubmit: (values) => {
-    //   console.log(values);
-    //   setVerify(!Verify)
-
-
-
-
-    // },
-  });
-  // const handleSubmit = async (e)=>{
-  //   e.preventDefault();
-  //   setVerify(!Verify)
-  //   console.log(formData);
-  //   try {
-  //     const res = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(otpData),
-        
-  
-  //     });
-  //     console.log(otpData);
-  //     const data = await res.json();
-  //     console.log(data);
-  //     if(data.error){
-  //       console.log("error");
-  //       return;
-  //     }
-  //     console.log("LOda");
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setVerify(prevVerify => !prevVerify); // If `setVerify` is a state setter from useState, use a function for safety
-
-    console.log('Form Data:', formData); // Assuming formData is defined somewhere globally
-    console.log('OTP Data being sent:', otpData);
-
-    try {
-        const response = await fetch(`${APIBASEURL}/api/auth/verification/send-otp`, {
-            method: "POST",
-            headers: {
+    onSubmit: (values )=>{
+      const sendotp = async () => {
+        setFormData(values);
+        // eslint-disable-next-line no-unused-vars
+        const { password, ...otpData } = values;
+        setVerify((prevVerify) => !prevVerify);
+        try {
+          const response = await fetch(
+            `${APIBASEURL}/api/auth/verification/send-otp`,
+            {
+              method: "POST",
+              headers: {
                 "Content-Type": "application/json",
-            },
-            body: JSON.stringify(otpData)
-        });
-
-        const data = await response.json();
-        
-        if (response.ok) {
+              },
+              body: JSON.stringify(otpData), // Pass values instead of otpData
+            }
+          );
+      
+          const data = await response.json();
+      
+          if (response.ok) {
             console.log("Success:", data);
             console.log("LODA");
-            return data; // Return data on success for further handling
-        } else {
+            return data;
+          } else {
             console.error("Error:", data.error);
-            return null; // Return null or throw an error if you want to handle it in the calling code
+            return null;
+          }
+        } catch (error) {
+          console.error("Network or other error:", error);
+          return null;
         }
+      };
 
-    } catch (error) {
-        console.error("Network or other error:", error);
-        return null; // Return null or handle the error as needed
-    }
-};
+      sendotp()
 
-  const handleRegister =async(e)=>{
-    e.preventDefault();
     
-    try {
+  },
+    
+  });
+  console.log(formData);
 
+  
+
+  const handleRegister = async () => {
+     
+
+    try {
       const res = await fetch(`${APIBASEURL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-         body: JSON.stringify(formData),
-         
-        });
-         
+        body: JSON.stringify(formData),
+      });
+
       const data = await res.json();
-      console.log(data);
-      if(data.error){
+      // console.log(data.id);
+      // const decode = jwt.decode(data)
+      // console.log(decode);
+      if (data.error) {
         console.log("error");
         return;
+      }else{
+        navigate("/");
+        return
       }
-      
-      console.log(data);
-      navigate('/')
+
     } catch (error) {
       console.log(error);
     }
+  };
 
-  }
-
-  const handleVerifyOtp =async(e)=>{
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    try {
 
-      const res = await fetch(`${APIBASEURL}/api/auth/verification/verify-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-         body: JSON.stringify(otp),
-         
-        });
-         
+    try {
+      const res = await fetch(
+        `${APIBASEURL}/api/auth/verification/verify-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(otp),
+        }
+      );
+
       const data = await res.json();
-      // console.log(data);
-      if(data.error){
+
+      if (data.error) {
         console.log("error");
+
         return;
+      }else{
+        handleRegister()
       }
-      
-      console.log("ho haya verified");
-      console.log(data);
-      setVerifying(true)
-      console.log(verifying);
     } catch (error) {
       console.log(error);
-    } finally{
-      setVerifying(false)
     }
-  }
-
-  
-
-
-
-
- 
+  };
 
   return (
     <div className=" w-full h-full py-10 flex items-center justify-center">
@@ -201,67 +164,72 @@ console.log(otp);
           >
             <div className="flex flex-col justify-center items-center gap-7">
               <div className="relative">
-
-              
-              <input
-                type="text"
-                placeholder="Name"
-                name="name"
-                id="name"
-                // required
-                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                 
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-               <p className="absolute -bottom-5 left-20 text-[12px] text-rose-400 font-bold ">{errors.name}</p>
-               </div>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  name="name"
+                  value={values.name}
+                  id="name"
+                  // required
+                  className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <p className="absolute -bottom-5 left-20 text-[12px] text-rose-400 font-bold ">
+                  {errors.name}
+                </p>
+              </div>
               <div className="relative">
                 <input
                   type="email"
                   placeholder="Email"
+                  value={values.email}
                   name="email"
                   id="email"
                   // required
-                  className="w-[270px] py-2.5 pl-2.5   rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                  
+                  className="w-[270px] py-2.5 pl-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
-                 <p className="absolute -bottom-5 left-20 text-[12px] text-rose-400 font-bold ">{errors.email}</p>
-                
+                <p className="absolute -bottom-5 left-20 text-[12px] text-rose-400 font-bold ">
+                  {errors.email}
+                </p>
               </div>
               <div className="relative">
-              <input
-                type="number"
-                placeholder="Mobile No."
-                name="phone"
-                // required
-                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-              
-                id="phone"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-               <p className="absolute -bottom-5 left-16 text-[12px] text-rose-400 font-bold ">{errors.phone}</p>
-               </div>
-               <div className="relative h-[70px]">
-              <input
-                type="password"
-                placeholder="Password"
-                name="password"
-                // required
-                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-           
-                id="password"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-               <p className="absolute -bottom-15 left-10 text-[12px] text-rose-400 font-bold ">{errors.password}</p>
-               </div>
+                <input
+                  type="number"
+                  placeholder="Mobile No."
+                  name="phone"
+                  value={values.phone}
+                  // required
+                  className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  id="phone"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <p className="absolute -bottom-5 left-16 text-[12px] text-rose-400 font-bold ">
+                  {errors.phone}
+                </p>
+              </div>
+              <div className="relative h-[70px]">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={values.password}
+                  // required
+                  className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  id="password"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <p className="absolute -bottom-15 left-10 text-[12px] text-rose-400 font-bold ">
+                  {errors.password}
+                </p>
+              </div>
 
               <div className="flex flex-col items-start">
-                <button  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
+                <button type="submit" className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
                   Signup
                 </button>
               </div>
@@ -277,45 +245,50 @@ console.log(otp);
             </h1>
           </form>
         </div>
-              {Verify && <div className="absolute w-screen h-[100vh] z-10 flex items-center top-0  ">
-                <div className="absolute bg-gray-500 w-screen h-[100vh] z-10   opacity-50    ">
+        {Verify && (
+          <div className="absolute w-full h-[100vh] z-10 flex items-center top-0  ">
+            <div className="absolute bg-gray-500 w-full h-[200vh] z-10   opacity-50     "></div>
+            <div className="absolute bg-white md:w-[500px] md:h-[400px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5     ">
+              <h1 className="  text-xl font-bold text-[#FF5C5C] ">Enter OTP</h1>
+              <form
+                action=""
+                onSubmit={handleVerifyOtp}
+                className=" flex flex-col gap-5 items-center "
+              >
+                <div>
+                  <input
+                    type="number"
+                    placeholder="OTP"
+                    name="otp"
+                    id="otp"
+                    maxLength={6}
+                    onChange={handleOtp}
+                    className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
+                  />
+
+                  <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">
+                    Resend OTP
+                  </p>
                 </div>
-                <div className="absolute bg-white md:w-[500px] md:h-[400px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5     ">
-                <h1 className="  text-xl font-bold text-[#FF5C5C] ">
-                Enter OTP
-                </h1>
-                <form action="" onSubmit={handleVerifyOtp} className=" flex flex-col gap-5 items-center ">
-                  <div>
 
-                <input
-                type="number"
-                placeholder="OTP"
-                name="otp"
-                 id="otp"
-                 maxLength={6}
-                onChange={handleOtp}
-                className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
-                />
-                 
-              <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">Resend OTP</p>
-                </div>
-
-
-                  <button onClick={handleRegister}  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+                {/* <button
+                  onClick={handleRegister}
+                  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white "
+                >
                   Signup
-                </button> 
+                </button> */}
 
-                 <button  className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white "> Verify OTP </button>  
+                <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white ">
+                  {" "}
+                  Verify OTP{" "}
+                </button>
 
-                
                 <p className={`text-red-600 font-bold `}>Incorrect OTP</p>
-                </form>
-
-                </div>
-                  
-                </div>
-              }
-
+                <p className={`text-green-600 font-bold `}>sdvs</p>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

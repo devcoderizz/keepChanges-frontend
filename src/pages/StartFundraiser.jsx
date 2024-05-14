@@ -1,20 +1,20 @@
 
 const StartFundraiser = () => {
 
-  var today = new Date();
+ 
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="  h-full w-[650px] flex flex-col items-center gap-10 py-10">
         <div className="flex flex-col items-center justify-center gap-3 ">
-          <h1 className="text-5xl font-extrabold text-[#FF5C5C] tracking-wide">
+          <h1 className=" text-3xl md:text-5xl font-extrabold text-[#FF5C5C] tracking-wide">
             Start your fundraiser{" "}
           </h1>
-          <p className="text-sm font-normal">
+          <p className="text-sm font-normal w-[300px]">
             *You have the flexibility to update these details whenever you
             choose.
           </p>
         </div>
-        <form action="" className="w-full h-full flex flex-col items-center gap-4">
+        <form action="" className="w-[500px] h-full flex flex-col items-center gap-4 p-5">
         <div className="flex flex-col items-start">
             <label htmlFor="" className="font-bold">Fundraiser Title*</label>
             <input type="text" name="title" placeholder="Give your raiser a name " className="p-2 w-[400px] border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none  " />

@@ -1,13 +1,14 @@
 import { useSetRecoilState } from "recoil";
 import { authScreenAtom } from "../atom/authAtom";
-import { Link, useNavigate } from "react-router-dom";
+import { Link  } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [formData, setFormData] = useState({});
   const APIBASEURL= import.meta.env.VITE_API_BASEURL
-  const navigate = useNavigate();
+   
 
   const handleChange = (e) => {
     setFormData({
@@ -32,10 +33,16 @@ const Login = () => {
       console.log(data);
       if (data.error) {
         console.log("error");
+        toast.error(data.error)
         return;
+      }else{
+        if(res.status === 200){
+
+          localStorage.setItem("UserData",JSON.stringify(data));
+          window.location.reload(false);
+        }
+        return
       }
-      console.log(data);
-      navigate("/");
     } catch (error) {
       console.log(error);
     }

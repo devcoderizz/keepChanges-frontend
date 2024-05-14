@@ -6,11 +6,13 @@ import Fundraisers from './pages/Fundraisers'
 import AuthPage from './pages/AuthPage'
 import StartFundraiser from "./pages/StartFundraiser"
 import Footer from "./components/Footer"
+import { useRecoilValue } from "recoil"
+import { userAtom } from "./atom/userAtom"
 
 
 
 function App() {
-
+  const user = useRecoilValue(userAtom)
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
@@ -20,7 +22,7 @@ function App() {
     
       <Route path="/" element={  <HomePage/> } ></Route>
       <Route path="/fundraisers" element={<Fundraisers/> } ></Route>
-      <Route path='/auth' element={<AuthPage/>} />
+      <Route path='/auth' element={!user ? <AuthPage/> : <Navigate to={'/'} /> } />
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
       <Route path='/fundraiser/:id' element={<Fundraisers/>} />
       

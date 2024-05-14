@@ -4,9 +4,9 @@ import { FaCircleUser } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import Hamburger from "hamburger-react";
-
+ 
 import { useLocation } from 'react-router-dom';
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 
 const items = [
@@ -56,34 +56,35 @@ const Navbar = () => {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate()
+  // const setUser = useSetRecoilState(userAtom)
+  const localData = JSON.parse(localStorage.getItem("UserData"))
+
+  // console.log("setUser",setUser);
+  // console.log("localData",localData);
 
 
-  // const handleClickOutside = (event) => {
-  //   if (
-  //     profileRef.current &&
-  //     !profileRef.current.contains(event.target) &&
-  //     !event.target.classList.contains("profile-button")
-  //   ) {
-  //     setProfileOpen(false);
-  //   }
-  // };
-
+ 
   const handleProfileClick = () => {
     setProfileOpen(!isProfileOpen);
   };
 
-  // useEffect(() => {
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
+   
 
   useEffect(() => {
     if (location.pathname === "/auth") {
       handleProfileClick();
     }
   }, [location.pathname]);
+
+  const handleLogout= ()=>{
+    localStorage.removeItem("UserData")
+    navigate('/auth')
+    window.location.reload(false);
+    toast.success("User loggedOut successfully");
+
+
+    
+  }
 
 
   return (
@@ -93,8 +94,6 @@ const Navbar = () => {
       <div className="flex items-center justify-between mx-auto md:py-4">
 
        <Toaster position="top-right"  toastOptions={{duration:10000, style: {
-
-      
       width: '150px', 
       height:'60px',
       top: '20px', 
@@ -168,14 +167,18 @@ const Navbar = () => {
 
 
         <div ref={profileRef} className="hidden md:flex items-center space-x-3 md:space-x-0 gap-4">
-          <Link to={'/startFundraiser'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          {localData ? <Link to={'/startFundraiser'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
-          </Link>
+          </Link> : <Link to={'/auth'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+            Start a Fundraiser
+          </Link>}
+          <span className="capitalize hidden md:block">Welcome, <strong className="text-[#EF5757]"> {localData.name}</strong></span>
           <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"
             onClick={handleProfileClick}
           >
+
             <FaCircleUser size={35} />
           </button>
         </div>
@@ -187,13 +190,19 @@ const Navbar = () => {
               <button onClick={()=>navigate('/auth')
 
               } >
-              <Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
+                {localData===null ? <Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 Login
+              </Link> :<Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
+                {localData.name}
               </Link>
+
+                }
+              
               </button>
-              <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+              {localData && <button onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
                 Logout
-              </button>
+              </button>}
+              
             </div>
           </div>
           </>

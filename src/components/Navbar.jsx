@@ -172,7 +172,7 @@ const Navbar = () => {
           </Link> : <Link to={'/auth'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
           </Link>}
-          <span className="capitalize hidden md:block">Welcome, <strong className="text-[#EF5757]"> {localData.name}</strong></span>
+          <span className="capitalize hidden md:block">{localData && "Welcome,"} <strong className="text-[#EF5757]"> {localData?.name}</strong></span>
           <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"

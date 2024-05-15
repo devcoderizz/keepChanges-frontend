@@ -34,6 +34,7 @@ const Hero = () => {
       goalAmount: 5000,
       daysLeft: 5,
       Suppoters: 2203,
+      to:"/fundraisers"
     },
     {
       title: "Supporting Elderly Care",
@@ -92,7 +93,7 @@ const Hero = () => {
           <div className="mt-6 ml-6 md:ml-1  ">
           {localData ? <Link to={'/startFundraiser'} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
-          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first")}} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first")  }} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
           </Link>}
            
@@ -190,7 +191,9 @@ const Hero = () => {
       >
         {donationData.map((data, index) => (    
           <div key={index}>
+            <Link to={data.to} >
             <ViewCard {...data} />
+            </Link>
           </div>
         ))}
       </div>

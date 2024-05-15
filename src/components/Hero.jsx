@@ -69,9 +69,9 @@ const Hero = () => {
       swiperRef.current.slidePrev();
     }
   };
-  const notify = () =>{ toast('Here is your toast.')
-    console.log("Toast")
-  };
+   
+ 
+ 
 
   return (
     <div className="w-full">
@@ -90,12 +90,12 @@ const Hero = () => {
             mission together, we&apos;re forging lasting impact.
           </p>
           <div className="mt-6 ml-6 md:ml-1  ">
-            
-            {localData ? <Link to={'/startFundraiser'} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          {localData ? <Link to={'/startFundraiser'} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
-          </Link> : <Link to={'/auth'} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first")}} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
           </Link>}
+           
           </div>
         </div>
 

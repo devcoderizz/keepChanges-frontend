@@ -11,12 +11,18 @@ export const registerSchema = yup.object({
     .required('Email is required'),
 
     phone: yup.string()
-    .matches(/^[1-9][0-9]{9}$/, 'Invalid mobile number')
-    .required('Mobile number is required'),
-
+    .matches(
+        /^(?:[6-9]\d{9}|\d{2}[1-9]\d{9})$/,
+        'Invalid mobile number'
+      )
+      .required('Mobile number is required').matches(
+        /^(?:[6-9]\d{9}|91[1-9]\d{9})$/,
+        'Invalid mobile number'
+      ),
+    
     password: yup.string()
     .min(8, 'Password must be at least 8 characters')
-    .matches(/^(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/, 'Password must contain at least one number, and one special character')
+    .matches(/^(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/, 'Password must contain atleast one alphabet, one special character and one number')
     .required('Password is required'),
 
     // otp: yup.string()

@@ -13,6 +13,8 @@ const Register = () => {
   const [formData, setFormData] = useState({});
   const [otp, setOtp] = useState(null);
   const [otpError, setOtpError] = useState(null);
+  const [otpSuccess, setOtpSuccess] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
  
 
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -34,38 +36,44 @@ const Register = () => {
     initialValues: initialValues,
     validationSchema: registerSchema,
     onSubmit: async (values) => {
-      const sendOtp = async () => {
-        setFormData(values);
-        const { password, ...otpData } = values;
-        setVerify(true);
-        try {
-          const response = await fetch(
-            `${APIBASEURL}/api/auth/verification/send-otp`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(otpData),
-            }
-          );
-
-          const data = await response.json();
-
-          if (response.ok) {
-            console.log("OTP sent successfully.");
-          } else {
-            console.error("Error:", data.error);
-            toast.error(data.error);
-          }
-        } catch (error) {
-          console.error("Network or other error:", error);
-        }
-      };
+     
 
       sendOtp();
     },
   });
+  const sendOtp = async () => {
+    setFormData(values);
+    const { password, ...otpData } = values;
+    
+    try {
+      const response = await fetch(
+        `${APIBASEURL}/api/auth/verification/send-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(otpData),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log("OTP sent successfully.");
+        setVerify(true);
+        setOtpSuccess(data.msg)
+        
+      } else {
+        setVerify(false)
+        setErrorMessage(data.msg)
+        console.error("Error:", data.error);
+        // toast.error(data.error);
+      }
+    } catch (error) {
+      console.error("Network or other error:", error);
+    } 
+  };
 
   const handleRegister = async () => {
     try {
@@ -112,9 +120,8 @@ const Register = () => {
         toast.success(data.msg);
         handleRegister();
       } else {
-        toast.error(data.msg);
         setOtpError(data.msg)
-        console.log(data.msg);
+        setOtpSuccess(null)
       }
     } catch (error) {
       console.log(error);
@@ -217,12 +224,14 @@ const Register = () => {
                 Login
               </Link>
             </h1>
+
+            {errorMessage && <span className="text-red-500 text-[12px] font-bold">{errorMessage}</span>}
           </form>
         </div>
         {Verify && (
           <div className="absolute w-full h-[100vh] z-10 flex items-center top-0">
             <div className="absolute bg-gray-500 w-full h-[200vh] z-10 opacity-50"></div>
-            <div className="absolute bg-white md:w-[500px] md:h-[400px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5">
+            <div className="absolute bg-white md:w-[500px] md:h-[350px] z-20 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-10 flex flex-col items-center gap-5">
               <h1 className="text-xl font-bold text-[#FF5C5C]">Enter OTP</h1>
               <form
                 action=""
@@ -240,7 +249,7 @@ const Register = () => {
                     className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50"
                   />
 
-                  <p className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">
+                  <p onClick={sendOtp} className="text-[12px] text-right font-bold hover:text-[#FF5C5C] hover:underline cursor-pointer">
                     Resend OTP
                   </p>
                 </div>
@@ -248,7 +257,9 @@ const Register = () => {
                 <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-xl font-bold text-white">
                   Verify OTP
                 </button>
-                {otpError && <p className="text-red-600 font-bold">{otpError}</p>}
+                {otpError && <p className="text-red-600 font-bold">Invalid OTP</p>}
+                {otpSuccess && <p className="text-green-600 font-bold">Otp Sent to your mail</p>}
+
               </form>
             </div>
           </div>

@@ -93,7 +93,7 @@ const Navbar = () => {
       
       <div className="flex items-center justify-between mx-auto md:py-4">
 
-       <Toaster position="top-right"  toastOptions={{duration:10000, style: {
+       <Toaster position="top-right"  toastOptions={{duration:4000, style: {
       width: '150px', 
       height:'60px',
       top: '20px', 
@@ -169,10 +169,10 @@ const Navbar = () => {
         <div ref={profileRef} className="hidden md:flex items-center space-x-3 md:space-x-0 gap-4">
           {localData ? <Link to={'/startFundraiser'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
-          </Link> : <Link to={'/auth'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first");setProfileOpen(false)} } className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
           </Link>}
-          <span className="capitalize hidden md:block">Welcome, <strong className="text-[#EF5757]"> {localData.name}</strong></span>
+          <span className="capitalize hidden md:block">{localData && "Welcome,"} <strong className="text-[#EF5757]"> {localData?.name}</strong></span>
           <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"
@@ -183,12 +183,12 @@ const Navbar = () => {
           </button>
         </div>
 
-        {isProfileOpen && (<>
+        {!isProfileOpen && (<>
         <div onClick={handleProfileClick} className="absolute w-[90vw] h-screen  -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2  "></div>
           <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10 ">
             <div className="py-1">
-              <button onClick={()=>navigate('/auth')
-
+              <button onClick={()=>navigate('/auth') 
+                
               } >
                 {localData===null ? <Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 Login

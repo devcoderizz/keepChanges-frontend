@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import ViewCard from "../components/ViewCard";
 import { Link } from "react-router-dom";
-const ActiveFundraisers = (onSearch) => {
+
+const ActiveFundraisers = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-  const [donationData, setDonationData] = React.useState([
+  const [donationData, setDonationData] = useState([
     {
-      title:
-        "help to brighten the lives of abandon children and their family by giving ",
+      title: "help to brighten the lives of abandon children and their family by giving",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 1000,
       goalAmount: 5000,
       daysLeft: 5,
@@ -20,8 +19,7 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Supporting Elderly Care",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 3000,
       goalAmount: 6000,
       daysLeft: 5,
@@ -30,8 +28,7 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Animal Welfare Fund",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 2000,
       goalAmount: 4000,
       daysLeft: 5,
@@ -40,8 +37,7 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Animal Welfare Fund",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 2000,
       goalAmount: 4000,
       daysLeft: 5,
@@ -50,8 +46,7 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Animal Welfare Fund",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 2000,
       goalAmount: 4000,
       daysLeft: 5,
@@ -60,8 +55,7 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Animal Welfare Fund",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 2000,
       goalAmount: 4000,
       daysLeft: 5,
@@ -70,13 +64,67 @@ const ActiveFundraisers = (onSearch) => {
     {
       title: "Animal Welfare Fund",
       by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
       raisedAmount: 2000,
       goalAmount: 4000,
       daysLeft: 5,
       Suppoters: 2203,
     },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    {
+      title: "Animal Welfare Fund",
+      by: "by Maitri",
+      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+      raisedAmount: 2000,
+      goalAmount: 4000,
+      daysLeft: 5,
+      Suppoters: 2203,
+    },
+    // ... more data
   ]);
 
   const handleInputChange = (event) => {
@@ -86,15 +134,16 @@ const ActiveFundraisers = (onSearch) => {
   const handleSearch = () => {
     onSearch(query);
   };
+
   return (
-    <div className=" w-full md:h-[1000px] flex flex-col items-center mb-10 ">
+    <div className="w-full flex flex-col items-center mb-10">
       <h1 className="text-4xl font-extrabold py-8 pl-8 md:pl-0">
         Currently Active Fundraiser
       </h1>
-      <div className="flex md:flex-row flex-col  my-12  ">
-        <div className="flex flex-col items-start w-[100px]  md:w-[30vw] pl-10">
+      <div className="flex flex-col md:flex-row w-full my-12">
+        <div className="flex flex-col items-start w-full md:w-[30vw] pl-10">
           <h1 className="text-3xl font-semibold">Categories</h1>
-          <ul className="text-sm flex  flex-row flex-wrap gap-4 md:flex-col w-[200px] font-semibold my-4">
+          <ul className="text-sm flex flex-row flex-wrap gap-4 md:flex-col w-full md:w-[200px] font-semibold my-4">
             <li className="p-2">
               <input type="checkbox" id="item1" className="mx-2" name="item1" />
               <label htmlFor="item1">Causes</label>
@@ -126,8 +175,8 @@ const ActiveFundraisers = (onSearch) => {
           </ul>
         </div>
 
-        <div className="flex flex-col my-12 w-[80vw] md:w-[60vw] h-[800px] md:h-[600px]  ">
-          <div className="w-full  md:pl-12 flex flex-row">
+        <div className="flex flex-col w-full md:w-[70vw] my-12">
+          <div className="w-full flex flex-row md:ml-12">
             <div className="flex items-center w-full md:w-[90%]">
               <input
                 type="text"
@@ -138,18 +187,16 @@ const ActiveFundraisers = (onSearch) => {
               />
               <button
                 onClick={handleSearch}
-                className="bg-red-500 hover:bg-red-600 text-white px-5 sm:px-7 py-3 md:py-4  rounded-r-full border-2 border-red-500 rounded-l-none focus:outline-none"
+                className="bg-red-500 hover:bg-red-600 text-white px-5 sm:px-7 py-3 md:py-4 rounded-r-full border-2 border-red-500 rounded-l-none focus:outline-none"
               >
                 <BsSearch />
               </button>
             </div>
           </div>
 
-          <div
-            className={`w-full h-full grid grid-cols-1 md:grid-cols-2 gap-20 md:gap-x-0 md:gap-y-6  my-16 overflow-y-scroll `}
-          >
+          <div className="w-full h-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-6 my-16">
             {donationData.map((data, index) => (
-              <div key={index} className="h-[400px] md:h-full">
+              <div key={index} className="min-h-[400px] h-auto md:h-full">
                 <Link to={data.to}>
                   <ViewCard {...data} />
                 </Link>

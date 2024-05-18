@@ -1,22 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaCircleUser } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import Hamburger from "hamburger-react";
- 
-import { useLocation } from 'react-router-dom';
-import toast, { Toaster } from "react-hot-toast";
+import { Dropdown as Drop } from "flowbite-react";
 
+import { useLocation } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const items = [
   {
     key: "1",
     label: (
-      <Link
-        rel="noopener noreferrer"
-        to="/fundraisers"
-      >
+      <Link rel="noopener noreferrer" to="/fundraisers">
         Fundraisers
       </Link>
     ),
@@ -50,25 +47,20 @@ const items = [
 ];
 
 const Navbar = () => {
- 
   const [isBurgerOpen, setBurgerOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [logoutCompleted, setLogoutCompleted] = useState(false);
   const profileRef = useRef(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // const setUser = useSetRecoilState(userAtom)
-  const localData = JSON.parse(localStorage.getItem("UserData"))
+  const localData = JSON.parse(localStorage.getItem("UserData"));
 
   // console.log("setUser",setUser);
   // console.log("localData",localData);
 
-
- 
   const handleProfileClick = () => {
     setProfileOpen(!isProfileOpen);
   };
-
-   
 
   useEffect(() => {
     if (location.pathname === "/auth") {
@@ -78,47 +70,67 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("UserData");
-    navigate('/auth');
+    navigate("/auth");
     window.location.reload(false);
     toast.success("User logged out successfully", { autoClose: false });
-    
-}
+  };
 
-//   useEffect(() => {
-//     handleLogout();
-//     const timeoutId = setTimeout(() => {
-//         toast.success("User logged out successfully");
-//     }, 2000);
+  //   useEffect(() => {
+  //     handleLogout();
+  //     const timeoutId = setTimeout(() => {
+  //         toast.success("User logged out successfully");
+  //     }, 2000);
 
-//     return () => clearTimeout(timeoutId);
-// }, []);
+  //     return () => clearTimeout(timeoutId);
+  // }, []);
 
   return (
-    <nav className=" bg-white border-gray-200 w-full py-5 md:py-0 px-10 md:px-20
-    ">
-      
+    <nav
+      className=" bg-white border-gray-200 w-full py-5 md:py-0 px-10 md:px-20
+    "
+    >
       <div className="flex items-center justify-between mx-auto md:py-4">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              width: "150px",
+              height: "60px",
+              top: "20px",
+              right: "20px",
+            },
+          }}
+        />
 
-       <Toaster position="top-right"  toastOptions={{duration:4000, style: {
-      width: '150px', 
-      height:'60px',
-      top: '20px', 
-      right: '20px',
-    }, }}   /> 
-
-
-      <div className="flex items-center space-x-3    mt-1 gap-3">
-          <Link to="/" className="text-2xl font-extrabold text-red-500 text-nowrap">
+        <div className="flex items-center space-x-3    mt-1 gap-3">
+          <Link
+            to="/"
+            className="text-2xl font-extrabold text-red-500 text-nowrap"
+          >
             Keep Changes
           </Link>
-          <div
-            className="flex items-center justify-center w-10 h-10 text-indigo-500 profile-button md:hidden   "
-            
-          >
-            <FaCircleUser size={35} onClick={handleProfileClick} />
+          <div className="flex items-center justify-center w-10 h-10 text-indigo-500 profile-button md:hidden   ">
+          <Drop
+            label={<FaCircleUser color="blue" size={35} />}
+            dismissOnClick={false}
+            style={{ border: "none" }}
+            color={"red"}
+            className=" border-none "
+            arrowIcon={false}
+          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/user-profile")}>
+          Login
+        </Drop.Item>):
+            (<Drop.Item onClick={() => navigate("/user-profile")}>
+              {localData.name}
+            </Drop.Item>)          
+}  { localData && <Drop.Item onClick={handleLogout}>
+              Logout
+            </Drop.Item> }
+          </Drop>
           </div>
         </div>
-        <div className="hidden md:flex"> 
+        <div className="hidden md:flex">
           <ul className="flex flex-col md:flex-row font-medium p-4 md:p-0 mt-4 gap-10">
             <Dropdown
               menu={{
@@ -136,11 +148,11 @@ const Navbar = () => {
             </Dropdown>
             <Link className="text-black font-semibold mx-4">Gallery</Link>
             <Link className="text-black font-semibold mx-4">About</Link>
-          </ul></div>
+          </ul>
+        </div>
 
         <div className="flex items-center md:hidden">
           <Hamburger toggled={isBurgerOpen} toggle={setBurgerOpen} />
-        
         </div>
 
         <div
@@ -167,29 +179,69 @@ const Navbar = () => {
             <Link className="text-black font-semibold">About</Link>
           </ul>
         </div>
- 
 
-
-
-
-        <div ref={profileRef} className="hidden md:flex items-center space-x-3 md:space-x-0 gap-4">
-          {localData ? <Link to={'/startFundraiser'} className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-            Start a Fundraiser
-          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first");setProfileOpen(false)} } className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-            Start a Fundraiser
-          </Link>}
-          <span onClick={()=>{navigate('/user-profile')}} className="capitalize hidden md:block cursor-pointer">{localData && "Welcome,"} <strong className="text-[#EF5757]"> {localData?.name}</strong></span>
-          <button
+        <div
+          ref={profileRef}
+          className="hidden md:flex items-center space-x-3 md:space-x-0 gap-4"
+        >
+          {localData ? (
+            <Link
+              to={"/startFundraiser"}
+              className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+            >
+              Start a Fundraiser
+            </Link>
+          ) : (
+            <Link
+              to={"/auth"}
+              onClick={() => {
+                toast.error("You have to login first");
+                setProfileOpen(false);
+              }}
+              className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+            >
+              Start a Fundraiser
+            </Link>
+          )}
+          <span
+            onClick={() => {
+              navigate("/user-profile");
+            }}
+            className="capitalize hidden md:block cursor-pointer"
+          >
+            {localData && "Welcome,"}{" "}
+            <strong className="text-[#EF5757]"> {localData?.name}</strong>
+          </span>
+          {/* <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"
             onClick={handleProfileClick}
           >
 
             <FaCircleUser size={35} />
-          </button>
+          </button> */}
+
+          <Drop
+            label={<FaCircleUser color="blue" size={35} />}
+            dismissOnClick={false}
+            style={{ border: "none" }}
+            color={"red"}
+            className=" border-none "
+            arrowIcon={false}
+          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/user-profile")}>
+          Login
+        </Drop.Item>):
+            (<Drop.Item onClick={() => navigate("/user-profile")}>
+              {localData.name}
+            </Drop.Item>)          
+}  { localData && <Drop.Item onClick={handleLogout}>
+              Logout
+            </Drop.Item> }
+          </Drop>
+
         </div>
 
-        {!isProfileOpen && (<>
+        {/* {!isProfileOpen && (<>
         <div onClick={handleProfileClick} className="absolute w-[90vw] h-screen  -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2  "></div>
           <div className="absolute top-16 right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10 ">
             <div className="py-1">
@@ -212,7 +264,7 @@ const Navbar = () => {
             </div>
           </div>
           </>
-        )}
+        )} */}
       </div>
     </nav>
   );

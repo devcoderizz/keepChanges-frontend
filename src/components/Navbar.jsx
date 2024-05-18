@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaCircleUser } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
@@ -13,13 +13,12 @@ const items = [
   {
     key: "1",
     label: (
-      <a
-        target="_blank"
+      <Link
         rel="noopener noreferrer"
-        href="https://www.antgroup.com"
+        to="/fundraisers"
       >
         Fundraisers
-      </a>
+      </Link>
     ),
   },
   {
@@ -172,7 +171,7 @@ const Navbar = () => {
           </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first");setProfileOpen(false)} } className="p-2 font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
             Start a Fundraiser
           </Link>}
-          <span className="capitalize hidden md:block">{localData && "Welcome,"} <strong className="text-[#EF5757]"> {localData?.name}</strong></span>
+          <span onClick={()=>{navigate('/user-profile')}} className="capitalize hidden md:block cursor-pointer">{localData && "Welcome,"} <strong className="text-[#EF5757]"> {localData?.name}</strong></span>
           <button
             type="button"
             className=" items-center justify-center w-10 h-10 text-indigo-500 hidden md:block"
@@ -192,9 +191,9 @@ const Navbar = () => {
               } >
                 {localData===null ? <Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 Login
-              </Link> :<Link  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
+              </Link> :<button onClick={()=>{navigate('/user-profile')}}  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ">
                 {localData.name}
-              </Link>
+              </button>
 
                 }
               

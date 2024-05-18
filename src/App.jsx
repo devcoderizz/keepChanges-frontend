@@ -8,6 +8,7 @@ import StartFundraiser from "./pages/StartFundraiser"
 import Footer from "./components/Footer"
 import { useRecoilValue } from "recoil"
 import { userAtom } from "./atom/userAtom"
+import UserProfile from "./pages/UserProfile"
 
 
 
@@ -25,6 +26,7 @@ function App() {
       <Route path='/auth' element={!user ? <AuthPage/> : <Navigate to={'/'} /> } />
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
       <Route path='/fundraiser/:id' element={<Fundraisers/>} />
+      <Route path='/user-profile' element={!user ? <AuthPage/> : <UserProfile/>} />
       
 
 

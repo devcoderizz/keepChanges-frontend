@@ -8,6 +8,7 @@ const Login = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [formData, setFormData] = useState({});
   const APIBASEURL= import.meta.env.VITE_API_BASEURL
+  const [errorMessage, setErrorMessage] = useState(null);
    
 
   const handleChange = (e) => {
@@ -31,6 +32,13 @@ const Login = () => {
 
       const data = await res.json();
       console.log(data);
+     
+      if(res.status === 400)(
+        setErrorMessage("Incorrect Password")
+      )
+      if(res.status === 404)(
+        setErrorMessage("This email is not registered")
+      )
       if (data.error) {
         console.log("error");
         toast.error(data.error)
@@ -107,6 +115,7 @@ const Login = () => {
                 Sign Up
               </Link>{" "}
             </h1>
+            {errorMessage && <p className="text-red-600 font-bold">{errorMessage}</p>}
           </form>
         </div>
       </div>

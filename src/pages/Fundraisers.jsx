@@ -290,9 +290,9 @@ const Fundraisers = ({
             </button>
 
             {showModal && (
-              <div className="absolute  transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100vw] h-[100vh]  z-30">
+              <div className="absolute  transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100%] h-[100vh]  z-30">
                 {" "}
-                <div className=" absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100vw] h-[100vh] bg-[#f4f7f6da]"></div>{" "}
+                <div className=" absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100%] h-[100vh] bg-[#f4f7f6da]"></div>{" "}
                 <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 h-[540px] w-[300px] md:w-[500px] ">
                   {" "}
                   <RxCross2

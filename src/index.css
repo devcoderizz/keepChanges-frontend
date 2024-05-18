@@ -51,3 +51,25 @@ input::-webkit-inner-spin-button {
   padding: 50px !important;
   width: 90%;
 }
+
+/* Hide the default checkbox */
+input[type="checkbox"] {
+  display: none;
+}
+
+/* Create a custom checkbox */
+input[type="checkbox"] + label::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #FF5C5C;
+  background-color: #fff;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Fill the checkbox with red color when checked */
+input[type="checkbox"]:checked + label::before {
+  background-color: #FF5C5C;
+}

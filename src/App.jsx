@@ -9,6 +9,7 @@ import Footer from "./components/Footer"
 import { useRecoilValue } from "recoil"
 import { userAtom } from "./atom/userAtom"
 import UserProfile from "./pages/UserProfile"
+import ActiveFundraisers from "./pages/ActiveFundraisers"
 
 
 
@@ -17,7 +18,7 @@ function App() {
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
-    <Navbar />
+    <Navbar/>
 
   <Routes>
     
@@ -27,6 +28,8 @@ function App() {
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
       <Route path='/fundraiser/:id' element={<Fundraisers/>} />
       <Route path='/user-profile' element={!user ? <AuthPage/> : <UserProfile/>} />
+      <Route path='/fundraisers/:id' element={<Fundraisers/>} />
+      <Route path='/all-fundraisers' element={<ActiveFundraisers/>} />
       
 
 

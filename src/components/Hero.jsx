@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 const Hero = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-  const localData = JSON.parse(localStorage.getItem("UserData"))
+  const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
   const [donationData, setDonationData] = React.useState([
     {
@@ -34,6 +34,7 @@ const Hero = () => {
       goalAmount: 5000,
       daysLeft: 5,
       Suppoters: 2203,
+      to: "/fundraisers",
     },
     {
       title: "Supporting Elderly Care",
@@ -55,7 +56,6 @@ const Hero = () => {
       daysLeft: 5,
       Suppoters: 2203,
     },
- 
   ]);
 
   const goNext = () => {
@@ -69,9 +69,6 @@ const Hero = () => {
       swiperRef.current.slidePrev();
     }
   };
-   
- 
- 
 
   return (
     <div className="w-full">
@@ -90,12 +87,24 @@ const Hero = () => {
             mission together, we&apos;re forging lasting impact.
           </p>
           <div className="mt-6 ml-6 md:ml-1  ">
-          {localData ? <Link to={'/startFundraiser'} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-            Start a Fundraiser
-          </Link> : <Link to={'/auth'} onClick={()=>{ toast.error("You have to login first")}} className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-            Start a Fundraiser
-          </Link>}
-           
+            {localData ? (
+              <Link
+                to={"/startFundraiser"}
+                className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+              >
+                Start a Fundraiser
+              </Link>
+            ) : (
+              <Link
+                to={"/auth"}
+                onClick={() => {
+                  toast.error("You have to login first");
+                }}
+                className="px-8 py-4 border-1 text-lg border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+              >
+                Start a Fundraiser
+              </Link>
+            )}
           </div>
         </div>
 
@@ -184,26 +193,27 @@ const Hero = () => {
         </p>
       </div>
 
-<div className=" mx-10 ">
-      <div
-        className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16 `}
-      >
-        {donationData.map((data, index) => (    
-          <div key={index}>
-            <ViewCard {...data} />
-          </div>
-        ))}
-      </div>
-      <div
-        className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16`}
-      >
-        {donationData.map((data, index) => (
-          <div key={index}>
-            <ViewCard {...data} />
-          </div>
-        ))}
-      </div>
-
+      <div className=" mx-10 ">
+        <div
+          className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16 `}
+        >
+          {donationData.map((data, index) => (
+            <div key={index}>
+              <Link to={data.to}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>
+        <div
+          className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16`}
+        >
+          {donationData.map((data, index) => (
+            <div key={index}>
+              <ViewCard {...data} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* <div className={`flex flex-col md:flex-row ${isSmallScreen ? 'flex-col ' : 'flex-row'} md:ml-8 gap-8 ml-6 mr-8 my-16`}>
@@ -224,25 +234,19 @@ const Hero = () => {
           alt=""
         />
         <div className="mt-16 ml-4">
-            <button className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-              Start a Fundraiser
-            </button>
-          </div>
+          <button className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
+            Start a Fundraiser
+          </button>
+        </div>
       </div>
 
-    <div className="flex justify-center my-28">
-
-      <img  className="  w-[80vw] md:w-[50vw]"
-       src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715070580/Group_22_af2hke.png" alt=""  />
-      
-
-    </div>
-
-
-
-
-
-
+      <div className="flex justify-center my-28">
+        <img
+          className="  w-[80vw] md:w-[50vw]"
+          src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715070580/Group_22_af2hke.png"
+          alt=""
+        />
+      </div>
     </div>
   );
 };

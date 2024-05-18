@@ -12,7 +12,9 @@ const Fundraisers = ({
   raisedAmount = 97550,
   goalAmount = 50000,
 }) => {
+  const [isUser, setIsUser] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   const handleSeeMore = () => {
     setShowModal(!showModal);
@@ -107,43 +109,77 @@ const Fundraisers = ({
           </div>
 
           <div className="flex flex-col gap-4 my-4 ">
-            <div className="flex flex-col w-[340px] h-[450px] md:h-[430px] md:w-[380px] rounded-xl bg-white shadow-lg mr-5 ">
-              <span className="text-red-500 text-[25px] font-extrabold ml-12 mt-2  ">
-                Be a &quot;Change Agent&quot;
-              </span>
-              <div className="flex flex-row mt-3">
-                <FaHands size={20} className="ml-4 mt-4" />
-                <span className=" text-[15px] font-semibold tracking-wide ml-2 mt-2  ">
-                  {" "}
-                  Change agents
-                </span>
-                <span className="text-[13px] ml-24 mt-2 text-red-500 font-semibold">
-                  69 Donators{" "}
-                </span>
+            {isUser ? (
+              <div className="flex flex-col w-[340px] h-[450px] md:h-[430px] md:w-[380px] rounded-xl bg-white shadow-lg mr-5">
+                <div className="flex flex-col gap-4 my-4">
+                  <div className="w-full flex flex-col justify-center px-10">
+                    <h1 className="text-md my-4 ml-16 font-semibold ">
+                      Add your bank account
+                    </h1>
+                    <button className="text-md text-red-500 py-3 px-6 text-nowrap border border-red-500 mx-10 rounded-xl font-semibold hover:bg-red-500 hover:text-white ">
+                      Account Details
+                    </button>
+                  </div>
+                  <div className="w-full flex flex-col justify-center px-10">
+                    <h1 className="text-md my-4 ml-16 font-semibold ">
+                      Fundraiser Images
+                    </h1>
+                    <button className="text-md text-blue-500 py-3 px-6 text-nowrap border border-blue-500 mx-10 rounded-xl font-semibold hover:bg-blue-500 hover:text-white ">
+                      Images
+                    </button>
+                  </div>
+                  <div className="w-full flex flex-col justify-center px-10">
+                    <h1 className="text-md my-4 ml-16 font-semibold ">
+                      Add your bank account
+                    </h1>
+                    <button className="text-md text-green-500 py-3 px-6 text-nowrap border border-green-500 mx-10 rounded-xl font-semibold  hover:bg-green-500 hover:text-white">
+                      Documnets
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button className="bg-[#FF5C5C] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
-                Donate now
-              </button>
-
-              <div className="border-t border-black  mt-8 w-[280px] mx-6 "></div>
-
-              <span className="text-[#2E9732] text-[25px] font-extrabold ml-8 mt-2">
-                Be a &quot;Change Catalyst&quot;
-              </span>
-              <div className="flex flex-row mt-3">
-                <FaHands size={20} className="ml-4 mt-4" />
-                <span className=" text-[15px] font-semibold tracking-wide ml-2 mt-2  ">
-                  {" "}
-                  Change catalysts
+            ) : (
+              <div className="flex flex-col w-[340px] h-[450px] md:h-[430px] md:w-[380px] rounded-xl bg-white shadow-lg mr-5 ">
+                <span className="text-red-500 text-[25px] font-extrabold ml-12 mt-2  ">
+                  Be a &quot;Change Agent&quot;
                 </span>
-                <span className="text-[13px] ml-24 mt-2 text-[#2E9732] font-semibold">
-                  69 Shares{" "}
+                <div className="flex flex-row mt-3">
+                  <FaHands size={20} className="ml-4 mt-2" />
+                  <span className=" text-[15px] font-semibold tracking-wide ml-2 mt-2  ">
+                    {" "}
+                    Change agents
+                  </span>
+                  <span className="text-[13px] ml-24 mt-2 text-red-500 font-semibold">
+                    69 Donators{" "}
+                  </span>
+                </div>
+                <button className="bg-[#FF5C5C] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
+                  Donate now
+                </button>
+
+                <div className="border-t border-black  mt-8 w-[280px] mx-6 "></div>
+
+                <span className="text-[#2E9732] text-[25px] font-extrabold ml-8 mt-2">
+                  Be a &quot;Change Catalyst&quot;
                 </span>
+                <div className="flex flex-row mt-3">
+                  <FaHands size={20} className="ml-4 mt-2" />
+                  <span className=" text-[15px] font-semibold tracking-wide ml-2 mt-2  ">
+                    {" "}
+                    Change catalysts
+                  </span>
+                  <span className="text-[13px] ml-24 mt-2 text-[#2E9732] font-semibold">
+                    69 Shares{" "}
+                  </span>
+                </div>
+                <button className="bg-[#2E9732] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#42aa46] ">
+                  Share now
+                </button>
               </div>
-              <button className="bg-[#2E9732] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#42aa46] ">
-                Share now
-              </button>
-            </div>
+            )}
+
+            {}
+
             <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
               <img
                 className="md:w-[25vw] md:h-[30vh]"
@@ -178,6 +214,36 @@ const Fundraisers = ({
             </div>
           </div>
         </div>
+        {isAdmin && (
+          <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-20 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
+            <div className="flex flex-col gap-2 px-4 my-4">
+              <h1 className="text-lg font-bold">Review Fundraiser</h1>
+              <textarea
+                className="resize-none  rounded-md p-2 border-red-500 border-2  focus:border-[#ab4543]  "
+                rows="4"
+                cols="70"
+                placeholder="Enter your message..."
+              />
+              <button className="text-md text-white py-3 md:mr-96 mt-1 border border-red-500 bg-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+                Submit
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 my-4 px-4">
+              <h1 className="text-lg font-semibold" >Set Status</h1>
+              <select
+                id="mySelect"
+                name="mySelect"
+                className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
+              >
+                <option value="option1" className="font-semibold" >Option 1</option>
+                <option value="option2" className="font-semibold">Option 2</option>
+                <option value="option3" className="font-semibold">Option 3</option>
+                <option value="option4" className="font-semibold">Option 4</option>
+              </select>
+            </div>
+          </div>
+        )}
+
         <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-96 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
           <div className="py-4 px-2 ">
             <h1 className="text-2xl text-red-400 font-semibold text-nowrap">
@@ -224,10 +290,18 @@ const Fundraisers = ({
             </button>
 
             {showModal && (
-              <div className="absolute  transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100vw] h-[100vh]  z-30">
+              <div className="absolute  transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100%] h-[100vh]  z-30">
                 {" "}
-                <div className=" absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100vw] h-[100vh] bg-[#f4f7f6da]"></div>{" "}
-                <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 h-[540px] w-[300px] md:w-[500px] ">   <RxCross2 size={30} onClick={handleSeeMore} className="relative z-50 cursor-pointer text-red-500 top-8 md:left-[450px] hover:text-red-800 "  /> <DonationListModal onClose={() => setShowModal(false)} /></div>
+                <div className=" absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[100%] h-[100vh] bg-[#f4f7f6da]"></div>{" "}
+                <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 h-[540px] w-[300px] md:w-[500px] ">
+                  {" "}
+                  <RxCross2
+                    size={30}
+                    onClick={handleSeeMore}
+                    className="relative z-50 cursor-pointer text-red-500 top-8 md:left-[450px] hover:text-red-800 "
+                  />{" "}
+                  <DonationListModal onClose={() => setShowModal(false)} />
+                </div>
               </div>
             )}
           </div>

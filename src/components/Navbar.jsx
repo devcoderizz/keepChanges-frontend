@@ -53,6 +53,7 @@ const Navbar = () => {
  
   const [isBurgerOpen, setBurgerOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const [logoutCompleted, setLogoutCompleted] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate()
   // const setUser = useSetRecoilState(userAtom)
@@ -75,16 +76,22 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  const handleLogout= ()=>{
-    localStorage.removeItem("UserData")
-    navigate('/auth')
+  const handleLogout = () => {
+    localStorage.removeItem("UserData");
+    navigate('/auth');
     window.location.reload(false);
-    toast.success("User loggedOut successfully");
-
-
+    toast.success("User logged out successfully", { autoClose: false });
     
-  }
+}
 
+//   useEffect(() => {
+//     handleLogout();
+//     const timeoutId = setTimeout(() => {
+//         toast.success("User logged out successfully");
+//     }, 2000);
+
+//     return () => clearTimeout(timeoutId);
+// }, []);
 
   return (
     <nav className=" bg-white border-gray-200 w-full py-5 md:py-0 px-10 md:px-20

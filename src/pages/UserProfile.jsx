@@ -2,6 +2,7 @@ import { useState } from "react";
 import ViewCard from "../components/ViewCard";
 
 const UserProfile = () => {
+  // eslint-disable-next-line no-unused-vars
   const [donationData, setDonationData] = useState([
     {
       title:
@@ -134,7 +135,7 @@ const UserProfile = () => {
 
         <div className="w-full h-full flex md:flex-row flex-col items-center justify-start   ">
           <div className="w-[30%] h-[100vh] pt-14 flex  flex-col gap-5 items-center justify-start  ">
-            <div className="w-[300px] h-[300px] bg-white flex flex-col items-center py-7 gap-5 rounded-md">
+            <div className="w-[300px] h-[300px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">
               <p className=" font-semibold text-[#636363]">Added Accounts</p>
               <div className=" w-full  flex flex-col items-center  px-5 gap-5">
                 <h1 className="text-lg font-semibold">SBI BANK</h1>
@@ -146,7 +147,7 @@ const UserProfile = () => {
                 </button>
               </div>
             </div>
-            <div className="w-[300px] h-[200px] bg-white flex flex-col items-center py-7 gap-5 rounded-md">
+            <div className="w-[300px] h-[200px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg ">
             <p className=" font-semibold text-[#636363]">Add important details</p>
             <div className=" w-full  flex flex-col items-center  px-5 gap-5">
                 <h1 className="text-lg font-semibold">Add pancard</h1>
@@ -158,7 +159,7 @@ const UserProfile = () => {
             <h1 className="text-2xl font-semibold ml-12">
               Fundraisers that you have created
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 w-full  md:w-[65vw] h-full overflow-y-scroll overflow-x-hidden no-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 w-full h-[90%]  md:w-[65vw]   overflow-y-scroll overflow-x-hidden no-scrollbar">
               {donationData.map((data, index) => (
                 <div className="py-5" key={index}>
                   <ViewCard {...data} />

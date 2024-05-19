@@ -23,10 +23,8 @@ function App() {
   <Routes>
     
       <Route path="/" element={  <HomePage/> } ></Route>
-      <Route path="/fundraisers" element={<Fundraisers/> } ></Route>
       <Route path='/auth' element={!user ? <AuthPage/> : <Navigate to={'/'} /> } />
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
-      <Route path='/fundraiser/:id' element={<Fundraisers/>} />
       <Route path='/user-profile' element={!user ? <AuthPage/> : <UserProfile/>} />
       <Route path='/fundraisers/:id' element={<Fundraisers/>} />
       <Route path='/all-fundraisers' element={<ActiveFundraisers/>} />

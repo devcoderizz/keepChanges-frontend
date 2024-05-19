@@ -34,7 +34,7 @@ const Hero = () => {
       goalAmount: 5000,
       daysLeft: 5,
       Suppoters: 2203,
-      to: "/fundraisers",
+      to: "/fundraisers/asda",
     },
     {
       title: "Supporting Elderly Care",
@@ -73,7 +73,7 @@ const Hero = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 my-12">
-        <div className="w-[70%] md:w-[50%] flex flex-col items-start justify-center">
+        <div className="w-full px-10 md:w-[57%] flex flex-col items-start justify-center">
           <span className="text-4xl text-[#FF5C5C] font-bold">
             Greetings, Change Agent
           </span>
@@ -108,11 +108,11 @@ const Hero = () => {
           </div>
         </div>
 
-        <div>
+        <div className=" w-[300px] h-[300px]  md:w-[350px] md:h-[300px] xl:w-[400px] xl:h-[400px]">
           <img
             src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067696/Group_4_wfvpsb.png"
             alt=""
-            className="h-[40vh] w-[70vw]  md:h-[60vh] md:w-[28vw]"
+            className="h-full w-full"
           />
         </div>
       </div>

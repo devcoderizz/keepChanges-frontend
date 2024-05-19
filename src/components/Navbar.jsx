@@ -13,7 +13,7 @@ const items = [
   {
     key: "1",
     label: (
-      <Link rel="noopener noreferrer" to="/fundraisers">
+      <Link rel="noopener noreferrer" to="/all-fundraisers">
         Fundraisers
       </Link>
     ),
@@ -58,6 +58,7 @@ const Navbar = () => {
   // console.log("setUser",setUser);
   // console.log("localData",localData);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleProfileClick = () => {
     setProfileOpen(!isProfileOpen);
   };
@@ -66,7 +67,7 @@ const Navbar = () => {
     if (location.pathname === "/auth") {
       handleProfileClick();
     }
-  }, [location.pathname]);
+  }, [handleProfileClick]);
 
   const handleLogout = () => {
     localStorage.removeItem("UserData");
@@ -110,7 +111,7 @@ const Navbar = () => {
           >
             Keep Changes
           </Link>
-          <div className="flex items-center justify-center w-10 h-10 text-indigo-500 profile-button md:hidden   ">
+          <div className="flex items-center justify-center w-10 h-10  text-indigo-500 profile-button md:hidden   ">
           <Drop
             label={<FaCircleUser color="blue" size={35} />}
             dismissOnClick={false}
@@ -207,7 +208,7 @@ const Navbar = () => {
             onClick={() => {
               navigate("/user-profile");
             }}
-            className="capitalize hidden md:block cursor-pointer"
+            className="capitalize hidden  cursor-pointer  xl:block"
           >
             {localData && "Welcome,"}{" "}
             <strong className="text-[#EF5757]"> {localData?.name}</strong>

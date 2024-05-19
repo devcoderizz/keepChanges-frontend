@@ -136,7 +136,7 @@ const ActiveFundraisers = ({ onSearch }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center mb-10">
+    <div className="w-full flex flex-col items-center mb-10 overflow-x-hidden">
       <h1 className="text-4xl font-extrabold py-8 pl-8 md:pl-0">
         Currently Active Fundraiser
       </h1>

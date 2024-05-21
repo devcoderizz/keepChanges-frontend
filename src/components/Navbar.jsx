@@ -5,7 +5,7 @@ import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import Hamburger from "hamburger-react";
 import { Dropdown as Drop } from "flowbite-react";
-
+import Cookies from 'js-cookie';
 import { useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -71,6 +71,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("UserData");
+    localStorage.removeItem("accessToken");
+    Cookies.remove('refreshToken');
     navigate("/auth");
     window.location.reload(false);
     toast.success("User logged out successfully", { autoClose: false });

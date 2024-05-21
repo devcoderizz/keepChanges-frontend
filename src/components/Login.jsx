@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { useSetRecoilState } from "recoil";
 import { authScreenAtom } from "../atom/authAtom";
 import { Link  } from "react-router-dom";
@@ -22,39 +23,56 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${APIBASEURL}/api/auth/login`, {
+      const res = await fetch(`${APIBASEURL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await res.json();
       console.log(data);
-     
-      if(res.status === 400)(
-        setErrorMessage("Incorrect Password")
-      )
-      if(res.status === 404)(
-        setErrorMessage("This email is not registered")
-      )
-      if (data.error) {
-        console.log("error");
-        toast.error(data.error)
-        return;
-      }else{
-        if(res.status === 200){
-
-          localStorage.setItem("UserData",JSON.stringify(data));
+  
+      const { accessToken, refreshToken } = data;
+      console.log("access", accessToken);
+      console.log("refresh", refreshToken);
+  
+      Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict' });
+      // Retrieve the refresh token from the cookie
+      const storedRefreshToken = Cookies.get('refreshToken');
+      console.log("Stored refresh token:", storedRefreshToken);
+      localStorage.setItem("accessToken", accessToken)
+  
+      // Use setTimeout to delay the execution of the next API call
+      setTimeout(async () => {
+        try {
+          const userRes = await fetch(`${APIBASEURL}/users/user/me`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+            },
+          });
+  
+          const userInfo = await userRes.json();
+  
+          if (!userRes.ok) {
+            setErrorMessage("Invalid User")
+            return;
+          }
+  
+          // Assuming userInfo contains the user's data
+          localStorage.setItem("UserData", JSON.stringify(userInfo));
           window.location.reload(false);
+        } catch (error) {
+          console.log(error);
         }
-        return
-      }
+      }, 1000); // Adjust the delay (in milliseconds) as needed
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   return (
     <div className=" w-full h-[89.5vh] flex items-center justify-center">

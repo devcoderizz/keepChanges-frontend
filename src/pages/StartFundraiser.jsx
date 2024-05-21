@@ -2,15 +2,11 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-}
 
 
 const StartFundraiser = () => {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [validationMessage, setValidationMessage] = useState('');
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     fundraiserTitle: "",
@@ -25,8 +21,26 @@ const StartFundraiser = () => {
 
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const accessToken =  localStorage.getItem("accessToken")
-  const refreshToken = getCookie('refreshToken');
+  // const refreshToken = getCookie('refreshToken');
   console.log("token",accessToken)
+  const validatePhoneNumber = (number) => {
+    // A simple regex for validating phone numbers (e.g., 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (phoneRegex.test(number)) {
+      setValidationMessage('Phone number is valid');
+    } else {
+      setValidationMessage('Phone number is invalid');
+    }
+  };
+  const handlePhoneChange = (event) => {
+    const { value } = event.target;
+    setPhoneNumber(value);
+    validatePhoneNumber(value);
+  };
+
+
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -125,6 +139,7 @@ const StartFundraiser = () => {
           <div className="flex flex-col items-start w-full">
             <label htmlFor="fundraiserTitle" className="font-bold">Fundraiser Title*</label>
             <input
+             required
               type="text"
               name="fundraiserTitle"
               id="fundraiserTitle"
@@ -138,7 +153,8 @@ const StartFundraiser = () => {
             <div className="relative flex flex-col items-start w-full md:w-1/2">
               <label htmlFor="raiseGoal" className="font-bold">Goal*</label>
               <input
-                type="text"
+               required
+                type="number"
                 name="raiseGoal"
                 id="raiseGoal"
                 placeholder="Amount in Rupees"
@@ -151,6 +167,7 @@ const StartFundraiser = () => {
             <div className="flex flex-col items-start w-full md:w-1/2">
               <label htmlFor="endDate" className="font-bold">End date*</label>
               <input
+               required
                 type="date"
                 name="endDate"
                 id="endDate"
@@ -164,6 +181,7 @@ const StartFundraiser = () => {
           <div className="flex flex-col items-start w-full">
             <label htmlFor="categoryName" className="font-bold">Category*</label>
             <select
+             required
               name="id"
               id="id"
               value={formData.id}
@@ -181,6 +199,7 @@ const StartFundraiser = () => {
             <div className="flex flex-col items-start w-full md:w-1/2">
               <label htmlFor="email" className="font-bold">Email*</label>
               <input
+               required
                 type="email"
                 name="email"
                 id="email"
@@ -190,17 +209,19 @@ const StartFundraiser = () => {
                 className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md pr-7 focus:outline-none"
               />
             </div>
-            <div className="flex flex-col items-start w-full md:w-1/2">
+            <div className="relative flex flex-col items-start w-full md:w-1/2">
               <label htmlFor="phone" className="font-bold">Phone*</label>
               <input
-                type="tel"
+              required
+                type="number"
                 name="phone"
                 id="phone"
                 placeholder="0123456789"
-                value={formData.phone}
-                onChange={handleChange}
+                value={phoneNumber}
+        onChange={handlePhoneChange}
                 className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
               />
+              <p className="absolute -bottom-6 text-sm  text-red-500" >{validationMessage}</p>
             </div>
           </div>
           <div className="flex flex-col items-start w-full">
@@ -216,6 +237,7 @@ const StartFundraiser = () => {
           </div>
           <div className="w-full">
             <input
+            required
               type="file"
               onChange={handleFileChange}
               className="flex items-center gap-5 px-4 py-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"

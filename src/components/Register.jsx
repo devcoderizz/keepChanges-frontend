@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
 import toast from "react-hot-toast";
-
+import Cookies from 'js-cookie';
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
@@ -41,13 +41,14 @@ const Register = () => {
       sendOtp();
     },
   });
+
   const sendOtp = async () => {
     setFormData(values);
     const { password, ...otpData } = values;
     
     try {
       const response = await fetch(
-        `${APIBASEURL}/api/auth/verification/send-otp`,
+        `${APIBASEURL}/auth/verification/send-otp`,
         {
           method: "POST",
           headers: {
@@ -75,35 +76,66 @@ const Register = () => {
     } 
   };
 
-  const handleRegister = async () => {
+ const handleRegister = async () => {
+
     try {
-      const res = await fetch(`${APIBASEURL}/api/auth/register`, {
+      const res = await fetch(`${APIBASEURL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await res.json();
-
-      if (data.error) {
-        toast.error(data.error);
-      } else if (res.status === 200) {
-        localStorage.setItem("UserData", JSON.stringify(data));
-        window.location.reload(false);
-      }
+      console.log(data);
+  
+      const { accessToken, refreshToken } = data;
+      console.log("access", accessToken);
+      console.log("refresh", refreshToken);
+  
+      Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict' });
+    
+      const storedRefreshToken = Cookies.get('refreshToken');
+      console.log("Stored refresh token:", storedRefreshToken);
+      localStorage.setItem("accessToken", accessToken)
+  
+    
+      setTimeout(async () => {
+        try {
+          const userRes = await fetch(`${APIBASEURL}/users/user/me`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+            },
+          });
+  
+          const userInfo = await userRes.json();
+  
+          if (!userRes.ok) {
+            toast.error(userInfo.error);
+            return;
+          }
+  
+    
+          localStorage.setItem("UserData", JSON.stringify(userInfo));
+          window.location.reload(false);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
-  };
+};
+
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
     try {
       const res = await fetch(
-        `${APIBASEURL}/api/auth/verification/verify-otp`,
+        `${APIBASEURL}/auth/verification/verify-otp`,
         {
           method: "POST",
           headers: {

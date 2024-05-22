@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { FaHands } from "react-icons/fa";
 import { FaCircleUser } from "react-icons/fa6";
 import DonationCircle from "../components/LoadingCircle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
 
@@ -12,9 +12,13 @@ const Fundraisers = ({
   raisedAmount = 97550,
   goalAmount = 50000,
 }) => {
+  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
   const [isUser, setIsUser] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
+  const [fundraiserDetails, setFundraiserDetails] = useState({})
+  const accessToken=localStorage.getItem("accessToken")
+  console.log("fundraiser panga",fundraiserDetails);
 
   const handleSeeMore = () => {
     setShowModal(!showModal);
@@ -29,13 +33,47 @@ const Fundraisers = ({
     // Add more agents as needed
   ];
 
+
+  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name); 
+  useEffect(() => {
+   const fundraiserDetails =async()=>{
+    try {
+      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log("fundraiser data",data);
+      setFundraiserDetails(data)
+
+      if (!data.ok) {
+        // setErrorMessage("Invalid User")
+        
+        return;
+      }
+   
+
+      // Assuming userInfo contains the user's data
+      // localStorage.setItem("UserData", JSON.stringify(userInfo));
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+    }
+   }
+   fundraiserDetails()
+    
+  }, [ id])
+  
+
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
           <span className="text-wrap">
-            Help Shiv Prasad, a loving son to 350 abandoned parents, provide
-            them with shelter and care
+           {fundraiserDetails.fundraiserTitle}
           </span>
           <span>✅</span>
         </div>
@@ -57,15 +95,15 @@ const Fundraisers = ({
               />
             </div>
             <div className="flex ">
-              <DonationCircle percentage={30} />
+              <DonationCircle percentage={17} />
               <div className="flex md:gap-96">
                 <span className="text-sm mt-4 -ml-10  md:text-nowrap ">
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
                     {" "}
-                    Rs&nbsp;{raisedAmount}{" "}
+                    Rs&nbsp;{fundraiserDetails.raiseGoal}
                   </span>{" "}
-                  &nbsp; of <strong> {goalAmount} </strong>
+                  &nbsp; of <strong> {60} </strong>
                 </span>
                 <span className="text-sm text-red-500 pl-16 mt-6 md:mt-9 md:text-nowrap">
                   {benefactors} benefactors
@@ -80,30 +118,7 @@ const Fundraisers = ({
             <div className="py-4 md:mx-[84px]">
               <h1 className="text-red-500 text-xl font-extrabold">Narrative</h1>
               <p className="w-full">
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
-                voluptas sit aspernatur aut odit aut fugit, sed quia
-                consequuntur magni dolores eos qui ratione voluptatem sequi
-                nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor
-                sit amet, consectetur, adipisci velit, sed quia non numquam eius
-                modi tempora incidunt ut labore et dolore magnam aliquam quaerat
-                voluptatem. Ut enim ad minima veniam, quis nostrum
-                exercitationem ullam corporis suscipit laboriosam, nisi ut
-                aliquid ex ea commodi consequatur? Quis autem vel eum iure
-                reprehenderit qui in ea voluptate velit esse quam nihil
-                molestiae consequatur, vel illum qui dolorem eum fugiat quo
-                voluptas nulla pariatur?&quot; Lorem Ipsum is simply dummy text
-                of the printing and typesetting industry. Lorem Ipsum has been
-                the industry&apos;s standard dummy text ever since the 1500s,
-                when an unknown printer took a galley of type and scrambled it
-                to make a type specimen book. It has survived not only five
-                centuries, but also the leap into electronic typesetting,
-                remaining essentially unchanged. It was popularised in the 1960s
-                with the release of Letraset sheets containing Lorem Ipsum
-                passages, and more recently with desktop publishing software
-                like Aldus PageMaker including versions of Lorem Ipsum.
+                {fundraiserDetails.fundraiserDescription}
               </p>
             </div>
           </div>
@@ -311,7 +326,7 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">Pranav Panga</span>
+                <span className="font-semibold">Pranav panga</span>
               </div>
             </div>
             <div className="absolute bg-black h-[70px] w-[2px] left-8 bottom-16 z-10"></div>
@@ -336,3 +351,4 @@ Fundraisers.propTypes = {
 };
 
 export default Fundraisers;
+

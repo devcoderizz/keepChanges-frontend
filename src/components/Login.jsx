@@ -45,6 +45,9 @@ const Login = () => {
       localStorage.setItem("accessToken", accessToken)
   
       // Use setTimeout to delay the execution of the next API call
+      if(res.status===200){
+
+   
       setTimeout(async () => {
         try {
           const userRes = await fetch(`${APIBASEURL}/users/user/me`, {
@@ -68,6 +71,7 @@ const Login = () => {
           console.log(error);
         }
       }, 1000); // Adjust the delay (in milliseconds) as needed
+    }
     } catch (error) {
       console.log(error);
     }

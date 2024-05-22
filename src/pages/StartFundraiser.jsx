@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 
 
 
 const StartFundraiser = () => {
+  const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [categories, setCategories] = useState([]);
@@ -42,6 +44,7 @@ const StartFundraiser = () => {
 
 
   useEffect(() => {
+
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${APIBASEURL}/categories/getall`,{
@@ -111,9 +114,11 @@ const StartFundraiser = () => {
       console.log("payload", payload)
       const data = await response.json();
       // console.log("response", response);
-
+      const urlParams = new URLSearchParams(location.search);
       if (response.ok) {
         toast.success("Fundraiser created successfully!");
+        urlParams.set('fundraiserId', data.id);
+        navigate(`/fundraisers/${data.id}`)
       } else {
         toast.error(data.error || "Error creating fundraiser");
       }

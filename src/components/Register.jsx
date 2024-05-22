@@ -100,7 +100,7 @@ const Register = () => {
       console.log("Stored refresh token:", storedRefreshToken);
       localStorage.setItem("accessToken", accessToken)
   
-    
+      if(res.status===200){
       setTimeout(async () => {
         try {
           const userRes = await fetch(`${APIBASEURL}/users/user/me`, {
@@ -124,6 +124,7 @@ const Register = () => {
           console.log(error);
         }
       }, 1000);
+    }
     } catch (error) {
       console.log(error);
     }

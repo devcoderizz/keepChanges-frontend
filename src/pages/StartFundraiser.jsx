@@ -103,7 +103,7 @@ const StartFundraiser = () => {
       const response = await fetch(`${APIBASEURL}/fundraisers/add`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzdW11a2g5MDM2QGdtYWlsLmNvbSIsImlhdCI6MTcxNjMwMDExMiwiZXhwIjoxNzE2Mzg2NTEyfQ.Kst2r17Sv_APciQt8MTT33rRv09Pn0c6ZbH6qznt_fhv8HqPHL0T3v6AwwO_KhDI`, 
+          "Authorization": `Bearer ${accessToken}`, 
         },
         body: payload,
       });

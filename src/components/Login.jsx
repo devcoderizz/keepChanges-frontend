@@ -3,13 +3,14 @@ import { useSetRecoilState } from "recoil";
 import { authScreenAtom } from "../atom/authAtom";
 import { Link  } from "react-router-dom";
 import { useState } from "react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 const Login = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [formData, setFormData] = useState({});
   const APIBASEURL= import.meta.env.VITE_API_BASEURL
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(null)
    
 
   const handleChange = (e) => {
@@ -22,6 +23,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       const res = await fetch(`${APIBASEURL}/auth/login`, {
         method: "POST",
@@ -33,6 +35,11 @@ const Login = () => {
   
       const data = await res.json();
       console.log(data);
+      if (res.status === 401) {
+        setErrorMessage("Invalid User Credentials")
+        setLoading(false)
+        return;
+      }
   
       const { accessToken, refreshToken } = data;
       console.log("access", accessToken);
@@ -46,29 +53,28 @@ const Login = () => {
   
       // Use setTimeout to delay the execution of the next API call
       if(res.status===200){
+      
 
    
       setTimeout(async () => {
         try {
-          const userRes = await fetch(`${APIBASEURL}/users/user/me`, {
+          const res = await fetch(`${APIBASEURL}/users/user/me`, {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${accessToken}`,
             },
           });
   
-          const userInfo = await userRes.json();
+          const userInfo = await res.json();
   
-          if (!userRes.ok) {
-            setErrorMessage("Invalid User")
-            return;
-          }
+          
   
           // Assuming userInfo contains the user's data
           localStorage.setItem("UserData", JSON.stringify(userInfo));
           window.location.reload(false);
         } catch (error) {
           console.log(error);
+          setLoading(false)
         }
       }, 1000); // Adjust the delay (in milliseconds) as needed
     }
@@ -79,7 +85,7 @@ const Login = () => {
   
 
   return (
-    <div className=" w-full h-[89.5vh] flex items-center justify-center">
+    <div className=" w-full h-full md:h-[89.5vh] flex items-center justify-center my-10 md:my-0">
       <div className=" md:w-[900px] md:h-[550px] flex flex-col items-center justify-center md:flex-row border-2 border-[#FF5C5C]">
         <div className="w-full md:w-1/2 h-full bg-[#FF5C5C] flex flex-col items-center justify-start gap-5 p-10">
           <h1 className=" h-10 text-xl font-bold text-white">
@@ -92,14 +98,14 @@ const Login = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-start gap-10 md:gap-0 p-10">
+        <div className="w-full md:w-1/2 md:h-full flex flex-col items-center justify-start gap-10 md:gap-0 p-10">
           <h1 className="text-3xl md:text-2xl font-extrabold text-[#FF5C5C]">
             Login
           </h1>
           <form
             action=""
             onSubmit={handleSubmit}
-            className=" w-full h-full flex flex-col justify-center items-center gap-5"
+            className="relative w-full h-[50vh] md:h-full flex flex-col justify-center items-center gap-5"
           >
             <div className="flex flex-col justify-center items-center gap-5">
               <input
@@ -119,9 +125,9 @@ const Login = () => {
                 className="w-[270px] p-2.5 rounded-full focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 "
               />
 
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start gap-3">
                 <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
-                  Login
+                  {loading ? "Loading...": "Login"}
                 </button>
                 <a href="/" className=" ml-5 text-[13px] font-semibold">
                   Forget Password ?
@@ -137,7 +143,7 @@ const Login = () => {
                 Sign Up
               </Link>{" "}
             </h1>
-            {errorMessage && <p className="text-red-600 font-bold">{errorMessage}</p>}
+            {errorMessage && <p className="absolute bottom-0 md:bottom-10 text-red-600 font-bold animate-bounce">{errorMessage}</p>}
           </form>
         </div>
       </div>

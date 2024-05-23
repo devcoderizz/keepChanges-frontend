@@ -13,11 +13,25 @@ const Fundraisers = ({
   goalAmount = 50000,
 }) => {
   const APIBASEURL= import.meta.env.VITE_API_BASEURL;
-  const [isUser, setIsUser] = useState(true);
+  const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [fundraiserDetails, setFundraiserDetails] = useState({})
-  const accessToken=localStorage.getItem("accessToken")
+  // const [postedBy, setPostedBy] = useState()
+  const localData=JSON.parse(localStorage.getItem("UserData"))
+  // console.log("roles",localData.roles[1].id);
+  const currentUser= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.id :" "
+  console.log("currentUser", currentUser);
+
+  // const adminRole= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.roles[1].id :" "
+  // console.log("admin role",localData.roles[1].id);
+
+  // setPostedBy(fundraiserDetails.postedBy)
+// console.log("fuaksdbvaskdvba", fundraiserDetails.map(obj=>obj.postedBy.id));
+
+
+
+ 
   console.log("fundraiser panga",fundraiserDetails);
 
   const handleSeeMore = () => {
@@ -36,18 +50,31 @@ const Fundraisers = ({
 
   // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name); 
   useEffect(() => {
+    if(localData?.id === currentUser){
+      console.log("hello");
+      setIsUser(true)
+    }
+
+    if(localData?.roles[1]?.id || localData?.roles[0]?.id === 501){
+      console.log("roles");
+      setIsAdmin(true)
+    }
+
+
    const fundraiserDetails =async()=>{
     try {
       const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
+          // "Authorization": `Bearer ${accessToken}`,
         },
       });
 
       const data = await res.json();
       console.log("fundraiser data",data);
       setFundraiserDetails(data)
+      // setPostedBy(fundraiserDetails.postedBy)
+      // console.log("posted By", postedBy);
 
       if (!data.ok) {
         // setErrorMessage("Invalid User")
@@ -65,7 +92,7 @@ const Fundraisers = ({
    }
    fundraiserDetails()
     
-  }, [ id])
+  }, [APIBASEURL, currentUser, id] )
   
 
   return (
@@ -326,7 +353,7 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">Pranav panga</span>
+                <span className="font-semibold">{fundraiserDetails.postedBy ? fundraiserDetails.postedBy.name : 'Anonymous'}</span>
               </div>
             </div>
             <div className="absolute bg-black h-[70px] w-[2px] left-8 bottom-16 z-10"></div>

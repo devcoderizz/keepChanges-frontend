@@ -13,7 +13,7 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import "swiper/css/autoplay";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../index.css";
 import { useMediaQuery } from "react-responsive";
 import ViewCard from "./ViewCard";
@@ -21,8 +21,10 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 const Hero = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
+  const [allFundraiser, setAllFundraiser] = useState([])
   const [donationData, setDonationData] = React.useState([
     {
       title:
@@ -34,7 +36,7 @@ const Hero = () => {
       goalAmount: 5000,
       daysLeft: 5,
       Suppoters: 2203,
-      to: "/fundraisers/asda",
+      to: "/fundraisers/3",
     },
     {
       title: "Supporting Elderly Care",
@@ -69,6 +71,35 @@ const Hero = () => {
       swiperRef.current.slidePrev();
     }
   };
+
+  useEffect(() => {
+    const fundraiserDetails =async()=>{
+      try {
+        const res = await fetch(`${APIBASEURL}/fundraisers`, {
+          method: "GET",
+          headers: {
+            // "Authorization": `Bearer ${accessToken}`,
+          },
+        });
+  
+        const data = await res.json();
+        console.log("fundraiser data",data);
+        setAllFundraiser(data)
+        console.log("kajbaskbc",allFundraiser);
+  
+        if (!data.ok) {
+          // setErrorMessage("Invalid User")
+          
+          return;
+        }
+  
+      } catch (error) {
+        console.log(error);
+      }
+     }
+     fundraiserDetails()
+  }, [APIBASEURL, allFundraiser])
+  
 
   return (
     <div className="w-full">
@@ -194,7 +225,7 @@ const Hero = () => {
       </div>
 
       <div className=" mx-10 ">
-        <div
+        {/* <div
           className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16 `}
         >
           {donationData.map((data, index) => (
@@ -204,15 +235,17 @@ const Hero = () => {
               </Link>
             </div>
           ))}
-        </div>
+        </div> */}
         <div
-          className={`grid grid-cols-1 md:grid-cols-3 gap-2  md:ml-8 mr-10 my-16`}
+          className={`grid grid-cols-1 md:grid-cols-3  gap-y-6  md:ml-8 mr-10 my-16`}
         >
-          {donationData.map((data, index) => (
-            <div key={index}>
-              <ViewCard {...data} />
-            </div>
-          ))}
+          {allFundraiser.slice(0, 6).map((data) => (
+        <div key={data.id}>
+          <Link to={`/fundraisers/${data.id}`}>
+            <ViewCard {...data} />
+          </Link>
+        </div>
+      ))}
         </div>
       </div>
 

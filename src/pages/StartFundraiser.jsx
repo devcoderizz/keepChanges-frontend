@@ -7,39 +7,33 @@ import { useNavigate } from "react-router-dom";
 
 const StartFundraiser = () => {
   const navigate = useNavigate();
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [validationMessage, setValidationMessage] = useState('');
+  // const [phoneNumber, setPhoneNumber] = useState('');
+  // const [validationMessage, setValidationMessage] = useState('');
   const [categories, setCategories] = useState([]);
-  const [formData, setFormData] = useState({
-    fundraiserTitle: "",
-    raiseGoal: "",
-    endDate: "",
-    id: "",
-    email: "",
-    phone: "",
-    fundraiserDescription: "",
-  });
+  const [formData, setFormData] = useState({});
   const [displayImage, setDisplayImage] = useState(null);
-
+console.log("form data", formData);
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const accessToken =  localStorage.getItem("accessToken")
   // const refreshToken = getCookie('refreshToken');
   console.log("token",accessToken)
-  const validatePhoneNumber = (number) => {
-    // A simple regex for validating phone numbers (e.g., 10 digits)
-    const phoneRegex = /^[0-9]{10}$/;
+  // const validatePhoneNumber = (number) => {
+  //   // A simple regex for validating phone numbers (e.g., 10 digits)
+  //   const phoneRegex = /^[0-9]{10}$/;
 
-    if (phoneRegex.test(number)) {
-      setValidationMessage('Phone number is valid');
-    } else {
-      setValidationMessage('Phone number is invalid');
-    }
-  };
-  const handlePhoneChange = (event) => {
-    const { value } = event.target;
-    setPhoneNumber(value);
-    validatePhoneNumber(value);
-  };
+  //   if (phoneRegex.test(number)) {
+  //     setValidationMessage('Phone number is valid');
+  //     setPhoneNumber(number);
+  //   } else {
+  //     setValidationMessage('Phone number is invalid');
+      
+  //   }
+  // };
+  // const handlePhoneChange = (event) => {
+  //   const { value } = event.target;
+  //   setPhoneNumber(value);
+  //   validatePhoneNumber(value);
+  // };
 
 
 
@@ -50,7 +44,7 @@ const StartFundraiser = () => {
         const response = await fetch(`${APIBASEURL}/categories/getall`,{
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${accessToken}I`,
+            // "Authorization": `Bearer ${accessToken}I`,
           },
         });
 
@@ -67,8 +61,10 @@ const StartFundraiser = () => {
   }, [APIBASEURL]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
   };
 
  
@@ -79,7 +75,7 @@ const StartFundraiser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { fundraiserTitle, raiseGoal, endDate, id, email, phone, fundraiserDescription } = formData;
+    const { fundraiserTitle, raiseGoal, endDate, id, email, phone, fundraiserDescription,beneficiary } = formData;
 
    
     const fundraiserData = {
@@ -88,7 +84,8 @@ const StartFundraiser = () => {
         endDate,
         email,
         phone,
-        fundraiserDescription
+        fundraiserDescription,
+        beneficiary
     };
 
     const payload = new FormData();
@@ -154,6 +151,19 @@ const StartFundraiser = () => {
               className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
             />
           </div>
+          <div className="flex flex-col items-start w-full">
+            <label htmlFor="Beneficiary" className="font-bold">Beneficiary*</label>
+            <input
+             required
+              type="text"
+              name="beneficiary"
+              id="beneficiary"
+              placeholder="This fundraiser will benefit"
+              value={formData.beneficiary}
+              onChange={handleChange}
+              className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+            />
+          </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-5 w-full">
             <div className="relative flex flex-col items-start w-full md:w-1/2">
               <label htmlFor="raiseGoal" className="font-bold">Goal*</label>
@@ -191,8 +201,12 @@ const StartFundraiser = () => {
               id="id"
               value={formData.id}
               onChange={handleChange}
+              placeholder="Select category"
               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
             >
+              <option  >
+              Select category
+                </option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.categoryName}
@@ -222,11 +236,11 @@ const StartFundraiser = () => {
                 name="phone"
                 id="phone"
                 placeholder="0123456789"
-                value={phoneNumber}
-        onChange={handlePhoneChange}
+                value={formData.phone}
+                   onChange={handleChange}
                 className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
               />
-              <p className="absolute -bottom-6 text-sm  text-red-500" >{validationMessage}</p>
+              {/* <p className="absolute -bottom-6 text-sm  text-red-500" >{validationMessage}</p> */}
             </div>
           </div>
           <div className="flex flex-col items-start w-full">

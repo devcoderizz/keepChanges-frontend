@@ -98,7 +98,7 @@ const Hero = () => {
       }
      }
      fundraiserDetails()
-  }, [APIBASEURL, allFundraiser])
+  }, [APIBASEURL])
   
 
   return (

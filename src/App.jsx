@@ -10,6 +10,7 @@ import { useRecoilValue } from "recoil"
 import { userAtom } from "./atom/userAtom"
 import UserProfile from "./pages/UserProfile"
 import ActiveFundraisers from "./pages/ActiveFundraisers"
+import ScrollToTop from "./components/ScrollToTop"
 
 
 
@@ -19,7 +20,7 @@ function App() {
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
     <Navbar/>
-
+    <ScrollToTop/>
   <Routes>
     
       <Route path="/" element={  <HomePage/> } ></Route>

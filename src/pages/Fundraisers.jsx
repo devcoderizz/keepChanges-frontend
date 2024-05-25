@@ -8,6 +8,8 @@ import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
 import { Modal } from "antd";
 import { ImImages } from "react-icons/im";
+import { MdDeleteForever } from "react-icons/md";
+import { LuUpload } from "react-icons/lu";
 
 const Fundraisers = ({
   benefactors = 69,
@@ -39,6 +41,14 @@ const Fundraisers = ({
     : " ";
   console.log("currentUser", currentUser);
 
+  const percentage = Math.floor(
+    (fundraiserDetails.raised
+      ? fundraiserDetails?.raised
+      : 100 / fundraiserDetails?.raiseGoal) * 100
+  );
+  console.log("raised", fundraiserDetails.raised);
+  console.log("percentage", percentage);
+
   const src = `${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`;
   console.log("display image", src);
 
@@ -55,7 +65,7 @@ const Fundraisers = ({
   };
 
   const handleCancel = () => {
-    setSelectedImages([])
+    setSelectedImages([]);
     setIsModalOpen(false);
   };
   const percentage = Math.floor(
@@ -74,7 +84,6 @@ const Fundraisers = ({
   const onSelectFile = (event) => {
     const selectedFiles = event.target.files;
     const selectedFilesArray = Array.from(selectedFiles);
-    
 
     const imagesArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
@@ -201,15 +210,13 @@ const Fundraisers = ({
               />
             </div>
             <div className="flex ">
-              <div className="">
               <DonationCircle percentage={percentage} />
-              </div>
               <div className="flex md:gap-96">
                 <span className="text-sm mt-4 -ml-10  md:text-nowrap ">
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
                     {" "}
-                    Rs&nbsp;
+                     Rs&nbsp;
                     {fundraiserDetails?.raised
                       ? fundraiserDetails?.raised
                       : 100}
@@ -259,12 +266,11 @@ const Fundraisers = ({
                     <Modal
                       title="Upload Images"
                       open={isModalOpen}
-                      
-                    
                       onCancel={handleCancel}
+                      footer={null}
                     >
                       <form action="">
-                        
+                        {selectedImages.length < 6 && (
                           <div
                             onClick={() => imgUploadRef.current.click()}
                             className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
@@ -274,8 +280,8 @@ const Fundraisers = ({
                               Select atmost six Images
                             </p>
                           </div>
+                        )}
                         <input
-                        
                           ref={imgUploadRef}
                           type="file"
                           onChange={onSelectFile}
@@ -285,31 +291,55 @@ const Fundraisers = ({
                           disabled={selectedImages.length >= 6}
                         />
                         <div>
-                            
-                            <div className="images flex flex-wrap gap-5 mt-5">
-                              {selectedImages &&
-                              
-                                selectedImages.map((image, index) => {
-                                  return (
-                                    <div key={image} className="image ">
-                                      <img
-                                        src={image}
-                                        height="200"
-                                        alt="upload"
-                                        className="w-[100px] h-[100px] object-cover"
-                                      />
-                                      <button
-                                        onClick={() => deleteHandler(image)}
-                                      >
-                                        delete image
-                                      </button>
-                                      <p>{index + 1}</p>
+                          <div className="images flex flex-wrap gap-5  mt-5">
+                            {selectedImages &&
+                              selectedImages.map((image, index) => {
+                                return (
+                                  <div key={image} className="relative ">
+                                    <img
+                                      src={image}
+                                      height="200"
+                                      alt="upload"
+                                      className="w-[100px] h-[100px] object-cover"
+                                    />
+                                    <button
+                                      onClick={() => deleteHandler(image)}
+                                      className="absolute text-red-600 text-2xl bg-zinc-300 hover:bg-rose-400 hover:text-white rounded-full p-1 -top-3 -right-3"
+                                    >
+                                      <MdDeleteForever />
+                                    </button>
+                                    <div className="flex justify-center absolute -bottom-3 right-1/3  ">
+                                      <p className="text-xs w-[30px] font-bold text-center p-2 rounded-full bg-slate-950 text-white">
+                                        {index + 1}
+                                      </p>
                                     </div>
-                                  );
-                                })
-                                }
-                            </div>
+                                  </div>
+                                );
+                              })}
                           </div>
+                        </div>
+                        <div className="mt-5 p-5 relative  ">
+                          {selectedImages.length > 0 &&
+                            (selectedImages.length > 6 ? (
+                              <p className="text-center font-bold text-red-600">
+                                *You can&apos;t upload more than 6 images!{" "}
+                                <br />
+                                <span>
+                                  please delete{" "}
+                                  <b> {selectedImages.length - 6} </b> of them{" "}
+                                </span>
+                              </p>
+                            ) : (
+                              <button
+                                className=" absolute right-0 bottom-5 flex items-center  gap-2 text-xl text-white bg-green-600 p-2 rounded-lg"
+                                onClick={() => {
+                                  console.log(selectedImages);
+                                }}
+                              >
+                                <LuUpload /> Upload
+                              </button>
+                            ))}
+                        </div>
                       </form>
                     </Modal>
                   </div>

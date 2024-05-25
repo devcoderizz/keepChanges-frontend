@@ -33,6 +33,14 @@ const Fundraisers = ({
     : " ";
   console.log("currentUser", currentUser);
 
+  const percentage = Math.floor(
+    (fundraiserDetails.raised
+      ? fundraiserDetails?.raised
+      : 100 / fundraiserDetails?.raiseGoal) * 100
+  );
+  console.log("raised", fundraiserDetails.raised);
+  console.log("percentage", percentage);
+
   const src = `${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`;
   console.log("display image", src);
 
@@ -150,15 +158,18 @@ const Fundraisers = ({
               />
             </div>
             <div className="flex ">
-              <DonationCircle percentage={17} />
+              <DonationCircle percentage={percentage} />
               <div className="flex md:gap-96">
                 <span className="text-sm mt-4 -ml-10  md:text-nowrap ">
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
                     {" "}
-                    Rs&nbsp;{fundraiserDetails.raiseGoal}
+                     Rs&nbsp;
+                    {fundraiserDetails?.raised
+                      ? fundraiserDetails?.raised
+                      : 100}
                   </span>{" "}
-                  &nbsp; of <strong> {60} </strong>
+                  &nbsp; of <strong> {fundraiserDetails.raiseGoal} </strong>
                 </span>
                 <span className="text-sm text-red-500 pl-16 mt-6 md:mt-9 md:text-nowrap">
                   {benefactors} benefactors
@@ -208,15 +219,16 @@ const Fundraisers = ({
                     >
                       <form action="">
                         {selectedImages.length < 6 && (
-                        <div
-                          onClick={() => imgUploadRef.current.click()}
-                          className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
-                        >
-                          <ImImages className=" text-7xl opacity-30" />
-                          <p className=" text-xl font-bold   opacity-50">
-                            Select atmost six Images
-                          </p>
-                        </div>)}
+                          <div
+                            onClick={() => imgUploadRef.current.click()}
+                            className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
+                          >
+                            <ImImages className=" text-7xl opacity-30" />
+                            <p className=" text-xl font-bold   opacity-50">
+                              Select atmost six Images
+                            </p>
+                          </div>
+                        )}
                         <input
                           ref={imgUploadRef}
                           type="file"

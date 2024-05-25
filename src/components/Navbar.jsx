@@ -49,7 +49,7 @@ const items = [
 const Navbar = () => {
   const [isBurgerOpen, setBurgerOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
-  const [logoutCompleted, setLogoutCompleted] = useState(false);
+  // const [logoutCompleted, setLogoutCompleted] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   // const setUser = useSetRecoilState(userAtom)
@@ -63,11 +63,11 @@ const Navbar = () => {
     setProfileOpen(!isProfileOpen);
   };
 
-  useEffect(() => {
-    if (location.pathname === "/auth") {
-      handleProfileClick();
-    }
-  }, [handleProfileClick]);
+  // useEffect(() => {
+  //   if (location.pathname === "/auth") {
+  //     handleProfileClick();
+  //   }
+  // }, [handleProfileClick]);
 
   const handleLogout = () => {
     localStorage.removeItem("UserData");

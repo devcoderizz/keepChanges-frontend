@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaHands } from "react-icons/fa";
 import { FaCircleUser } from "react-icons/fa6";
 import DonationCircle from "../components/LoadingCircle";
@@ -10,6 +10,10 @@ import { Modal } from "antd";
 import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import toast from "react-hot-toast";
+import { HiLink } from "react-icons/hi";
 
 const Fundraisers = ({
   benefactors = 69,
@@ -18,7 +22,7 @@ const Fundraisers = ({
 }) => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
-  const CARD_DISPLAY = import.meta.env.VITE_FUNDRAISER_DISPLAY;
+  const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -27,31 +31,44 @@ const Fundraisers = ({
   const imgUploadRef = useRef(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const localData = JSON.parse(localStorage.getItem("UserData"));
+  const accessToken = localStorage.getItem("accessToken");
+  const navigate= useNavigate();
 
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
     : " ";
-  console.log("currentUser", currentUser);
+ 
 
   const percentage = Math.floor(
     (fundraiserDetails.raised
       ? fundraiserDetails?.raised
       : 100 / fundraiserDetails?.raiseGoal) * 100
   );
-  console.log("raised", fundraiserDetails.raised);
-  console.log("percentage", percentage);
+  
+  const handleDeleteFundraiser = async()=>{
+    try {
+      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+          },
+        });
 
-  const src = `${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`;
-  console.log("display image", src);
-
-  console.log("fundraiser panga", fundraiserDetails);
+        const data = res.json();
+        console.log(data);
+        navigate('/')
+        toast.success("Fundraiser Deleted")
+      } catch (error) {
+      console.log(error);
+    }
+  }
 
   const showModal2 = () => {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleImageUpload = () => {
+    
   };
 
   const handleCancel = () => {
@@ -132,7 +149,12 @@ const Fundraisers = ({
     };
     fundraiserDetails();
   }, [APIBASEURL, currentUser, id]);
-
+  const copylink = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      toast.success("Link Copied")
+    });
+  };
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
@@ -153,13 +175,13 @@ const Fundraisers = ({
             <div className="flex flex-row gap-8">
               <img
                 className="md:w-[50vw] md:h-[50vh] h-[30vh] w-[90vw] object-cover rounded-xl "
-                src={`${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`}
+                src={`${VITE_BASE_IMAGE_URL}${fundraiserDetails.displayPhoto}`}
                 alt=""
               />
             </div>
             <div className="flex ">
               <DonationCircle percentage={percentage} />
-              <div className="flex md:gap-96">
+              <div className=" flex md:gap-96 ">
                 <span className="text-sm mt-4 -ml-10  md:text-nowrap ">
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
@@ -171,9 +193,12 @@ const Fundraisers = ({
                   </span>{" "}
                   &nbsp; of <strong> {fundraiserDetails.raiseGoal} </strong>
                 </span>
-                <span className="text-sm text-red-500 pl-16 mt-6 md:mt-9 md:text-nowrap">
-                  {benefactors} benefactors
-                </span>
+                <div className="flex items-center pl-16 -mt-10 gap-3 ml-5 text-xl  ">
+                  {isUser ? <>
+                  <button className="hover:text-blue-600"><FiEdit /></button>
+                  <button className="hover:text-rose-600" onClick={handleDeleteFundraiser}><RiDeleteBin6Line /></button>
+                  </> : <button className="flex items-center justify-center gap-2 text-xl bg-red-400 hover:bg-red-500 p-2 rounded-full" onClick={copylink}><HiLink size={20}  color="white" /></button>}
+                </div>
               </div>
             </div>
             <div className="text-[16px] md:-mt-12 md:ml-[85px] ml-2  ">
@@ -280,9 +305,7 @@ const Fundraisers = ({
                             ) : (
                               <button
                                 className=" absolute right-0 bottom-5 flex items-center  gap-2 text-xl text-white bg-green-600 p-2 rounded-lg"
-                                onClick={() => {
-                                  console.log(selectedImages);
-                                }}
+                                onClick={handleImageUpload}
                               >
                                 <LuUpload /> Upload
                               </button>

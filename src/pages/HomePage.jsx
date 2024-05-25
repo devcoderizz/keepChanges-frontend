@@ -1,4 +1,7 @@
 import Hero from "../components/Hero"
+
+
+
 // import Navbar from "../components/Navbar"
 
 const HomePage = () => {
@@ -6,6 +9,7 @@ const HomePage = () => {
     <div  className="flex flex-col space-x-10  ">
    
     <Hero/>
+  
     
     </div> 
   )

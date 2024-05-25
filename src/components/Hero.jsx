@@ -19,6 +19,7 @@ import { useMediaQuery } from "react-responsive";
 import ViewCard from "./ViewCard";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { IsAuthenticated } from "../utils/IsAuthenticated"
 const Hero = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const APIBASEURL= import.meta.env.VITE_API_BASEURL;
@@ -32,6 +33,7 @@ const Hero = () => {
       swiperRef.current.slideNext();
     }
   };
+  IsAuthenticated()
 
   const goPrev = () => {
     if (swiperRef.current) {

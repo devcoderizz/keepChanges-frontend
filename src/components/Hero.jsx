@@ -25,40 +25,7 @@ const Hero = () => {
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
   const [allFundraiser, setAllFundraiser] = useState([])
-  const [donationData, setDonationData] = React.useState([
-    {
-      title:
-        "help to brighten the lives of abandon children and their family by giving ",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 1000,
-      goalAmount: 5000,
-      daysLeft: 5,
-      Suppoters: 2203,
-      to: "/fundraisers/3",
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-  ]);
+  
 
   const goNext = () => {
     if (swiperRef.current) {
@@ -214,7 +181,7 @@ const Hero = () => {
         </div>
       </div>
       <div className="flex flex-col ml-5   md:justify-end md:items-end my-10 mr-40">
-        <span className="text-4xl text-[#FF5C5C] font-bold  ">
+        <span className=" text-2xl md:text-4xl  text-[#FF5C5C] font-bold  ">
           Support a Fundraiser Today!
         </span>
         <p className="mt-2 text-nowrap">
@@ -258,7 +225,7 @@ const Hero = () => {
       </div> */}
 
       <div className="flex flex-col justify-center items-center my-12 ">
-        <h1 className="text-2xl md:text-4xl  text-[#FF5C5C] font-bold">
+        <h1 className="text-2xl md:text-4xl text-center  text-[#FF5C5C] font-bold">
           Start Your Fundraiser in three simple steps:
         </h1>
         <img

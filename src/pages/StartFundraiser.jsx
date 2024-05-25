@@ -38,7 +38,7 @@ console.log("form data", formData);
 
 
   useEffect(() => {
-
+    
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${APIBASEURL}/categories/getall`,{

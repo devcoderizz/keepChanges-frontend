@@ -12,27 +12,34 @@ const Fundraisers = ({
   raisedAmount = 97550,
   goalAmount = 50000,
 }) => {
-  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
+  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [fundraiserDetails, setFundraiserDetails] = useState({})
+  const [fundraiserDetails, setFundraiserDetails] = useState({});
   // const [postedBy, setPostedBy] = useState()
-  const localData=JSON.parse(localStorage.getItem("UserData"))
+  const localData = JSON.parse(localStorage.getItem("UserData"));
   // console.log("roles",localData.roles[1].id);
-  const currentUser= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.id :" "
+  const currentUser = fundraiserDetails.postedBy
+    ? fundraiserDetails.postedBy.id
+    : " ";
   console.log("currentUser", currentUser);
 
   // const adminRole= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.roles[1].id :" "
   // console.log("admin role",localData.roles[1].id);
 
   // setPostedBy(fundraiserDetails.postedBy)
-// console.log("fuaksdbvaskdvba", fundraiserDetails.map(obj=>obj.postedBy.id));
+  // console.log("fuaksdbvaskdvba", fundraiserDetails.map(obj=>obj.postedBy.id));
 
+  const percentage = Math.floor(
+    (fundraiserDetails.raised
+      ? fundraiserDetails?.raised
+      : 100 / fundraiserDetails?.raiseGoal) * 100
+  );
+  console.log("raised", fundraiserDetails.raised);
+  console.log("percentage", percentage);
 
-
- 
-  console.log("fundraiser panga",fundraiserDetails);
+  console.log("fundraiser panga", fundraiserDetails);
 
   const handleSeeMore = () => {
     setShowModal(!showModal);
@@ -47,61 +54,54 @@ const Fundraisers = ({
     // Add more agents as needed
   ];
 
-
-  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name); 
+  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name);
   useEffect(() => {
-    if(localData?.id === currentUser){
+    if (localData?.id === currentUser) {
       console.log("hello");
-      setIsUser(true)
+      setIsUser(true);
     }
 
-    if(localData?.roles[1]?.id || localData?.roles[0]?.id === 501){
+    if (localData?.roles[1]?.id || localData?.roles[0]?.id === 501) {
       console.log("roles");
-      setIsAdmin(true)
+      setIsAdmin(true);
     }
 
+    const fundraiserDetails = async () => {
+      try {
+        const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
+          method: "GET",
+          headers: {
+            // "Authorization": `Bearer ${accessToken}`,
+          },
+        });
 
-   const fundraiserDetails =async()=>{
-    try {
-      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
-        method: "GET",
-        headers: {
-          // "Authorization": `Bearer ${accessToken}`,
-        },
-      });
+        const data = await res.json();
+        console.log("fundraiser data", data);
+        setFundraiserDetails(data);
+        // setPostedBy(fundraiserDetails.postedBy)
+        // console.log("posted By", postedBy);
 
-      const data = await res.json();
-      console.log("fundraiser data",data);
-      setFundraiserDetails(data)
-      // setPostedBy(fundraiserDetails.postedBy)
-      // console.log("posted By", postedBy);
+        if (!data.ok) {
+          // setErrorMessage("Invalid User")
 
-      if (!data.ok) {
-        // setErrorMessage("Invalid User")
-        
-        return;
+          return;
+        }
+
+        // Assuming userInfo contains the user's data
+        // localStorage.setItem("UserData", JSON.stringify(userInfo));
+        // window.location.reload(false);
+      } catch (error) {
+        console.log(error);
       }
-   
-
-      // Assuming userInfo contains the user's data
-      // localStorage.setItem("UserData", JSON.stringify(userInfo));
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-    }
-   }
-   fundraiserDetails()
-    
-  }, [APIBASEURL, currentUser, id] )
-  
+    };
+    fundraiserDetails();
+  }, [APIBASEURL, currentUser, id]);
 
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
-          <span className="text-wrap">
-           {fundraiserDetails.fundraiserTitle}
-          </span>
+          <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
           <span>✅</span>
         </div>
 
@@ -122,15 +122,20 @@ const Fundraisers = ({
               />
             </div>
             <div className="flex ">
-              <DonationCircle percentage={17} />
+              <div className="">
+              <DonationCircle percentage={percentage} />
+              </div>
               <div className="flex md:gap-96">
                 <span className="text-sm mt-4 -ml-10  md:text-nowrap ">
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
                     {" "}
-                    Rs&nbsp;{fundraiserDetails.raiseGoal}
+                    Rs&nbsp;
+                    {fundraiserDetails?.raised
+                      ? fundraiserDetails?.raised
+                      : 100}
                   </span>{" "}
-                  &nbsp; of <strong> {60} </strong>
+                  &nbsp; of <strong> {fundraiserDetails.raiseGoal} </strong>
                 </span>
                 <span className="text-sm text-red-500 pl-16 mt-6 md:mt-9 md:text-nowrap">
                   {benefactors} benefactors
@@ -271,16 +276,24 @@ const Fundraisers = ({
               </button>
             </div>
             <div className="flex flex-col gap-2 my-4 px-4">
-              <h1 className="text-lg font-semibold" >Set Status</h1>
+              <h1 className="text-lg font-semibold">Set Status</h1>
               <select
                 id="mySelect"
                 name="mySelect"
                 className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
               >
-                <option value="option1" className="font-semibold" >Option 1</option>
-                <option value="option2" className="font-semibold">Option 2</option>
-                <option value="option3" className="font-semibold">Option 3</option>
-                <option value="option4" className="font-semibold">Option 4</option>
+                <option value="option1" className="font-semibold">
+                  Option 1
+                </option>
+                <option value="option2" className="font-semibold">
+                  Option 2
+                </option>
+                <option value="option3" className="font-semibold">
+                  Option 3
+                </option>
+                <option value="option4" className="font-semibold">
+                  Option 4
+                </option>
               </select>
             </div>
           </div>
@@ -353,7 +366,11 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">{fundraiserDetails.postedBy ? fundraiserDetails.postedBy.name : 'Anonymous'}</span>
+                <span className="font-semibold">
+                  {fundraiserDetails.postedBy
+                    ? fundraiserDetails.postedBy.name
+                    : "Anonymous"}
+                </span>
               </div>
             </div>
             <div className="absolute bg-black h-[70px] w-[2px] left-8 bottom-16 z-10"></div>
@@ -378,4 +395,3 @@ Fundraisers.propTypes = {
 };
 
 export default Fundraisers;
-

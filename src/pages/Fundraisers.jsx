@@ -3,40 +3,74 @@ import { Link, useParams } from "react-router-dom";
 import { FaHands } from "react-icons/fa";
 import { FaCircleUser } from "react-icons/fa6";
 import DonationCircle from "../components/LoadingCircle";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
+import { Modal } from "antd";
+import { ImImages } from "react-icons/im";
 
 const Fundraisers = ({
   benefactors = 69,
   raisedAmount = 97550,
   goalAmount = 50000,
 }) => {
-  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
+  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
+  // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
+  const CARD_DISPLAY = import.meta.env.VITE_FUNDRAISER_DISPLAY;
   const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [fundraiserDetails, setFundraiserDetails] = useState({})
-  // const [postedBy, setPostedBy] = useState()
-  const localData=JSON.parse(localStorage.getItem("UserData"))
-  // console.log("roles",localData.roles[1].id);
-  const currentUser= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.id :" "
+  const [fundraiserDetails, setFundraiserDetails] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const imgUploadRef = useRef(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const localData = JSON.parse(localStorage.getItem("UserData"));
+
+  const currentUser = fundraiserDetails.postedBy
+    ? fundraiserDetails.postedBy.id
+    : " ";
   console.log("currentUser", currentUser);
 
-  // const adminRole= fundraiserDetails.postedBy ? fundraiserDetails.postedBy.roles[1].id :" "
-  // console.log("admin role",localData.roles[1].id);
+  const src = `${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`;
+  console.log("display image", src);
 
-  // setPostedBy(fundraiserDetails.postedBy)
-// console.log("fuaksdbvaskdvba", fundraiserDetails.map(obj=>obj.postedBy.id));
+  console.log("fundraiser panga", fundraiserDetails);
 
+  const showModal2 = () => {
+    setIsModalOpen(true);
+  };
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
 
- 
-  console.log("fundraiser panga",fundraiserDetails);
+  const handleCancel = () => {
+    setSelectedImages([])
+    setIsModalOpen(false);
+  };
 
   const handleSeeMore = () => {
     setShowModal(!showModal);
   };
+  const onSelectFile = (event) => {
+    const selectedFiles = event.target.files;
+    const selectedFilesArray = Array.from(selectedFiles);
+    
+
+    const imagesArray = selectedFilesArray.map((file) => {
+      return URL.createObjectURL(file);
+    });
+
+    setSelectedImages((previousImages) => previousImages.concat(imagesArray));
+
+    // FOR BUG IN CHROME
+    event.target.value = "";
+  };
+
+  function deleteHandler(image) {
+    setSelectedImages(selectedImages.filter((e) => e !== image));
+    URL.revokeObjectURL(image);
+  }
 
   const { id } = useParams();
   const agentData = [
@@ -47,61 +81,54 @@ const Fundraisers = ({
     // Add more agents as needed
   ];
 
-
-  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name); 
+  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name);
   useEffect(() => {
-    if(localData?.id === currentUser){
+    if (localData?.id === currentUser) {
       console.log("hello");
-      setIsUser(true)
+      setIsUser(true);
     }
 
-    if(localData?.roles[1]?.id || localData?.roles[0]?.id === 501){
+    if (localData?.roles[1]?.id || localData?.roles[0]?.id === 501) {
       console.log("roles");
-      setIsAdmin(true)
+      setIsAdmin(true);
     }
 
+    const fundraiserDetails = async () => {
+      try {
+        const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
+          method: "GET",
+          headers: {
+            // "Authorization": `Bearer ${accessToken}`,
+          },
+        });
 
-   const fundraiserDetails =async()=>{
-    try {
-      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
-        method: "GET",
-        headers: {
-          // "Authorization": `Bearer ${accessToken}`,
-        },
-      });
+        const data = await res.json();
+        console.log("fundraiser data", data);
+        setFundraiserDetails(data);
+        // setPostedBy(fundraiserDetails.postedBy)
+        // console.log("posted By", postedBy);
 
-      const data = await res.json();
-      console.log("fundraiser data",data);
-      setFundraiserDetails(data)
-      // setPostedBy(fundraiserDetails.postedBy)
-      // console.log("posted By", postedBy);
+        if (!data.ok) {
+          // setErrorMessage("Invalid User")
 
-      if (!data.ok) {
-        // setErrorMessage("Invalid User")
-        
-        return;
+          return;
+        }
+
+        // Assuming userInfo contains the user's data
+        // localStorage.setItem("UserData", JSON.stringify(userInfo));
+        // window.location.reload(false);
+      } catch (error) {
+        console.log(error);
       }
-   
-
-      // Assuming userInfo contains the user's data
-      // localStorage.setItem("UserData", JSON.stringify(userInfo));
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-    }
-   }
-   fundraiserDetails()
-    
-  }, [APIBASEURL, currentUser, id] )
-  
+    };
+    fundraiserDetails();
+  }, [APIBASEURL, currentUser, id]);
 
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
-          <span className="text-wrap">
-           {fundraiserDetails.fundraiserTitle}
-          </span>
+          <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
           <span>✅</span>
         </div>
 
@@ -117,7 +144,7 @@ const Fundraisers = ({
             <div className="flex flex-row gap-8">
               <img
                 className="md:w-[50vw] md:h-[50vh] h-[30vh] w-[90vw] object-cover rounded-xl "
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067580/cld-sample.jpg"
+                src={`${CARD_DISPLAY}${fundraiserDetails.displayPhoto}`}
                 alt=""
               />
             </div>
@@ -166,9 +193,68 @@ const Fundraisers = ({
                     <h1 className="text-md my-4 ml-16 font-semibold ">
                       Fundraiser Images
                     </h1>
-                    <button className="text-md text-blue-500 py-3 px-6 text-nowrap border border-blue-500 mx-10 rounded-xl font-semibold hover:bg-blue-500 hover:text-white ">
+                    <button
+                      className="text-md text-blue-500 py-3 px-6 text-nowrap border border-blue-500 mx-10 rounded-xl font-semibold hover:bg-blue-500 hover:text-white "
+                      onClick={showModal2}
+                    >
                       Images
                     </button>
+                    <Modal
+                      title="Upload Images"
+                      open={isModalOpen}
+                      
+                    
+                      onCancel={handleCancel}
+                    >
+                      <form action="">
+                        
+                          <div
+                            onClick={() => imgUploadRef.current.click()}
+                            className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
+                          >
+                            <ImImages className=" text-7xl opacity-30" />
+                            <p className=" text-xl font-bold   opacity-50">
+                              Select atmost six Images
+                            </p>
+                          </div>
+                        <input
+                        
+                          ref={imgUploadRef}
+                          type="file"
+                          onChange={onSelectFile}
+                          accept="image/*"
+                          multiple
+                          style={{ display: "none" }}
+                          disabled={selectedImages.length >= 6}
+                        />
+                        <div>
+                            
+                            <div className="images flex flex-wrap gap-5 mt-5">
+                              {selectedImages &&
+                              
+                                selectedImages.map((image, index) => {
+                                  return (
+                                    <div key={image} className="image ">
+                                      <img
+                                        src={image}
+                                        height="200"
+                                        alt="upload"
+                                        className="w-[100px] h-[100px] object-cover"
+                                      />
+                                      <button
+                                        onClick={() => deleteHandler(image)}
+                                      >
+                                        delete image
+                                      </button>
+                                      <p>{index + 1}</p>
+                                    </div>
+                                  );
+                                })
+                                }
+                            </div>
+                          </div>
+                      </form>
+                    </Modal>
                   </div>
                   <div className="w-full flex flex-col justify-center px-10">
                     <h1 className="text-md my-4 ml-16 font-semibold ">
@@ -271,16 +357,24 @@ const Fundraisers = ({
               </button>
             </div>
             <div className="flex flex-col gap-2 my-4 px-4">
-              <h1 className="text-lg font-semibold" >Set Status</h1>
+              <h1 className="text-lg font-semibold">Set Status</h1>
               <select
                 id="mySelect"
                 name="mySelect"
                 className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
               >
-                <option value="option1" className="font-semibold" >Option 1</option>
-                <option value="option2" className="font-semibold">Option 2</option>
-                <option value="option3" className="font-semibold">Option 3</option>
-                <option value="option4" className="font-semibold">Option 4</option>
+                <option value="option1" className="font-semibold">
+                  Option 1
+                </option>
+                <option value="option2" className="font-semibold">
+                  Option 2
+                </option>
+                <option value="option3" className="font-semibold">
+                  Option 3
+                </option>
+                <option value="option4" className="font-semibold">
+                  Option 4
+                </option>
               </select>
             </div>
           </div>
@@ -353,7 +447,11 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">{fundraiserDetails.postedBy ? fundraiserDetails.postedBy.name : 'Anonymous'}</span>
+                <span className="font-semibold">
+                  {fundraiserDetails.postedBy
+                    ? fundraiserDetails.postedBy.name
+                    : "Anonymous"}
+                </span>
               </div>
             </div>
             <div className="absolute bg-black h-[70px] w-[2px] left-8 bottom-16 z-10"></div>
@@ -378,4 +476,3 @@ Fundraisers.propTypes = {
 };
 
 export default Fundraisers;
-

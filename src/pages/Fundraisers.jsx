@@ -19,7 +19,6 @@ const Fundraisers = ({
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
   const CARD_DISPLAY = import.meta.env.VITE_FUNDRAISER_DISPLAY;
-  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -29,13 +28,6 @@ const Fundraisers = ({
   const [selectedImages, setSelectedImages] = useState([]);
   const localData = JSON.parse(localStorage.getItem("UserData"));
 
-  const currentUser = fundraiserDetails.postedBy
-    ? fundraiserDetails.postedBy.id
-    : " ";
-  const [fundraiserDetails, setFundraiserDetails] = useState({});
-  // const [postedBy, setPostedBy] = useState()
-  const localData = JSON.parse(localStorage.getItem("UserData"));
-  // console.log("roles",localData.roles[1].id);
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
     : " ";
@@ -53,8 +45,6 @@ const Fundraisers = ({
   console.log("display image", src);
 
   console.log("fundraiser panga", fundraiserDetails);
-  // setPostedBy(fundraiserDetails.postedBy)
-  // console.log("fuaksdbvaskdvba", fundraiserDetails.map(obj=>obj.postedBy.id));
 
   const showModal2 = () => {
     setIsModalOpen(true);
@@ -68,15 +58,6 @@ const Fundraisers = ({
     setSelectedImages([]);
     setIsModalOpen(false);
   };
-  const percentage = Math.floor(
-    (fundraiserDetails.raised
-      ? fundraiserDetails?.raised
-      : 100 / fundraiserDetails?.raiseGoal) * 100
-  );
-  console.log("raised", fundraiserDetails.raised);
-  console.log("percentage", percentage);
-
-  console.log("fundraiser panga", fundraiserDetails);
 
   const handleSeeMore = () => {
     setShowModal(!showModal);
@@ -110,20 +91,15 @@ const Fundraisers = ({
   ];
 
   // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name);
-  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name);
   useEffect(() => {
-    if (localData?.id === currentUser) {
     if (localData?.id === currentUser) {
       console.log("hello");
       setIsUser(true);
-      setIsUser(true);
     }
 
-    if (localData?.roles[1]?.id || localData?.roles[0]?.id === 501) {
     if (localData?.roles[1]?.id || localData?.roles[0]?.id === 501) {
       console.log("roles");
       setIsAdmin(true);
-      setIsAdmin(true);
     }
 
     const fundraiserDetails = async () => {
@@ -134,20 +110,7 @@ const Fundraisers = ({
             // "Authorization": `Bearer ${accessToken}`,
           },
         });
-    const fundraiserDetails = async () => {
-      try {
-        const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
-          method: "GET",
-          headers: {
-            // "Authorization": `Bearer ${accessToken}`,
-          },
-        });
 
-        const data = await res.json();
-        console.log("fundraiser data", data);
-        setFundraiserDetails(data);
-        // setPostedBy(fundraiserDetails.postedBy)
-        // console.log("posted By", postedBy);
         const data = await res.json();
         console.log("fundraiser data", data);
         setFundraiserDetails(data);
@@ -159,21 +122,7 @@ const Fundraisers = ({
 
           return;
         }
-        if (!data.ok) {
-          // setErrorMessage("Invalid User")
 
-          return;
-        }
-
-        // Assuming userInfo contains the user's data
-        // localStorage.setItem("UserData", JSON.stringify(userInfo));
-        // window.location.reload(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fundraiserDetails();
-  }, [APIBASEURL, currentUser, id]);
         // Assuming userInfo contains the user's data
         // localStorage.setItem("UserData", JSON.stringify(userInfo));
         // window.location.reload(false);
@@ -188,7 +137,6 @@ const Fundraisers = ({
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
-          <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
           <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
           <span>✅</span>
         </div>
@@ -445,24 +393,11 @@ const Fundraisers = ({
             </div>
             <div className="flex flex-col gap-2 my-4 px-4">
               <h1 className="text-lg font-semibold">Set Status</h1>
-              <h1 className="text-lg font-semibold">Set Status</h1>
               <select
                 id="mySelect"
                 name="mySelect"
                 className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
               >
-                <option value="option1" className="font-semibold">
-                  Option 1
-                </option>
-                <option value="option2" className="font-semibold">
-                  Option 2
-                </option>
-                <option value="option3" className="font-semibold">
-                  Option 3
-                </option>
-                <option value="option4" className="font-semibold">
-                  Option 4
-                </option>
                 <option value="option1" className="font-semibold">
                   Option 1
                 </option>
@@ -547,11 +482,6 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">
-                  {fundraiserDetails.postedBy
-                    ? fundraiserDetails.postedBy.name
-                    : "Anonymous"}
-                </span>
                 <span className="font-semibold">
                   {fundraiserDetails.postedBy
                     ? fundraiserDetails.postedBy.name

@@ -11,18 +11,22 @@ import { userAtom } from "./atom/userAtom"
 import UserProfile from "./pages/UserProfile"
 import ActiveFundraisers from "./pages/ActiveFundraisers"
 import ScrollToTop from "./components/ScrollToTop"
-
+import { IsAuthenticated } from "../src/utils/IsAuthenticated";
 
 
 function App() {
   const user = useRecoilValue(userAtom)
+  IsAuthenticated()
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
     <Navbar/>
     <ScrollToTop/>
+
+    <IsAuthenticated />
   <Routes>
     
+
       <Route path="/" element={  <HomePage/> } ></Route>
       <Route path='/auth' element={!user ? <AuthPage/> : <Navigate to={'/'} /> } />
       <Route path='/startFundraiser' element={<StartFundraiser/>} />

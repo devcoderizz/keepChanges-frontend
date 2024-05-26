@@ -4,7 +4,7 @@ import { IsAuthenticated } from "../utils/IsAuthenticated";
 
 const ScrollToTop = (props) => {
   const location = useLocation();
-  IsAuthenticated();
+
 
   useEffect(() => {
     window.scrollTo(0, 0);

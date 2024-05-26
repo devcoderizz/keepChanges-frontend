@@ -33,7 +33,7 @@ const Hero = () => {
       swiperRef.current.slideNext();
     }
   };
-  IsAuthenticated()
+
 
   const goPrev = () => {
     if (swiperRef.current) {

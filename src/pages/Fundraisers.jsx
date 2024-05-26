@@ -11,10 +11,11 @@ import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
-import { IoMdAddCircle } from "react-icons/io";
+import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
+import { TiArrowBack } from "react-icons/ti";
 
 const Fundraisers = ({
   benefactors = 69,
@@ -33,9 +34,16 @@ const Fundraisers = ({
   const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
+  const [allAccount, setAllAccount] = useState([]);
+  const [allreadyAccount, setallreadyAccount] = useState(true);
+  const [accountFormData, setAccountFormData] = useState({});
+  const [deleteAccount, setDeleteAccount] = useState(true);
+  const [inputData, setInputData] = useState(null)
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
+
+  // console.log("all accounts",allAccount);
 
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
@@ -74,37 +82,38 @@ const Fundraisers = ({
   };
 
   const handleImageUpload = async (e) => {
-  e.preventDefault();
-  try {
-    const formData = new FormData();
-    
-    // Assuming selectedImages is an array of File objects
-    images1.forEach((image, index) => {
-      formData.append(`image_${index}`, image);
-    });
+    e.preventDefault();
+    try {
+      const formData = new FormData();
 
-    const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        // No need to set Content-Type; fetch will automatically set it to multipart/form-data
-      },
-      body: formData,
-    });
+      // Assuming selectedImages is an array of File objects
+      images1.forEach((image, index) => {
+        formData.append(`image_${index}`, image);
+      });
 
-    console.log("response image", res);
-    const data = await res.json();
-    console.log("image upload console", data);
-    
-    // Uncomment the following line if you want to reload the page after successful upload
-    // window.location.reload(false);
-  } catch (error) {
-    console.error("Error uploading images:", error);
-  }
-};
+      const res = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // No need to set Content-Type; fetch will automatically set it to multipart/form-data
+          },
+          body: formData,
+        }
+      );
 
+      console.log("response image", res);
+      const data = await res.json();
+      console.log("image upload console", data);
 
-  const handleAddAccount = () => {};
+      // Uncomment the following line if you want to reload the page after successful upload
+      // window.location.reload(false);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    }
+  };
+
 
   const handleCancel = () => {
     setImages([]);
@@ -172,6 +181,27 @@ const Fundraisers = ({
       }
     };
     fundraiserDetails();
+
+    const Accounts = async () => {
+      try {
+        const res = await fetch(`${APIBASEURL}/accounts/getall/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const data = await res.json();
+        // console.log("bank data", data);
+        setAllAccount(data);
+        if (!data.ok) {
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    Accounts();
   }, [APIBASEURL, currentUser, id]);
   const copylink = () => {
     const currentUrl = window.location.href;
@@ -179,6 +209,77 @@ const Fundraisers = ({
       toast.success("Link Copied");
     });
   };
+
+  const handleAccountShown = (e) => {
+    e.preventDefault();
+    setallreadyAccount(!allreadyAccount);
+  };
+
+  const handleChange = (e) => {
+    setAccountFormData({
+      ...accountFormData,
+      [e.target.id]: e.target.value,
+    });
+  };
+  console.log(accountFormData);
+
+  const handleAccountAdd = async () => {
+    try {
+      const res = await fetch(`${APIBASEURL}/accounts/add`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountFormData),
+      });
+
+      const data = await res.json();
+      console.log("add bank data", data);
+      // setAllAccount(data);
+      if (!data.ok) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteForm = (e) => {
+    e.preventDefault();
+    setDeleteAccount(!deleteAccount);
+  };
+
+  const handleInputChange = (e) => {
+    setInputData({
+      [e.target.id]: e.target.value,
+    });
+  };
+  console.log(inputData);
+
+  const handleAccountDelete = async () => {
+    try {
+      const res = await fetch(`${APIBASEURL}/accounts/account_${inputData}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(inputData),
+      });
+
+      const data = await res.json();
+      console.log("delete data", data);
+      // setAllAccount(data);
+      if (!data.ok) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
@@ -273,93 +374,165 @@ const Fundraisers = ({
                       open={isModalOpenAccount}
                       onCancel={handleCancelAccount}
                       footer={null}
-                      className=""
                     >
-                      <form
-                        action=""
-                        className="px-5  py-3 flex flex-col items-end  gap-2"
-                      >
-                        <div className=" flex flex-col w-full">
-                          <label
-                            htmlFor=""
-                            className="font-bold text-[#696763] "
+                      {allreadyAccount ? (
+                        <div
+                           
+                          className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                        >
+                          <button
+                            onClick={handleAccountShown}
+                            className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
                           >
-                            User Accounts{" "}
-                          </label>
-                          <select
-                            name=""
-                            id=""
-                            className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                          >
-                            <option
-                              value=""
-                              className="font-bold text-[#696763]"
+                            {allreadyAccount
+                              ? "Add New Account"
+                              : "Select existing account"}
+                          </button>
+
+                          <button onClick={handleDeleteForm} className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><RiDeleteBin2Fill />
+                            account</h1> : <h1 className="flex items-center gap-1"> <TiArrowBack /> back</h1> }
+                            
+                          </button>
+                          {deleteAccount ? <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
                             >
-                              select account
-                            </option>
-                            <option
-                              value=""
-                              className="font-bold text-[#696763]"
+                              User Accounts{" "}
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              
+                              // value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
                             >
-                              SBI account
-                            </option>
-                            <option
-                              value=""
-                              className="font-bold text-[#696763]"
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
+                              >
+                                select an account
+                              </option>
+
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
+
+                            }
+                          </button>
+                          </form>: <form className=" flex flex-col w-full gap-3 bg-gray-300 p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
                             >
-                              AXIS account
-                            </option>
-                            <option
-                              value=""
-                              className="font-bold text-[#696763]"
+                             Delete User Accounts
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
                             >
-                              CBI account
-                            </option>
-                          </select>
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
+                              >
+                                select an account
+                              </option>
+
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button onClick={handleAccountDelete} className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
+
+                            }
+                            
+                          </button>
+                          </form>}
+                          
+                          
                         </div>
-                        <button className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl">
-                          <IoMdAddCircle /> Add
-                        </button>
-                      </form>
-                      <h1 className=" text-[#EF5757] font-bold text-center ">
-                        ----- OR -----
-                      </h1>
-                      <form
-                        action=""
-                        className="px-5  py-3 flex flex-col items-end  gap-2"
-                      >
-                        <div className=" flex flex-col gap-3 w-full">
-                          <label
-                            htmlFor=""
-                            className="font-bold text-[#696763] "
+                      ) : (
+                        <form
+                          action=""
+                          className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                        >
+                          <button
+                            onClick={handleAccountShown}
+                            className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
                           >
-                            Add a new account{" "}
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Enter bank Name"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Enter account number"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Enter IFSC code"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Enter account holder’s name"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                        </div>
-                        <button className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl">
-                          <IoMdAddCircle /> Add
-                        </button>
-                      </form>
+                            {allreadyAccount
+                              ? "Add New Account"
+                              : "Select existing account"}
+                          </button>
+                          <div className=" flex flex-col gap-3 w-full">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                              Add a new account{" "}
+                            </label>
+                            <input
+                              type="text"
+                              name="bankName"
+                              id="bankName"
+                              onChange={handleChange}
+                              placeholder="Enter bank Name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="number"
+                              name="accountNumber"
+                              id="accountNumber"
+                              onChange={handleChange}
+                              placeholder="Enter account number"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="branch"
+                              id="branch"
+                              onChange={handleChange}
+                              placeholder="Enter branch name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="ifsc"
+                              id="ifsc"
+                              onChange={handleChange}
+                              placeholder="Enter IFSC code"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="holderName"
+                              id="holderName"
+                              onChange={handleChange}
+                              placeholder="Enter account holder’s name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                          </div>
+                          <button
+                            onClick={handleAccountAdd}
+                            className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
+                          >
+                            <IoMdAddCircle /> Add
+                          </button>
+                        </form>
+                      )}
                     </Modal>
                   </div>
                   <div className="w-full flex flex-col justify-center px-10">
@@ -436,8 +609,8 @@ const Fundraisers = ({
                                 *You can&apos;t upload more than 6 images!{" "}
                                 <br />
                                 <span>
-                                  please delete{" "}
-                                  <b> {images1.length - 6} </b> of them{" "}
+                                  please delete <b> {images1.length - 6} </b> of
+                                  them{" "}
                                 </span>
                               </p>
                             ) : (

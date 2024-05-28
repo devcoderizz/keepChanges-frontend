@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
 import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
 import { TiArrowBack } from "react-icons/ti";
-
+import useAuth from "../utils/IsAuthenticated";
 const Fundraisers = ({
   benefactors = 69,
   raisedAmount = 97550,
@@ -24,6 +24,7 @@ const Fundraisers = ({
 }) => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
+
   const { id } = useParams();
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const [isUser, setIsUser] = useState(false);
@@ -38,12 +39,14 @@ const Fundraisers = ({
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
   const [deleteAccount, setDeleteAccount] = useState(true);
-  const [inputData, setInputData] = useState(null)
+  const [inputData, setInputData] = useState(null);
   const localData = JSON.parse(localStorage.getItem("UserData"));
-  const accessToken = localStorage.getItem("accessToken");
+  // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
-  // console.log("all accounts",allAccount);
+  const { fetchAccess, isAccessTokenValid } = useAuth();
+
+  // console.log("image1", images1)
 
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
@@ -56,6 +59,11 @@ const Fundraisers = ({
   );
 
   const handleDeleteFundraiser = async () => {
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+
     try {
       if (!window.confirm("You want to delete Your Fundraiser ?")) return;
       const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
@@ -82,38 +90,40 @@ const Fundraisers = ({
   };
 
   const handleImageUpload = async (e) => {
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+
     e.preventDefault();
     try {
-      const formData = new FormData();
+      const payload = new FormData();
 
-      // Assuming selectedImages is an array of File objects
-      images1.forEach((image, index) => {
-        formData.append(`image_${index}`, image);
+      const images = [];
+
+      images1.forEach((image) => {
+        images.push(image);
       });
 
+      console.log("images", images);
+
+      // payload.append("images", images)
+      // console.log("payload", payload)
       const res = await fetch(
         `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
         {
           method: "POST",
           headers: {
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${accessToken}`,
-            // No need to set Content-Type; fetch will automatically set it to multipart/form-data
           },
-          body: formData,
+          body: images,
         }
       );
-
-      console.log("response image", res);
-      const data = await res.json();
-      console.log("image upload console", data);
-
-      // Uncomment the following line if you want to reload the page after successful upload
-      // window.location.reload(false);
     } catch (error) {
       console.error("Error uploading images:", error);
     }
   };
-
 
   const handleCancel = () => {
     setImages([]);
@@ -164,6 +174,9 @@ const Fundraisers = ({
     }
 
     const fundraiserDetails = async () => {
+      if (!isAccessTokenValid()) {
+        await fetchAccess();
+      }
       try {
         const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
           method: "GET",
@@ -183,6 +196,11 @@ const Fundraisers = ({
     fundraiserDetails();
 
     const Accounts = async () => {
+      if (!isAccessTokenValid()) {
+        await fetchAccess();
+      }
+      const accessToken = localStorage.getItem("accessToken");
+
       try {
         const res = await fetch(`${APIBASEURL}/accounts/getall/`, {
           method: "GET",
@@ -224,15 +242,24 @@ const Fundraisers = ({
   console.log(accountFormData);
 
   const handleAccountAdd = async () => {
+    // e.preventDefault();
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+
     try {
-      const res = await fetch(`${APIBASEURL}/accounts/add`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(accountFormData),
-      });
+      const res = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${id}/account/add`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(accountFormData),
+        }
+      );
 
       const data = await res.json();
       console.log("add bank data", data);
@@ -258,15 +285,23 @@ const Fundraisers = ({
   console.log(inputData);
 
   const handleAccountDelete = async () => {
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+
     try {
-      const res = await fetch(`${APIBASEURL}/accounts/account_${inputData}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(inputData),
-      });
+      const res = await fetch(
+        `${APIBASEURL}/accounts/account_${inputData.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(inputData.id),
+        }
+      );
 
       const data = await res.json();
       console.log("delete data", data);
@@ -278,7 +313,6 @@ const Fundraisers = ({
       console.log(error);
     }
   };
-
 
   return (
     <>
@@ -376,10 +410,7 @@ const Fundraisers = ({
                       footer={null}
                     >
                       {allreadyAccount ? (
-                        <div
-                           
-                          className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
-                        >
+                        <div className="px-5  py-3 flex flex-col items-end  gap-2 mb-10">
                           <button
                             onClick={handleAccountShown}
                             className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
@@ -389,80 +420,108 @@ const Fundraisers = ({
                               : "Select existing account"}
                           </button>
 
-                          <button onClick={handleDeleteForm} className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400">
-                            {deleteAccount ? <h1 className="flex items-center gap-1"><RiDeleteBin2Fill />
-                            account</h1> : <h1 className="flex items-center gap-1"> <TiArrowBack /> back</h1> }
-                            
+                          <button
+                            onClick={handleDeleteForm}
+                            className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400"
+                          >
+                            {deleteAccount ? (
+                              <h1 className="flex items-center gap-1">
+                                <RiDeleteBin2Fill />
+                                account
+                              </h1>
+                            ) : (
+                              <h1 className="flex items-center gap-1">
+                                {" "}
+                                <TiArrowBack /> back
+                              </h1>
+                            )}
                           </button>
-                          {deleteAccount ? <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
-                            <label
-                              htmlFor=""
-                              className="font-bold text-[#696763] "
-                            >
-                              User Accounts{" "}
-                            </label>
-                            <select
-                              name="id"
-                              id="id"
-                              
-                              // value={allAccount.id}
-                              onChange={handleInputChange}
-                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                            >
-                              <option
-                                value=""
-                                className="font-bold text-[#696763]"
+                          {deleteAccount ? (
+                            <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
+                              <label
+                                htmlFor=""
+                                className="font-bold text-[#696763] "
                               >
-                                select an account
-                              </option>
-
-                              {allAccount.map((accounts) => (
-                                <option key={accounts.id} value={accounts.id}>
-                                  {accounts.bankName}
-                                </option>
-                              ))}
-                            </select>
-                            <button className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
-                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
-
-                            }
-                          </button>
-                          </form>: <form className=" flex flex-col w-full gap-3 bg-gray-300 p-4 rounded-md">
-                            <label
-                              htmlFor=""
-                              className="font-bold text-[#696763] "
-                            >
-                             Delete User Accounts
-                            </label>
-                            <select
-                              name="id"
-                              id="id"
-                              value={allAccount.id}
-                              onChange={handleInputChange}
-                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                            >
-                              <option
-                                value=""
-                                className="font-bold text-[#696763]"
+                                User Accounts{" "}
+                              </label>
+                              <select
+                                name="id"
+                                id="id"
+                                // value={allAccount.id}
+                                onChange={handleInputChange}
+                                className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
                               >
-                                select an account
-                              </option>
-
-                              {allAccount.map((accounts) => (
-                                <option key={accounts.id} value={accounts.id}>
-                                  {accounts.bankName}
+                                <option
+                                  value=""
+                                  className="font-bold text-[#696763]"
+                                >
+                                  select an account
                                 </option>
-                              ))}
-                            </select>
-                            <button onClick={handleAccountDelete} className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
-                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
 
-                            }
-                            
-                          </button>
-                          </form>}
-                          
-                          
+                                {allAccount.map((accounts) => (
+                                  <option key={accounts.id} value={accounts.id}>
+                                    {accounts.bankName}
+                                  </option>
+                                ))}
+                              </select>
+                              <button className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
+                                {deleteAccount ? (
+                                  <h1 className="flex items-center gap-1">
+                                    <IoMdAddCircle /> Add
+                                  </h1>
+                                ) : (
+                                  <h1 className="flex items-center gap-1">
+                                    {" "}
+                                    <IoIosRemoveCircle /> Remove
+                                  </h1>
+                                )}
+                              </button>
+                            </form>
+                          ) : (
+                            <form className=" flex flex-col w-full gap-3 bg-gray-300 p-4 rounded-md">
+                              <label
+                                htmlFor=""
+                                className="font-bold text-[#696763] "
+                              >
+                                Delete User Accounts
+                              </label>
+                              <select
+                                name="id"
+                                id="id"
+                                value={allAccount.id}
+                                onChange={handleInputChange}
+                                className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
+                              >
+                                <option
+                                  value=""
+                                  className="font-bold text-[#696763]"
+                                >
+                                  select an account
+                                </option>
+
+                                {allAccount.map((accounts) => (
+                                  <option key={accounts.id} value={accounts.id}>
+                                    {accounts.bankName}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                onClick={handleAccountDelete}
+                                className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
+                              >
+                                {deleteAccount ? (
+                                  <h1 className="flex items-center gap-1">
+                                    <IoMdAddCircle /> Add
+                                  </h1>
+                                ) : (
+                                  <h1 className="flex items-center gap-1">
+                                    {" "}
+                                    <IoIosRemoveCircle /> Remove
+                                  </h1>
+                                )}
+                              </button>
+                            </form>
+                          )}
                         </div>
                       ) : (
                         <form
@@ -831,7 +890,11 @@ const Fundraisers = ({
                 <span className="font-semibold  text-gray-500 ">
                   This Fundraiser will benifit
                 </span>
-                <span className="font-semibold">Pranav Panga</span>
+                <span className="font-semibold">
+                  {fundraiserDetails?.beneficiary
+                    ? fundraiserDetails?.beneficiary
+                    : "Anonymous"}{" "}
+                </span>
               </div>
             </div>
           </div>

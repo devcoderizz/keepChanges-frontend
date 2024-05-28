@@ -1,22 +1,24 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../utils/IsAuthenticated";
 
 
 
 
 const StartFundraiser = () => {
+  const { fetchAccess, isAccessTokenValid } = useAuth();
   const navigate = useNavigate();
   // const [phoneNumber, setPhoneNumber] = useState('');
   // const [validationMessage, setValidationMessage] = useState('');
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({});
   const [displayImage, setDisplayImage] = useState(null);
-console.log("form data", formData);
+// console.log("form data", formData);
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
-  const accessToken =  localStorage.getItem("accessToken")
+  
   // const refreshToken = getCookie('refreshToken');
-  console.log("token",accessToken)
+
   // const validatePhoneNumber = (number) => {
   //   // A simple regex for validating phone numbers (e.g., 10 digits)
   //   const phoneRegex = /^[0-9]{10}$/;
@@ -74,6 +76,12 @@ console.log("form data", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAccessTokenValid()) {
+       await fetchAccess();
+
+  }
+  const accessToken =  localStorage.getItem("accessToken")
 
     const { fundraiserTitle, raiseGoal, endDate, id, email, phone, fundraiserDescription,beneficiary } = formData;
 

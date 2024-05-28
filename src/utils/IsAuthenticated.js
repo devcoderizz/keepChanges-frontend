@@ -3,6 +3,7 @@ import { useRecoilValue } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import toast from "react-hot-toast";
+import {jwtDecode} from "jwt-decode";
 import { userAtom } from "../atom/userAtom";
 
 const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -11,70 +12,77 @@ const useAuth = () => {
     const userData = useRecoilValue(userAtom);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("useAuth hook initialized");
-
-        if (!userData) {
-            console.log("No user data found, skipping token refresh");
-            return;
-        }
-
+    const fetchAccess = async () => {
         const refreshToken = Cookies.get('refreshToken');
+
         if (!refreshToken) {
             console.log("No refresh token found, skipping token refresh");
             return;
         }
 
-        const fetchAccess = async () => {
-            console.log("Attempting to refresh token");
+        console.log("Attempting to refresh token");
 
-            try {
-                const res = await fetch(`${APIBASEURL}/auth/refresh-token`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${refreshToken}`,
-                    },
-                });
+        try {
+            const res = await fetch(`${APIBASEURL}/auth/refresh-token`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${refreshToken}`,
+                },
+            });
 
-                const data = await res.json();
-                console.log("Fetch response", res);
-                console.log("Access Token Data", data);
+            const data = await res.json();
+             console.log("Fetch response", res);
+            console.log(" Data", data);
 
-                if (res.status === 401) {
-                    console.log("Refresh token expired, logging out");
-                    localStorage.removeItem("UserData");
-                    localStorage.removeItem("accessToken");
-                    Cookies.remove('refreshToken');
-                    toast.error("Session expired. Please log in again.");
-                    // navigate("/auth");
-                    window.location.reload(false);
-                    
-
-
-                } else {
-                    console.log("Token refreshed successfully");
-                    localStorage.setItem("accessToken", data.refreshToken);
-                    toast.success("Session refreshed.");
-                }
-            } catch (error) {
-                console.error("Error refreshing access token:", error);
+            if (res.status === 401) {
+                console.log("Refresh token expired, logging out");
+                localStorage.removeItem("UserData");
+                localStorage.removeItem("accessToken");
+                Cookies.remove('refreshToken');
+                toast.error("Session expired. Please log in again.");
+                window.location.reload(false);
+            } else {
+                console.log("Token refreshed successfully");
+                localStorage.setItem("accessToken", data.refreshToken);
+                // console.log("token", )
+                toast.success("Session refreshed.");
             }
-        };
+        } catch (error) {
+            console.error("Error refreshing access token:", error);
+        }
+    };
 
-        // Initial call to fetchAccess
-        fetchAccess();
+    const isAccessTokenValid = () => {
+        const accessToken = localStorage.getItem("accessToken");
 
-        // Set up interval to call fetchAccess periodically
-        const intervalId = setInterval(fetchAccess, 60000); // 1 minute
+        if (!accessToken) {
+            return false;
+        }
 
-        // Cleanup interval on component unmount
-        return () => clearInterval(intervalId);
+        try {
+            const decodedToken = jwtDecode(accessToken);
+            const currentTime = Math.floor(Date.now() / 1000);
+            return decodedToken.exp > currentTime;
+        } catch (error) {
+            console.error("Error decoding access token:", error);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        console.log("useAuth hook initialized");
+
+        if (!userData) {
+            console.log("No user data found, skipping token validation");
+            return;
+        }
+
+        if (!isAccessTokenValid()) {
+            fetchAccess();
+        }
     }, [userData]);
+
+    return { fetchAccess, isAccessTokenValid };
 };
 
-function IsAuthenticated() {
-    useAuth();
-    return null;
-}
-
-export { IsAuthenticated };
+export default useAuth;

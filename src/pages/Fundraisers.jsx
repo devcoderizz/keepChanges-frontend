@@ -90,40 +90,44 @@ const Fundraisers = ({
   };
 
   const handleImageUpload = async (e) => {
+    e.preventDefault();
+  
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
+  
     const accessToken = localStorage.getItem("accessToken");
-
-    e.preventDefault();
+  
     try {
-      const payload = new FormData();
-
-      const images = [];
-
+      const images = new FormData();
+  
+      // Append each image individually to the FormData object
       images1.forEach((image) => {
-        images.push(image);
+        images.append("images", image);
       });
-
-      console.log("images", images);
-
-      // payload.append("images", images)
-      // console.log("payload", payload)
+  
       const res = await fetch(
         `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${accessToken}`,
           },
           body: images,
         }
       );
+  
+      if (!res.ok) {
+        throw new Error(`Error uploading images: ${res.statusText}`);
+      }
+  
+      const data = await res.json();
+      console.log("Upload successful:", data);
     } catch (error) {
       console.error("Error uploading images:", error);
     }
   };
+  
 
   const handleCancel = () => {
     setImages([]);
@@ -241,8 +245,8 @@ const Fundraisers = ({
   };
   console.log(accountFormData);
 
-  const handleAccountAdd = async () => {
-    // e.preventDefault();
+  const handleAccountAdd = async (e) => {
+    e.preventDefault();
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -264,6 +268,9 @@ const Fundraisers = ({
       const data = await res.json();
       console.log("add bank data", data);
       // setAllAccount(data);
+      if(res.status===200){
+        toast.success("Account Added")
+      }
       if (!data.ok) {
         return;
       }
@@ -283,6 +290,43 @@ const Fundraisers = ({
     });
   };
   console.log(inputData);
+
+  const handleAccountSelect = async (e) => {
+    e.preventDefault();
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      const res = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${id}/account_${inputData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(inputData.id),
+        }
+      );
+
+      const data = await res.json();
+      console.log("account added", data);
+      if(res.status===200){
+        toast.success("Account Selected")
+      }
+      // setAllAccount(data);
+      if (!data.ok) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  
 
   const handleAccountDelete = async () => {
     if (!isAccessTokenValid()) {
@@ -442,12 +486,12 @@ const Fundraisers = ({
                                 htmlFor=""
                                 className="font-bold text-[#696763] "
                               >
-                                User Accounts{" "}
+                                User Accounts
                               </label>
                               <select
                                 name="id"
                                 id="id"
-                                // value={allAccount.id}
+                                value={allAccount.id}
                                 onChange={handleInputChange}
                                 className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
                               >
@@ -464,26 +508,17 @@ const Fundraisers = ({
                                   </option>
                                 ))}
                               </select>
-                              <button className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
-                                {deleteAccount ? (
-                                  <h1 className="flex items-center gap-1">
+                              <button onClick={handleAccountSelect} className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
                                     <IoMdAddCircle /> Add
-                                  </h1>
-                                ) : (
-                                  <h1 className="flex items-center gap-1">
-                                    {" "}
-                                    <IoIosRemoveCircle /> Remove
-                                  </h1>
-                                )}
                               </button>
                             </form>
                           ) : (
-                            <form className=" flex flex-col w-full gap-3 bg-gray-300 p-4 rounded-md">
+                            <form className=" flex flex-col w-full gap-3 bg-red-200 p-4 rounded-md">
                               <label
                                 htmlFor=""
-                                className="font-bold text-[#696763] "
+                                className="font-bold text-red-500 "
                               >
-                                Delete User Accounts
+                                *Delete User Accounts
                               </label>
                               <select
                                 name="id"
@@ -509,16 +544,7 @@ const Fundraisers = ({
                                 onClick={handleAccountDelete}
                                 className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
                               >
-                                {deleteAccount ? (
-                                  <h1 className="flex items-center gap-1">
-                                    <IoMdAddCircle /> Add
-                                  </h1>
-                                ) : (
-                                  <h1 className="flex items-center gap-1">
-                                    {" "}
-                                    <IoIosRemoveCircle /> Remove
-                                  </h1>
-                                )}
+                              <IoIosRemoveCircle /> Remove    
                               </button>
                             </form>
                           )}

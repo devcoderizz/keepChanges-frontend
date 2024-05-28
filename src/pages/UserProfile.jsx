@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ViewCard from "../components/ViewCard";
+import useAuth from "../utils/IsAuthenticated";
 
 const UserProfile = () => {
   // eslint-disable-next-line no-unused-vars
+  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
+  const { fetchAccess, isAccessTokenValid } = useAuth();
+  const [userData, setUserData] = useState({})
+  const localData = JSON.parse(localStorage.getItem("UserData"));
+  console.log("userData",userData);
+  const admin =localData?.roles[1]?.id
+ 
   const [donationData, setDonationData] = useState([
     {
       title:
@@ -96,6 +104,43 @@ const UserProfile = () => {
       Suppoters: 2203,
     },
   ]);
+  // if (userData?.roles[1]?.id || userData?.roles[1]?.id === 501) {
+  //   console.log("roles");
+  //   setIsAdmin(true);
+  // }
+useEffect(() => {
+  const user =async()=>{
+    if (!isAccessTokenValid()) {
+      await fetchAccess();
+    }
+    const accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await fetch(`${APIBASEURL}/users/user/me`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+
+      const userInfo = await res.json();
+      setUserData(userInfo)
+
+      
+
+      // Assuming userInfo contains the user's data
+      localStorage.setItem("UserData", JSON.stringify(userInfo));
+      // window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+     
+    }
+  }
+  user()
+},[APIBASEURL])
+
+
+
+
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
       <div className="w-[90vw] h-full py-10">
@@ -118,11 +163,12 @@ const UserProfile = () => {
                   />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold">
-                    Pranav panga
+                  <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold flex items-center  gap-2 ">
+                    {userData.name}
+                    <h1 className="text-sm mt-2 text-red-500 italic font-medium   ">{admin && "(Admin)"}</h1>
                   </h1>
                   <p className="font-semibold text-[#5D5D5D] ">
-                    pranav@paanga.gmail.com
+                    {userData.email}
                   </p>
                 </div>
               </div>
@@ -133,7 +179,7 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <div className="w-full h-full flex md:flex-row flex-col items-center justify-start   ">
+        <div className="w-full h-full flex md:flex-row flex-col items-start justify-start   ">
           <div className="w-[30%] h-[100vh] pt-14 flex  flex-col gap-5 items-center justify-start  ">
             <div className="w-[300px] h-[300px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">
               <p className=" font-semibold text-[#636363]">Added Accounts</p>
@@ -148,20 +194,22 @@ const UserProfile = () => {
               </div>
             </div>
             <div className="w-[300px] h-[200px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg ">
-            <p className=" font-semibold text-[#636363]">Add important details</p>
-            <div className=" w-full  flex flex-col items-center  px-5 gap-5">
+              <p className=" font-semibold text-[#636363]">
+                Add important details
+              </p>
+              <div className=" w-full  flex flex-col items-center  px-5 gap-5">
                 <h1 className="text-lg font-semibold">Add pancard</h1>
                 <h1 className="text-lg font-semibold">Add Aadharcard</h1>
               </div>
             </div>
           </div>
-          <div className="w-full md:w-[70%] h-[100vh]     ">
-            <h1 className="text-2xl font-semibold ml-12">
+          <div className="w-full h-full md:w-[70%]">
+            <h1 className="text-2xl font-semibold ml-4 md:ml-12">
               Fundraisers that you have created
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 w-full h-[90%]  md:w-[65vw]   overflow-y-scroll overflow-x-hidden no-scrollbar">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar">
               {donationData.map((data, index) => (
-                <div className="py-5" key={index}>
+                <div className="p-4" key={index}>
                   <ViewCard {...data} />
                 </div>
               ))}

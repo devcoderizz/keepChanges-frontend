@@ -11,9 +11,11 @@ import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
+import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
+import { TiArrowBack } from "react-icons/ti";
 
 const Fundraisers = ({
   benefactors = 69,
@@ -22,58 +24,104 @@ const Fundraisers = ({
 }) => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
+  const { id } = useParams();
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const [isUser, setIsUser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [fundraiserDetails, setFundraiserDetails] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
   const imgUploadRef = useRef(null);
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [images1, setImages] = useState([]);
+  const [allAccount, setAllAccount] = useState([]);
+  const [allreadyAccount, setallreadyAccount] = useState(true);
+  const [accountFormData, setAccountFormData] = useState({});
+  const [deleteAccount, setDeleteAccount] = useState(true);
+  const [inputData, setInputData] = useState(null)
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const accessToken = localStorage.getItem("accessToken");
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+
+  // console.log("all accounts",allAccount);
 
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
     : " ";
- 
 
   const percentage = Math.floor(
     (fundraiserDetails.raised
       ? fundraiserDetails?.raised
       : 100 / fundraiserDetails?.raiseGoal) * 100
   );
-  
-  const handleDeleteFundraiser = async()=>{
-    try {
-      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-          },
-        });
 
-        const data = res.json();
-        console.log(data);
-        navigate('/')
-        toast.success("Fundraiser Deleted")
-      } catch (error) {
+  const handleDeleteFundraiser = async () => {
+    try {
+      if (!window.confirm("You want to delete Your Fundraiser ?")) return;
+      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const data = res.json();
+      console.log(data);
+      navigate("/");
+      toast.success("Fundraiser Deleted");
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const showModal2 = () => {
     setIsModalOpen(true);
   };
-
-  const handleImageUpload = () => {
-    
+  const showModalAccount = () => {
+    setIsModalOpenAccount(true);
   };
 
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+
+      // Assuming selectedImages is an array of File objects
+      images1.forEach((image, index) => {
+        formData.append(`image_${index}`, image);
+      });
+
+      const res = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // No need to set Content-Type; fetch will automatically set it to multipart/form-data
+          },
+          body: formData,
+        }
+      );
+
+      console.log("response image", res);
+      const data = await res.json();
+      console.log("image upload console", data);
+
+      // Uncomment the following line if you want to reload the page after successful upload
+      // window.location.reload(false);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    }
+  };
+
+
   const handleCancel = () => {
-    setSelectedImages([]);
+    setImages([]);
     setIsModalOpen(false);
+  };
+  const handleCancelAccount = () => {
+    // setSelectedImages([]);
+    setIsModalOpenAccount(false);
   };
 
   const handleSeeMore = () => {
@@ -87,27 +135,23 @@ const Fundraisers = ({
       return URL.createObjectURL(file);
     });
 
-    setSelectedImages((previousImages) => previousImages.concat(imagesArray));
+    setImages((previousImages) => previousImages.concat(imagesArray));
 
-    // FOR BUG IN CHROME
     event.target.value = "";
   };
 
   function deleteHandler(image) {
-    setSelectedImages(selectedImages.filter((e) => e !== image));
+    setImages(images1.filter((e) => e !== image));
     URL.revokeObjectURL(image);
   }
 
-  const { id } = useParams();
   const agentData = [
     { name: "Agent 1", donation: 69.69 },
     { name: "Agent 2", donation: 50.5 },
     { name: "Agent 3", donation: 100.0 },
     { name: "Agent 4", donation: 80.0 },
-    // Add more agents as needed
   ];
 
-  // console.log("bsdk tune naam diya tha kya usko",fundraiserDetails.postedBy.name);
   useEffect(() => {
     if (localData?.id === currentUser) {
       console.log("hello");
@@ -123,38 +167,119 @@ const Fundraisers = ({
       try {
         const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
           method: "GET",
-          headers: {
-            // "Authorization": `Bearer ${accessToken}`,
-          },
+          headers: {},
         });
 
         const data = await res.json();
         console.log("fundraiser data", data);
         setFundraiserDetails(data);
-        // setPostedBy(fundraiserDetails.postedBy)
-        // console.log("posted By", postedBy);
-
         if (!data.ok) {
-          // setErrorMessage("Invalid User")
-
           return;
         }
-
-        // Assuming userInfo contains the user's data
-        // localStorage.setItem("UserData", JSON.stringify(userInfo));
-        // window.location.reload(false);
       } catch (error) {
         console.log(error);
       }
     };
     fundraiserDetails();
+
+    const Accounts = async () => {
+      try {
+        const res = await fetch(`${APIBASEURL}/accounts/getall/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const data = await res.json();
+        // console.log("bank data", data);
+        setAllAccount(data);
+        if (!data.ok) {
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    Accounts();
   }, [APIBASEURL, currentUser, id]);
   const copylink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
-      toast.success("Link Copied")
+      toast.success("Link Copied");
     });
   };
+
+  const handleAccountShown = (e) => {
+    e.preventDefault();
+    setallreadyAccount(!allreadyAccount);
+  };
+
+  const handleChange = (e) => {
+    setAccountFormData({
+      ...accountFormData,
+      [e.target.id]: e.target.value,
+    });
+  };
+  console.log(accountFormData);
+
+  const handleAccountAdd = async () => {
+    try {
+      const res = await fetch(`${APIBASEURL}/accounts/add`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountFormData),
+      });
+
+      const data = await res.json();
+      console.log("add bank data", data);
+      // setAllAccount(data);
+      if (!data.ok) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteForm = (e) => {
+    e.preventDefault();
+    setDeleteAccount(!deleteAccount);
+  };
+
+  const handleInputChange = (e) => {
+    setInputData({
+      [e.target.id]: e.target.value,
+    });
+  };
+  console.log(inputData);
+
+  const handleAccountDelete = async () => {
+    try {
+      const res = await fetch(`${APIBASEURL}/accounts/account_${inputData}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(inputData),
+      });
+
+      const data = await res.json();
+      console.log("delete data", data);
+      // setAllAccount(data);
+      if (!data.ok) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   return (
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
@@ -186,7 +311,7 @@ const Fundraisers = ({
                   Raised <br />{" "}
                   <span className="text-red-500 mt-2">
                     {" "}
-                     Rs&nbsp;
+                    Rs&nbsp;
                     {fundraiserDetails?.raised
                       ? fundraiserDetails?.raised
                       : 100}
@@ -194,10 +319,26 @@ const Fundraisers = ({
                   &nbsp; of <strong> {fundraiserDetails.raiseGoal} </strong>
                 </span>
                 <div className="flex items-center pl-16 -mt-10 gap-3 ml-5 text-xl  ">
-                  {isUser ? <>
-                  <button className="hover:text-blue-600"><FiEdit /></button>
-                  <button className="hover:text-rose-600" onClick={handleDeleteFundraiser}><RiDeleteBin6Line /></button>
-                  </> : <button className="flex items-center justify-center gap-2 text-xl bg-red-400 hover:bg-red-500 p-2 rounded-full" onClick={copylink}><HiLink size={20}  color="white" /></button>}
+                  {isUser ? (
+                    <>
+                      <button className="hover:text-blue-600">
+                        <FiEdit />
+                      </button>
+                      <button
+                        className="hover:text-rose-600"
+                        onClick={handleDeleteFundraiser}
+                      >
+                        <RiDeleteBin6Line />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="flex items-center justify-center gap-2 text-xl bg-red-400 hover:bg-red-500 p-2 rounded-full"
+                      onClick={copylink}
+                    >
+                      <HiLink size={20} color="white" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -222,9 +363,177 @@ const Fundraisers = ({
                     <h1 className="text-md my-4 ml-16 font-semibold ">
                       Add your bank account
                     </h1>
-                    <button className="text-md text-red-500 py-3 px-6 text-nowrap border border-red-500 mx-10 rounded-xl font-semibold hover:bg-red-500 hover:text-white ">
+                    <button
+                      onClick={showModalAccount}
+                      className="text-md text-red-500 py-3 px-6 text-nowrap border border-red-500 mx-10 rounded-xl font-semibold hover:bg-red-500 hover:text-white "
+                    >
                       Account Details
                     </button>
+                    <Modal
+                      title="Add Account"
+                      open={isModalOpenAccount}
+                      onCancel={handleCancelAccount}
+                      footer={null}
+                    >
+                      {allreadyAccount ? (
+                        <div
+                           
+                          className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                        >
+                          <button
+                            onClick={handleAccountShown}
+                            className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
+                          >
+                            {allreadyAccount
+                              ? "Add New Account"
+                              : "Select existing account"}
+                          </button>
+
+                          <button onClick={handleDeleteForm} className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><RiDeleteBin2Fill />
+                            account</h1> : <h1 className="flex items-center gap-1"> <TiArrowBack /> back</h1> }
+                            
+                          </button>
+                          {deleteAccount ? <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                              User Accounts{" "}
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              
+                              // value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
+                            >
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
+                              >
+                                select an account
+                              </option>
+
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
+
+                            }
+                          </button>
+                          </form>: <form className=" flex flex-col w-full gap-3 bg-gray-300 p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                             Delete User Accounts
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
+                            >
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
+                              >
+                                select an account
+                              </option>
+
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button onClick={handleAccountDelete} className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
+                            {deleteAccount ? <h1 className="flex items-center gap-1"><IoMdAddCircle /> Add</h1>:<h1 className="flex items-center gap-1"> <IoIosRemoveCircle /> Remove</h1>
+
+                            }
+                            
+                          </button>
+                          </form>}
+                          
+                          
+                        </div>
+                      ) : (
+                        <form
+                          action=""
+                          className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                        >
+                          <button
+                            onClick={handleAccountShown}
+                            className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
+                          >
+                            {allreadyAccount
+                              ? "Add New Account"
+                              : "Select existing account"}
+                          </button>
+                          <div className=" flex flex-col gap-3 w-full">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                              Add a new account{" "}
+                            </label>
+                            <input
+                              type="text"
+                              name="bankName"
+                              id="bankName"
+                              onChange={handleChange}
+                              placeholder="Enter bank Name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="number"
+                              name="accountNumber"
+                              id="accountNumber"
+                              onChange={handleChange}
+                              placeholder="Enter account number"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="branch"
+                              id="branch"
+                              onChange={handleChange}
+                              placeholder="Enter branch name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="ifsc"
+                              id="ifsc"
+                              onChange={handleChange}
+                              placeholder="Enter IFSC code"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                            <input
+                              type="text"
+                              name="holderName"
+                              id="holderName"
+                              onChange={handleChange}
+                              placeholder="Enter account holder’s name"
+                              className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                            />
+                          </div>
+                          <button
+                            onClick={handleAccountAdd}
+                            className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
+                          >
+                            <IoMdAddCircle /> Add
+                          </button>
+                        </form>
+                      )}
+                    </Modal>
                   </div>
                   <div className="w-full flex flex-col justify-center px-10">
                     <h1 className="text-md my-4 ml-16 font-semibold ">
@@ -243,7 +552,7 @@ const Fundraisers = ({
                       footer={null}
                     >
                       <form action="">
-                        {selectedImages.length < 6 && (
+                        {images1.length < 6 && (
                           <div
                             onClick={() => imgUploadRef.current.click()}
                             className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
@@ -257,16 +566,18 @@ const Fundraisers = ({
                         <input
                           ref={imgUploadRef}
                           type="file"
+                          name="images"
+                          id="images"
                           onChange={onSelectFile}
                           accept="image/*"
                           multiple
                           style={{ display: "none" }}
-                          disabled={selectedImages.length >= 6}
+                          disabled={images1.length >= 6}
                         />
                         <div>
                           <div className="images flex flex-wrap gap-5  mt-5">
-                            {selectedImages &&
-                              selectedImages.map((image, index) => {
+                            {images1 &&
+                              images1.map((image, index) => {
                                 return (
                                   <div key={image} className="relative ">
                                     <img
@@ -292,18 +603,19 @@ const Fundraisers = ({
                           </div>
                         </div>
                         <div className="mt-5 p-5 relative  ">
-                          {selectedImages.length > 0 &&
-                            (selectedImages.length > 6 ? (
+                          {images1.length > 0 &&
+                            (images1.length > 6 ? (
                               <p className="text-center font-bold text-red-600">
                                 *You can&apos;t upload more than 6 images!{" "}
                                 <br />
                                 <span>
-                                  please delete{" "}
-                                  <b> {selectedImages.length - 6} </b> of them{" "}
+                                  please delete <b> {images1.length - 6} </b> of
+                                  them{" "}
                                 </span>
                               </p>
                             ) : (
                               <button
+                                type="submit"
                                 className=" absolute right-0 bottom-5 flex items-center  gap-2 text-xl text-white bg-green-600 p-2 rounded-lg"
                                 onClick={handleImageUpload}
                               >

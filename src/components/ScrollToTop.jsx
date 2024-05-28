@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { IsAuthenticated } from "../utils/IsAuthenticated";
+
 
 const ScrollToTop = (props) => {
   const location = useLocation();

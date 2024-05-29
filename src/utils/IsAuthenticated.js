@@ -44,7 +44,7 @@ const useAuth = () => {
                 navigate('/')
             } else {
                 console.log("Token refreshed successfully");
-                localStorage.setItem("accessToken", data.refreshToken);
+                localStorage.setItem("accessToken", data.accessToken);
                 // console.log("token", )
                 toast.success("Session refreshed.");
             }

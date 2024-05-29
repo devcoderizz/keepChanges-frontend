@@ -1,145 +1,140 @@
 import { useEffect, useState } from "react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import ViewCard from "../components/ViewCard";
-import useAuth from "../utils/IsAuthenticated";
+// import useAuth from "../utils/IsAuthenticated";
+// import { Tabs } from 'antd';
+import { Link, useParams } from "react-router-dom";
+// import Fundraisers from "./Fundraisers";
 
 const UserProfile = () => {
   // eslint-disable-next-line no-unused-vars
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
-  const { fetchAccess, isAccessTokenValid } = useAuth();
-  const [userData, setUserData] = useState({})
+  // const { fetchAccess, isAccessTokenValid } = useAuth();
+  const [userData, setUserData] = useState({});
+  const [allFundraisers, setAllFundraisers] = useState([]);
   const localData = JSON.parse(localStorage.getItem("UserData"));
-  console.log("userData",userData);
-  const admin =localData?.roles[1]?.id
- 
-  const [donationData, setDonationData] = useState([
-    {
-      title:
-        "help to brighten the lives of abandon children and their family by giving ",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 1000,
-      goalAmount: 5000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc:
-        "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-  ]);
+  console.log("userData", userData);
+  console.log("fundraisers data", allFundraisers);
+  const admin = localData?.roles[1]?.id;
+  const { id } = useParams();
+  console.log("user id", userData.id);
+
+  let activeFundraiser = [];
+
+  allFundraisers.forEach((fundraiser) => {
+    activeFundraiser.push(fundraiser);
+  });
+  console.log("active fund", activeFundraiser);
+
+  // const onChange = (key) => {
+  //   console.log(key);
+  // };
+
+  // const items = [
+  //   {
+  //     key: '1',
+  //     label: 'Active Fundraisers',
+  //     children: (activeFundraiser.fundraiserTitle),
+  //   },{
+  //     key: '2',
+  //     label: 'Pending Fundraisers',
+  //     children: 'Content of Tab Pane 2',
+  //   },
+  //   {
+  //     key: '3',
+  //     label: 'Rejected Fundraisers',
+  //     children: 'Content of Tab Pane 3',
+  //   },
+
+  // ];
+
+  // const [donationData, setDonationData] = useState([
+  //   {
+  //     title:
+  //       "help to brighten the lives of abandon children and their  ",
+  //     by: "by Maitri",
+  //     imageSrc:
+  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+  //     raisedAmount: 1000,
+  //     goalAmount: 5000,
+  //     daysLeft: 5,
+  //     Suppoters: 2203,
+  //   },
+  //   {
+  //     title: "Supporting Elderly Care",
+  //     by: "by Maitri",
+  //     imageSrc:
+  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+  //     raisedAmount: 3000,
+  //     goalAmount: 6000,
+  //     daysLeft: 5,
+  //     Suppoters: 2203,
+  //   },
+  //   {
+  //     title: "Supporting Elderly Care",
+  //     by: "by Maitri",
+  //     imageSrc:
+  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
+  //     raisedAmount: 3000,
+  //     goalAmount: 6000,
+  //     daysLeft: 5,
+  //     Suppoters: 2203,
+  //   },
+
+  // ]);
   // if (userData?.roles[1]?.id || userData?.roles[1]?.id === 501) {
   //   console.log("roles");
   //   setIsAdmin(true);
   // }
-useEffect(() => {
-  const user =async()=>{
-    if (!isAccessTokenValid()) {
-      await fetchAccess();
-    }
-    const accessToken = localStorage.getItem("accessToken");
-    try {
-      const res = await fetch(`${APIBASEURL}/users/user/me`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-        },
-      });
 
-      const userInfo = await res.json();
-      setUserData(userInfo)
+  useEffect(() => {
+    // const allFundraisers =async()=>{
 
-      
+    //   try {
 
-      // Assuming userInfo contains the user's data
-      localStorage.setItem("UserData", JSON.stringify(userInfo));
-      // window.location.reload(false);
-    } catch (error) {
-      console.log(error);
-     
-    }
-  }
-  user()
-},[APIBASEURL])
+    //     const res = await fetch(`${APIBASEURL}/fundraisers/poster/${userData?.id}`, {
+    //       method: "GET",
 
+    //     });
 
+    //     const fundraiserInfo = await res.json();
+    //     setAllFundraisers(fundraiserInfo)
 
+    //   } catch (error) {
+    //     console.log(error);
+
+    //   }
+    // }
+
+    const user = async () => {
+      try {
+        const res = await fetch(`${APIBASEURL}/users/user_${id}`, {
+          method: "GET",
+        });
+        const userInfo = await res.json();
+        setUserData(userInfo);
+
+        if (res.status != 200) {
+          return;
+        }
+        const res2 = await fetch(
+          `${APIBASEURL}/fundraisers/poster/${userInfo?.id}`,
+          {
+            method: "GET",
+          }
+        );
+        const fundraiserInfo = await res2.json();
+        setAllFundraisers(fundraiserInfo);
+
+        // if(res.status ===200){
+        //     allFundraisers()
+        // }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    user();
+  }, [APIBASEURL]);
 
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
@@ -165,7 +160,9 @@ useEffect(() => {
                 <div>
                   <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold flex items-center  gap-2 ">
                     {userData.name}
-                    <h1 className="text-sm mt-2 text-red-500 italic font-medium   ">{admin && "(Admin)"}</h1>
+                    <h1 className="text-sm mt-2 text-red-500 italic font-medium   ">
+                      {admin && "(Admin)"}
+                    </h1>
                   </h1>
                   <p className="font-semibold text-[#5D5D5D] ">
                     {userData.email}
@@ -207,17 +204,43 @@ useEffect(() => {
             <h1 className="text-2xl font-semibold ml-4 md:ml-12">
               Fundraisers that you have created
             </h1>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar">
-              {donationData.map((data, index) => (
+            
+              {/* <Tabs defaultActiveKey="1"   items={allFundraisers} onChange={onChange} className="text-red-500 " /> */}
+
+              <Tabs className="flex flex-col items-center" >
+                <TabList className="flex flex-row gap-10 text-2xl">
+                  <Tab className="">Active </Tab>
+                  <Tab>Pending</Tab>
+                  <Tab>Rejected</Tab>
+                </TabList>
+
+                <TabPanels>
+                  <TabPanel>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                    {allFundraisers.map((data, index) => (
                 <div className="p-4" key={index}>
+                   <Link to={`/fundraisers/${data.id}`}>
                   <ViewCard {...data} />
+                  </Link>
                 </div>
               ))}
+              </div>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>two!</p>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>three!</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+
+             
             </div>
           </div>
         </div>
       </div>
-    </div>
+  
   );
 };
 

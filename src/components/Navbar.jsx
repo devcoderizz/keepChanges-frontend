@@ -208,7 +208,8 @@ const Navbar = () => {
           )}
           <span
             onClick={() => {
-              navigate("/user-profile");
+              navigate(`/user-profile/${localData?.id}`);
+
             }}
             className="capitalize hidden  cursor-pointer  xl:block"
           >

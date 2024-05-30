@@ -42,7 +42,7 @@ const Fundraisers = ({
   const [deleteAccount, setDeleteAccount] = useState(true);
   const [inputData, setInputData] = useState(null);
   const localData = JSON.parse(localStorage.getItem("UserData"));
-  console.log("local id" , localData.id);
+  console.log("local id" , localData);
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -330,7 +330,8 @@ const Fundraisers = ({
 
   
 
-  const handleAccountDelete = async () => {
+  const handleAccountDelete = async (e) => {
+    e.preventDefault()
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }

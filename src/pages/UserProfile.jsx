@@ -12,99 +12,48 @@ const UserProfile = () => {
   // const { fetchAccess, isAccessTokenValid } = useAuth();
   const [userData, setUserData] = useState({});
   const [allFundraisers, setAllFundraisers] = useState([]);
+  const [approvedFundraisers, setApprovedFundraisers] = useState([])
+  const [pendingFundraisers, setPendingFundraisers] = useState([])
+  const [disapprovedFundraisers, setDisapprovedFundraisers] = useState([])
   const localData = JSON.parse(localStorage.getItem("UserData"));
   console.log("userData", userData);
   console.log("fundraisers data", allFundraisers);
   const admin = localData?.roles[1]?.id;
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const { id } = useParams();
   console.log("user id", userData.id);
 
-  let activeFundraiser = [];
-
-  allFundraisers.forEach((fundraiser) => {
-    activeFundraiser.push(fundraiser);
-  });
-  console.log("active fund", activeFundraiser);
-
-  // const onChange = (key) => {
-  //   console.log(key);
-  // };
-
-  // const items = [
-  //   {
-  //     key: '1',
-  //     label: 'Active Fundraisers',
-  //     children: (activeFundraiser.fundraiserTitle),
-  //   },{
-  //     key: '2',
-  //     label: 'Pending Fundraisers',
-  //     children: 'Content of Tab Pane 2',
-  //   },
-  //   {
-  //     key: '3',
-  //     label: 'Rejected Fundraisers',
-  //     children: 'Content of Tab Pane 3',
-  //   },
-
-  // ];
-
-  // const [donationData, setDonationData] = useState([
-  //   {
-  //     title:
-  //       "help to brighten the lives of abandon children and their  ",
-  //     by: "by Maitri",
-  //     imageSrc:
-  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-  //     raisedAmount: 1000,
-  //     goalAmount: 5000,
-  //     daysLeft: 5,
-  //     Suppoters: 2203,
-  //   },
-  //   {
-  //     title: "Supporting Elderly Care",
-  //     by: "by Maitri",
-  //     imageSrc:
-  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-  //     raisedAmount: 3000,
-  //     goalAmount: 6000,
-  //     daysLeft: 5,
-  //     Suppoters: 2203,
-  //   },
-  //   {
-  //     title: "Supporting Elderly Care",
-  //     by: "by Maitri",
-  //     imageSrc:
-  //       "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-  //     raisedAmount: 3000,
-  //     goalAmount: 6000,
-  //     daysLeft: 5,
-  //     Suppoters: 2203,
-  //   },
-
-  // ]);
-  // if (userData?.roles[1]?.id || userData?.roles[1]?.id === 501) {
-  //   console.log("roles");
-  //   setIsAdmin(true);
-  // }
 
   useEffect(() => {
-    // const allFundraisers =async()=>{
+    // Filter the fundraisers based on their status
+    const approved = allFundraisers.filter(fundraiser => fundraiser.approval === 'APPROVED');
+    const pending = allFundraisers.filter(fundraiser => fundraiser.approval === 'PENDING');
+    const rejected = allFundraisers.filter(fundraiser => fundraiser.approval === 'DISAPPROVED');
 
-    //   try {
+    setApprovedFundraisers(approved);
+    setPendingFundraisers(pending);
+    setDisapprovedFundraisers(rejected);
+  }, [allFundraisers]);
 
-    //     const res = await fetch(`${APIBASEURL}/fundraisers/poster/${userData?.id}`, {
-    //       method: "GET",
+  // allFundraisers.map((index)=>{
+  //   if(index.approval==="APPROVED"){
+  //     setApprovedFundraisers(index)
+  //   }else if(index.approval==="PENDING"){
+  //     setPendingFundraisers(index)
+  //   }else{
+  //     setRejectedFundraisers(index)
+  //   }
+  // })
 
-    //     });
+  
+  console.log("approved fund",approvedFundraisers);
+  console.log("pending fund",pendingFundraisers);
+  console.log("DISAPPROVED fund",disapprovedFundraisers);
+  
+  
 
-    //     const fundraiserInfo = await res.json();
-    //     setAllFundraisers(fundraiserInfo)
-
-    //   } catch (error) {
-    //     console.log(error);
-
-    //   }
-    // }
+  useEffect(() => {
+    
 
     const user = async () => {
       try {
@@ -176,8 +125,8 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <div className="w-full h-full flex md:flex-row flex-col items-start justify-start   ">
-          <div className="w-[30%] h-[100vh] pt-14 flex  flex-col gap-5 items-center justify-start  ">
+        <div className="w-full h-full flex md:flex-row flex-col items-center md:items-start justify-center md:justify-start   ">
+          <div className="w-[30%] h-[100vh] pt-[52px] flex  flex-col gap-5 items-center justify-start  ">
             <div className="w-[300px] h-[300px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">
               <p className=" font-semibold text-[#636363]">Added Accounts</p>
               <div className=" w-full  flex flex-col items-center  px-5 gap-5">
@@ -201,46 +150,86 @@ const UserProfile = () => {
             </div>
           </div>
           <div className="w-full h-full md:w-[70%]">
-            <h1 className="text-2xl font-semibold ml-4 md:ml-12">
+            <h1 className="text-xl md:text-2xl font-semibold mb-5  text-center md:text-left"  >
               Fundraisers that you have created
             </h1>
-            
-              {/* <Tabs defaultActiveKey="1"   items={allFundraisers} onChange={onChange} className="text-red-500 " /> */}
 
-              <Tabs className="flex flex-col items-center" >
-                <TabList className="flex flex-row gap-10 text-2xl">
-                  <Tab className="">Active </Tab>
-                  <Tab>Pending</Tab>
-                  <Tab>Rejected</Tab>
-                </TabList>
+            {/* <Tabs defaultActiveKey="1"   items={allFundraisers} onChange={onChange} className="text-red-500 " /> */}
 
-                <TabPanels>
-                  <TabPanel>
+            <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md">
+              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
+                <Tab
+                  className={
+                    selectedIndex === 0
+                      ? "text-red-500 underline bg-white py-2 w-1/3 rounded-l-md"
+                      : "text-black w-1/3 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedIndex(0)}
+                >
+                  Active
+                </Tab>
+                <Tab
+                  className={
+                    selectedIndex === 1
+                      ? "text-red-500 underline bg-white py-2 w-1/3 "
+                      : "text-black w-1/3 py-2  "
+                  }
+                  onClick={() => setSelectedIndex(1)}
+                >
+                  Pending
+                </Tab>
+                <Tab
+                  className={
+                    selectedIndex === 2
+                      ? "text-red-500 underline bg-white py-2  w-1/3 rounded-r-md"
+                      : "text-black w-1/3 py-2 rounded-r-md"
+                  }
+                  onClick={() => setSelectedIndex(2)}
+                >
+                  Disapproved
+                </Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                    {allFundraisers.map((data, index) => (
-                <div className="p-4" key={index}>
-                   <Link to={`/fundraisers/${data.id}`}>
-                  <ViewCard {...data} />
-                  </Link>
-                </div>
-              ))}
-              </div>
-                  </TabPanel>
-                  <TabPanel>
-                    <p>two!</p>
-                  </TabPanel>
-                  <TabPanel>
-                    <p>three!</p>
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-
-             
-            </div>
+                    {approvedFundraisers.map((data, index) => (
+                      <div className="p-4" key={index}>
+                        <Link to={`/fundraisers/${data.id}`}>
+                          <ViewCard {...data} />
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </TabPanel>
+                <TabPanel>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                    {pendingFundraisers.map((data, index) => (
+                      <div className="p-4" key={index}>
+                        <Link to={`/fundraisers/${data.id}`}>
+                          <ViewCard {...data} />
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </TabPanel>
+                <TabPanel>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                {disapprovedFundraisers.map((data, index) => (
+                      <div className="p-4" key={index}>
+                        <Link to={`/fundraisers/${data.id}`}>
+                          <ViewCard {...data} />
+                        </Link>
+                      </div>
+                    ))}
+                    </div>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </div>
         </div>
       </div>
-  
+    </div>
   );
 };
 

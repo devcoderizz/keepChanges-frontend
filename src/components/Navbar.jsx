@@ -232,7 +232,7 @@ const Navbar = () => {
             color={"red"}
             className=" border-none "
             arrowIcon={false}
-          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/user-profile")}>
+          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/auth")}>
           Login
         </Drop.Item>):
             (<Drop.Item onClick={() => navigate("/user-profile")}>

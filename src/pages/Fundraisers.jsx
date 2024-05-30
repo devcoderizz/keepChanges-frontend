@@ -36,11 +36,13 @@ const Fundraisers = ({
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
   const [allAccount, setAllAccount] = useState([]);
+  console.log("all account",allAccount);
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
   const [deleteAccount, setDeleteAccount] = useState(true);
   const [inputData, setInputData] = useState(null);
   const localData = JSON.parse(localStorage.getItem("UserData"));
+  console.log("local id" , localData.id);
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -203,13 +205,13 @@ const Fundraisers = ({
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
-      const accessToken = localStorage.getItem("accessToken");
+      // const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(`${APIBASEURL}/accounts/getall/`, {
+        const res = await fetch(`${APIBASEURL}/accounts/account/user_${localData.id}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+          
           },
         });
 

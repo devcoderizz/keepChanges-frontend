@@ -40,8 +40,8 @@ const useAuth = () => {
                 localStorage.removeItem("accessToken");
                 Cookies.remove('refreshToken');
                 toast.error("Session expired. Please log in again.");
-                window.location.reload(false);
                 navigate('/')
+                window.location.reload(false);
             } else {
                 console.log("Token refreshed successfully");
                 localStorage.setItem("accessToken", data.accessToken);

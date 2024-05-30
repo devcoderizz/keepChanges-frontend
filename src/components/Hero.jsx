@@ -44,7 +44,7 @@ const Hero = () => {
   useEffect(() => {
     const fundraiserDetails =async()=>{
       try {
-        const res = await fetch(`${APIBASEURL}/fundraisers`, {
+        const res = await fetch(`${APIBASEURL}/fundraisers/latest`, {
           method: "GET",
           headers: {
             // "Authorization": `Bearer ${accessToken}`,

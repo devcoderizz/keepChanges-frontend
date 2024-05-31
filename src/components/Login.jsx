@@ -4,7 +4,7 @@ import { authScreenAtom } from "../atom/authAtom";
 import { Link  } from "react-router-dom";
 import { useState } from "react";
 // import toast from "react-hot-toast";
-
+import handleError from '../utils/ErrorHandler'; 
 const Login = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [formData, setFormData] = useState({});
@@ -32,7 +32,9 @@ const Login = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+      if(res.status!=200){
+        handleError(res.status); 
+        }
       const data = await res.json();
       console.log(data);
       if (res.status === 401) {
@@ -66,7 +68,9 @@ const Login = () => {
           });
   
           const userInfo = await res.json();
-  
+          if(res.status!=200){
+            handleError(res.status); 
+            }
           
   
           // Assuming userInfo contains the user's data

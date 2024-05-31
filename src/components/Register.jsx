@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import { registerSchema } from "../Yup schema/Schema";
 import toast from "react-hot-toast";
 import Cookies from 'js-cookie';
+
 const Register = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const [Verify, setVerify] = useState(false);
@@ -57,7 +58,6 @@ const Register = () => {
           body: JSON.stringify(otpData),
         }
       );
-
       const data = await response.json();
       
       if (response.ok) {
@@ -86,7 +86,7 @@ const Register = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+     
       const data = await res.json();
       console.log(data);
   

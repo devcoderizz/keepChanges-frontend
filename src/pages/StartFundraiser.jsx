@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../utils/IsAuthenticated";
+import handleError from '../utils/ErrorHandler'; 
 
 
 
@@ -50,12 +51,16 @@ const StartFundraiser = () => {
           },
         });
 
-
+        if(response.status!=200){
+          handleError(response.status); 
+          }
+    
         const data = await response.json();
         const categories = data
          setCategories(categories); 
         console.log("categories",data)
       } catch (error) {
+        
         console.error("Error fetching categories:", error);
       }
     };
@@ -116,20 +121,28 @@ const StartFundraiser = () => {
         body: payload,
       });
 
+
       console.log("payload", payload)
       const data = await response.json();
       // console.log("response", response);
+
       const urlParams = new URLSearchParams(location.search);
+      if(response.status!=200){
+        handleError(response.status); 
+        }
+  
       if (response.ok) {
         toast.success("Fundraiser created successfully!");
         urlParams.set('fundraiserId', data.id);
         navigate(`/fundraisers/${data.id}`)
       } else {
-        toast.error(data.error || "Error creating fundraiser");
+        // toast.error(data.error || "Error creating fundraiser");
       }
+   
+
     } catch (error) {
       console.error("Error creating fundraiser:", error);
-      toast.error("An error occurred. Please try again.");
+  
     }
 };
 
@@ -227,7 +240,7 @@ const StartFundraiser = () => {
               <label htmlFor="email" className="font-bold">Email*</label>
               <input
                required
-                type="email"
+                // type="email"
                 name="email"
                 id="email"
                 placeholder="abc@xyz.com"

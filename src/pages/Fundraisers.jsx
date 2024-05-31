@@ -17,6 +17,7 @@ import { HiLink } from "react-icons/hi";
 import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
 import { TiArrowBack } from "react-icons/ti";
 import useAuth from "../utils/IsAuthenticated";
+import handleError from '../utils/ErrorHandler'; 
 const Fundraisers = ({
   benefactors = 69,
   raisedAmount = 97550,
@@ -41,8 +42,8 @@ const Fundraisers = ({
   const [accountFormData, setAccountFormData] = useState({});
   const [deleteAccount, setDeleteAccount] = useState(true);
   const [inputData, setInputData] = useState(null);
-  const localData = JSON.parse(localStorage.getItem("UserData"));
-  console.log("local id" , localData.id);
+  const localData = JSON.parse(localStorage?.getItem("UserData"));
+  console.log("local id" , localData?.id);
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -74,7 +75,9 @@ const Fundraisers = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-
+      if(res.status!=200){
+        handleError(res.status); 
+        }
       const data = res.json();
       console.log(data);
       navigate("/");
@@ -98,29 +101,27 @@ const Fundraisers = ({
       await fetchAccess();
     }
   
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage?.getItem("accessToken");
   
     try {
-      const images = new FormData();
+      const formData = new FormData();
   
       // Append each image individually to the FormData object
-      images1.forEach((image) => {
-        images.append("images", image);
+      images1?.forEach((image) => {
+        formData.append("images", image);
       });
   
-      const res = await fetch(
-        `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: images,
-        }
-      );
+      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+            
+        },
+        body: formData,
+      });
   
-      if (!res.ok) {
-        throw new Error(`Error uploading images: ${res.statusText}`);
+      if (res.status !== 200) {
+        handleError(res.status);
       }
   
       const data = await res.json();
@@ -170,12 +171,10 @@ const Fundraisers = ({
 
   useEffect(() => {
     if (localData?.id === currentUser) {
-      console.log("hello");
       setIsUser(true);
     }
 
     if (localData?.roles[1]?.id || localData?.roles[0]?.id === 501) {
-      console.log("roles");
       setIsAdmin(true);
     }
 
@@ -188,7 +187,9 @@ const Fundraisers = ({
           method: "GET",
           headers: {},
         });
-
+        if(res.status!=200){
+          handleError(res.status); 
+          }
         const data = await res.json();
         console.log("fundraiser data", data);
         setFundraiserDetails(data);
@@ -214,7 +215,9 @@ const Fundraisers = ({
           
           },
         });
-
+        if(res.status!=200){
+          handleError(res.status); 
+          }
         const data = await res.json();
         // console.log("bank data", data);
         setAllAccount(data);
@@ -227,6 +230,8 @@ const Fundraisers = ({
     };
     Accounts();
   }, [APIBASEURL, currentUser, id]);
+
+  
   const copylink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
@@ -266,25 +271,27 @@ const Fundraisers = ({
           body: JSON.stringify(accountFormData),
         }
       );
-
+      if(res.status!=200){
+        handleError(res.status); 
+        }
       const data = await res.json();
       console.log("add bank data", data);
       // setAllAccount(data);
       if(res.status===200){
         toast.success("Account Added")
       }
-      if (!data.ok) {
-        return;
-      }
     } catch (error) {
       console.log(error);
     }
   };
 
+
+
   const handleDeleteForm = (e) => {
     e.preventDefault();
     setDeleteAccount(!deleteAccount);
   };
+
 
   const handleInputChange = (e) => {
     setInputData({
@@ -292,6 +299,8 @@ const Fundraisers = ({
     });
   };
   console.log(inputData);
+
+
 
   const handleAccountSelect = async (e) => {
     e.preventDefault();
@@ -312,16 +321,15 @@ const Fundraisers = ({
           body: JSON.stringify(inputData.id),
         }
       );
-
+      if(res.status!=200){
+        handleError(res.status); 
+        }
       const data = await res.json();
       console.log("account added", data);
       if(res.status===200){
         toast.success("Account Selected")
       }
       // setAllAccount(data);
-      if (!data.ok) {
-        return;
-      }
     } catch (error) {
       console.log(error);
     }
@@ -348,13 +356,12 @@ const Fundraisers = ({
           body: JSON.stringify(inputData.id),
         }
       );
-
+      if(res.status!=200){
+        handleError(res.status); 
+        }
       const data = await res.json();
       console.log("delete data", data);
       // setAllAccount(data);
-      if (!data.ok) {
-        return;
-      }
     } catch (error) {
       console.log(error);
     }

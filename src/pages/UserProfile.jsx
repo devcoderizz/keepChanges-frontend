@@ -5,7 +5,8 @@ import ViewCard from "../components/ViewCard";
 // import { Tabs } from 'antd';
 import { Link, useParams } from "react-router-dom";
 // import Fundraisers from "./Fundraisers";
-
+import handleError from '../utils/ErrorHandler'; 
+import useAuth from "../utils/IsAuthenticated";
 const UserProfile = () => {
   // eslint-disable-next-line no-unused-vars
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -22,9 +23,10 @@ const UserProfile = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { id } = useParams();
   console.log("user id", userData.id);
-
+  const { fetchAccess, isAccessTokenValid } = useAuth();
 
   useEffect(() => {
+    
     // Filter the fundraisers based on their status
     const approved = allFundraisers.filter(fundraiser => fundraiser.approval === 'APPROVED');
     const pending = allFundraisers.filter(fundraiser => fundraiser.approval === 'PENDING');
@@ -56,6 +58,10 @@ const UserProfile = () => {
     
 
     const user = async () => {
+      if (!isAccessTokenValid()) {
+        await fetchAccess();
+ 
+   }
       try {
         const res = await fetch(`${APIBASEURL}/users/user_${id}`, {
           method: "GET",
@@ -63,15 +69,20 @@ const UserProfile = () => {
         const userInfo = await res.json();
         setUserData(userInfo);
 
-        if (res.status != 200) {
-          return;
-        }
+        if(res.status!=200){
+          handleError(res.status);
+          return 
+          }
         const res2 = await fetch(
           `${APIBASEURL}/fundraisers/poster/${userInfo?.id}`,
           {
             method: "GET",
           }
         );
+        if(res2.status!=200){
+          handleError(res2.status);
+          return 
+          }
         const fundraiserInfo = await res2.json();
         setAllFundraisers(fundraiserInfo);
 

@@ -19,7 +19,7 @@ import { useMediaQuery } from "react-responsive";
 import ViewCard from "./ViewCard";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import handleError from '../utils/ErrorHandler'; 
 const Hero = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const APIBASEURL= import.meta.env.VITE_API_BASEURL;
@@ -50,17 +50,15 @@ const Hero = () => {
             // "Authorization": `Bearer ${accessToken}`,
           },
         });
-  
+        if(res.status!=200){
+          handleError(res.status); 
+          }
         const data = await res.json();
         console.log("fundraiser data",data);
         setAllFundraiser(data)
         console.log("kajbaskbc",allFundraiser);
-  
-        if (!data.ok) {
-          // setErrorMessage("Invalid User")
-          
-          return;
-        }
+      
+    
   
       } catch (error) {
         console.log(error);

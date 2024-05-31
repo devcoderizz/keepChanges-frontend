@@ -121,10 +121,10 @@ const Navbar = () => {
             color={"red"}
             className=" border-none "
             arrowIcon={false}
-          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/user-profile")}>
+          >{ localData ===null ? (<Drop.Item onClick={() => navigate("/auth")}>
           Login
         </Drop.Item>):
-            (<Drop.Item onClick={() => navigate("/user-profile")}>
+            (<Drop.Item onClick={() => navigate(`/user-profile/${localData?.id}`)}>
               {localData.name}
             </Drop.Item>)          
 }  { localData && <Drop.Item onClick={handleLogout}>
@@ -235,7 +235,7 @@ const Navbar = () => {
           >{ localData ===null ? (<Drop.Item onClick={() => navigate("/auth")}>
           Login
         </Drop.Item>):
-            (<Drop.Item onClick={() => navigate("/user-profile")}>
+            (<Drop.Item onClick={() => navigate(`/user-profile/${localData?.id}`)}>
               {localData.name}
             </Drop.Item>)          
 }  { localData && <Drop.Item onClick={handleLogout}>

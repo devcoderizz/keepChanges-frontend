@@ -1,131 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import ViewCard from "../components/ViewCard";
 import { Link } from "react-router-dom";
+import handleError from "../utils/ErrorHandler";
 
 const ActiveFundraisers = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-  const [donationData, setDonationData] = useState([
-    {
-      title: "help to brighten the lives of abandon children and their family by giving",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 1000,
-      goalAmount: 5000,
-      daysLeft: 5,
-      Suppoters: 2203,
-      to: "/fundraisers",
-    },
-    {
-      title: "Supporting Elderly Care",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 3000,
-      goalAmount: 6000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    {
-      title: "Animal Welfare Fund",
-      by: "by Maitri",
-      imageSrc: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715067573/samples/balloons.jpg",
-      raisedAmount: 2000,
-      goalAmount: 4000,
-      daysLeft: 5,
-      Suppoters: 2203,
-    },
-    // ... more data
-  ]);
+  const [activeFundraiser, setActiveFundraiser] = useState([])
+  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
+
 
   const handleInputChange = (event) => {
     setQuery(event.target.value);
@@ -134,6 +17,29 @@ const ActiveFundraisers = ({ onSearch }) => {
   const handleSearch = () => {
     onSearch(query);
   };
+
+  useEffect(() => {
+    const fundraiserDetails =async()=>{
+      try {
+        const res = await fetch(`${APIBASEURL}/fundraisers/active`, {
+          method: "GET",
+        });
+        if(res.status!=200){
+          handleError(res.status); 
+          }
+        const data = await res.json();
+        console.log("Active fundraiser data",data);
+         setActiveFundraiser(data)
+      } catch (error) {
+        console.log(error);
+      }
+     }
+     fundraiserDetails()
+  }, [APIBASEURL])
+  
+
+
+
 
   return (
     <div className="w-full flex flex-col items-center mb-10 overflow-x-hidden">
@@ -195,9 +101,9 @@ const ActiveFundraisers = ({ onSearch }) => {
           </div>
 
           <div className="w-full h-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-6 my-16">
-            {donationData.map((data, index) => (
+            {activeFundraiser.map((data, index) => (
               <div key={index} className="min-h-[400px] h-auto md:h-full">
-                <Link to={data.to}>
+                <Link to={`/fundraisers/${data.id}`}>
                   <ViewCard {...data} />
                 </Link>
               </div>

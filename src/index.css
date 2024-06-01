@@ -27,7 +27,7 @@ input::-webkit-inner-spin-button {
   width: 12px;
 }
 ::-webkit-scrollbar-track{
-  background: white;
+  background: #FFF1F1;
 }
 ::-webkit-scrollbar-thumb{
   background: linear-gradient(180deg, #fb8282 100%, #ff0000 0%);

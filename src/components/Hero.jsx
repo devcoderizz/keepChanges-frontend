@@ -1,11 +1,4 @@
-import { FaChildren } from "react-icons/fa6";
-import { MdOutlineElderly } from "react-icons/md";
-import { FaPaw } from "react-icons/fa";
-import { GiHealthNormal } from "react-icons/gi";
-import { FaWheelchairMove } from "react-icons/fa6";
-import { FaHouseDamage } from "react-icons/fa";
-import { CgGirl } from "react-icons/cg";
-import { BsGrid1X2Fill } from "react-icons/bs";
+const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -26,6 +19,7 @@ const Hero = () => {
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
   const [allFundraiser, setAllFundraiser] = useState([])
+  const [allCetegories, setAllCetegories] = useState([])
   
 
   const goNext = () => {
@@ -65,6 +59,34 @@ const Hero = () => {
       }
      }
      fundraiserDetails()
+
+     const getAllCategories =async()=>{
+      try {
+        const res = await fetch(`${APIBASEURL}/categories/getall/`, {
+          method: "GET",
+          headers: {
+            // "Authorization": `Bearer ${accessToken}`,
+          },
+        });
+        if(res.status!=200){
+          handleError(res.status); 
+          }
+        const data = await res.json();
+        console.log("get cetegories data",data);
+        setAllCetegories(data)
+        console.log("kajbaskbc",allCetegories);
+      
+    
+  
+      } catch (error) {
+        console.log(error);
+      }
+     }
+     getAllCategories()
+
+
+
+
   }, [APIBASEURL])
   
 
@@ -140,44 +162,29 @@ const Hero = () => {
         </p>
         <div className="mt-4  ">
           <Swiper
-            className=""
-            modules={[Navigation, Pagination, Scrollbar, A11y]}
-            spaceBetween={50}
-            slidesPerView={6}
-            navigation={{
-              nextEl: ".swiper-button-next",
-              prevEl: ".swiper-button-prev",
-            }}
-            onSlideChange={() => console.log("slide change")}
-            onSwiper={(swiper) => console.log(swiper)}
-          >
-            <SwiperSlide>
-              <BsGrid1X2Fill size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <FaChildren size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <MdOutlineElderly size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <FaPaw size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <GiHealthNormal size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <FaWheelchairMove size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <FaHouseDamage size={30} color={"gray"} />
-            </SwiperSlide>
-            <SwiperSlide>
-              <CgGirl size={30} color={"gray"} />
-            </SwiperSlide>
-            <div className="swiper-button-next " onClick={goNext}></div>
-            <div className="swiper-button-prev" onClick={goPrev}></div>
-          </Swiper>
+      className=""
+      modules={[Navigation, Pagination, Scrollbar, A11y]}
+      spaceBetween={50}
+      slidesPerView={6}
+      navigation={{
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      }}
+      onSlideChange={() => console.log("slide change")}
+      onSwiper={(swiper) => console.log(swiper)}
+    >
+      {allCetegories.map((data, index) => (
+        <SwiperSlide key={index}>
+          <div className="h-[60px] w-[60px] object-fill overflow-hidden">
+          <img src={`${VITE_BASE_IMAGE_URL}${data.categorySvg}`} alt=""   />
+          
+          </div>
+        </SwiperSlide>
+      ))}
+
+      <div className="swiper-button-next" onClick={goNext}></div>
+      <div className="swiper-button-prev" onClick={goPrev}></div>
+    </Swiper>
         </div>
       </div>
       <div className="flex flex-col ml-5   md:justify-end md:items-end my-10 mr-40">

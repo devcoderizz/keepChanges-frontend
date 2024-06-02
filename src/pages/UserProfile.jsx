@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import ViewCard from "../components/ViewCard";
+
 // import useAuth from "../utils/IsAuthenticated";
 // import { Tabs } from 'antd';
 import { Link, useParams } from "react-router-dom";
@@ -14,6 +15,7 @@ import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
 import handleError from "../utils/ErrorHandler";
 import { BsBank2 } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
+import DonateFund from "../components/modal/DonateFund";
 
 const UserProfile = () => {
   // eslint-disable-next-line no-unused-vars
@@ -34,12 +36,15 @@ const UserProfile = () => {
   const [panFormData, setPanFormData] = useState({});
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const { fetchAccess, isAccessTokenValid } = useAuth();
-  const admin =localData?.roles[1]?.id === 501 || localData?.roles[0]?.id === 501;
+  const admin =
+    localData?.roles[1]?.id === 501 || localData?.roles[0]?.id === 501;
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
   const [isUpdateShow, setIsUpdateShow] = useState(false);
   const [userUpdateForm, setUserUpdateForm] = useState({});
-  const [displayImage, setDisplayImage] = useState(null);
+  const [displayImage, setDisplayImage] = useState(false);
   const [isPanDetails, setIsPanDetails] = useState([]);
+  const [allUserDonations, setAllUserDonations] = useState([])
   console.log("pandetails state", isPanDetails);
   const { id } = useParams();
 
@@ -141,6 +146,35 @@ const UserProfile = () => {
       }
     };
     PanDetails();
+
+    const getUserDonations = async () => {
+      if (!isAccessTokenValid()) {
+        await fetchAccess();
+      }
+      const accessToken = localStorage.getItem("accessToken");
+
+      try {
+        const res = await fetch(`${APIBASEURL}/users/user_${id}/donations`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (res.status != 200) {
+          handleError(res.status);
+          return;
+        }
+        const data = await res.json();
+        setAllUserDonations(data)
+        console.log("donations ",data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getUserDonations();
+
+
+
   }, [APIBASEURL]);
 
   const showModalAccount = () => {
@@ -152,6 +186,12 @@ const UserProfile = () => {
   const showModalUpdate = () => {
     setIsUpdateShow(true);
     setUserUpdateForm({});
+  };
+  const showModalProfile = () => {
+    setDisplayImage(true);
+  };
+  const handleCancelProfile = () => {
+    setDisplayImage(false);
   };
 
   const handleCancelAccount = () => {
@@ -189,8 +229,7 @@ const UserProfile = () => {
     setDisplayImage(e.target.files[0]);
   };
 
-  const handleAccountAdd = async (e) => {
-    e.preventDefault();
+  const handleAccountAdd = async () => {
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -420,10 +459,19 @@ const UserProfile = () => {
                       className="object-contain"
                     />
                   </div>
-                  {localData?.id === userData?.id &&
-                  <button >
-                    <MdEdit className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white hover:text-yellow-500 text-xl rounded-full p-1 w-[30px] h-[30px] cursor-pointer hover:drop-shadow-xl " />
-                  </button>}
+                  {localData && localData?.id === userData?.id && (
+                    <button onClick={showModalProfile}>
+                      <MdEdit className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white hover:text-yellow-500 text-xl rounded-full p-1 w-[30px] h-[30px] cursor-pointer hover:drop-shadow-xl " />
+                    </button>
+                  )}
+                  <Modal
+                    title="Edit Profile"
+                    open={displayImage}
+                    onCancel={handleCancelProfile}
+                    footer={null}
+                  >
+                    <form action=""></form>
+                  </Modal>
                 </div>
                 <div className="relative h-full mt-1 w-[300px] md:w-[700px] ">
                   <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold flex items-center  gap-2 ">
@@ -440,13 +488,14 @@ const UserProfile = () => {
                   </p>
                 </div>
               </div>
-              {localData?.id === userData?.id &&
-              <button
-                onClick={showModalUpdate}
-                className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
-              >
-                Edit
-              </button>}
+              {localData && localData?.id === userData?.id && (
+                <button
+                  onClick={showModalUpdate}
+                  className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
+                >
+                  Edit
+                </button>
+              )}
               <Modal
                 title="Add Account"
                 open={isUpdateShow}
@@ -547,7 +596,7 @@ const UserProfile = () => {
         </div>
 
         <div className="w-full h-full flex md:flex-row flex-col items-center md:items-start justify-center md:justify-center   ">
-          {localData?.id === userData.id && (
+          {localData && localData?.id === userData?.id && (
             <div className="w-[30%] h-[100vh] pt-[52px] flex  flex-col gap-5 items-center justify-start  ">
               <div className="w-[300px] min-h-[300px] max-h-[500px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">
                 <div className="w-full  flex flex-col gap-5 items-center justify-center px-5">
@@ -943,108 +992,149 @@ const UserProfile = () => {
               Fundraisers that you have created
             </h1>
 
-            {/* <Tabs defaultActiveKey="1"   items={allFundraisers} onChange={onChange} className="text-red-500 " /> */}
-
-            <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md">
-              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
+            <Tabs className="bg-white min-h-[600px] flex flex-col  rounded-md">
+              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
                 <Tab
                   className={
-                    selectedIndex === 0
-                      ? "text-red-500 underline bg-white py-2 w-1/3 rounded-l-md"
-                      : "text-black w-1/3 py-2 rounded-l-md"
+                    selectedHeadIndex === 0
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
                   }
-                  onClick={() => setSelectedIndex(0)}
+                  onClick={() => setSelectedHeadIndex(0)}
                 >
-                  Active
+                  Fundraisers
                 </Tab>
-                {admin ? (
-                  <>
-                    <Tab
-                      className={
-                        selectedIndex === 1
-                          ? "text-red-500 underline bg-white py-2 w-1/3 "
-                          : "text-black w-1/3 py-2"
-                      }
-                      onClick={() => setSelectedIndex(1)}
-                    >
-                      Pending
-                    </Tab>
-                    <Tab
-                      className={
-                        selectedIndex === 2
-                          ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
-                          : "text-black w-1/3 py-2 rounded-r-md"
-                      }
-                      onClick={() => setSelectedIndex(2)}
-                    >
-                      Disapproved
-                    </Tab>
-                  </>
-                ) : (
-                  localData?.id === userData.id && (
-                    <>
-                    
-                      <Tab
-                        className={
-                          selectedIndex === 1
-                            ? "text-red-500 underline bg-white py-2 w-1/3 "
-                            : "text-black w-1/3 py-2"
-                        }
-                        onClick={() => setSelectedIndex(1)}
-                      >
-                        Pending
-                      </Tab>
-                      <Tab
-                        className={
-                          selectedIndex === 2
-                            ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
-                            : "text-black w-1/3 py-2 rounded-r-md"
-                        }
-                        onClick={() => setSelectedIndex(2)}
-                      >
-                        Disapproved
-                      </Tab>
-                    </>
-                  )
-                )}
-              </TabList>
+                <Tab
+                  className={
+                    selectedHeadIndex === 1
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedHeadIndex(1)}
+                >
+                  Donated Funds
+                </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <div>
+                      <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md py-5">
+                        <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
+                          <Tab
+                            className={
+                              selectedIndex === 0
+                                ? "text-red-500 underline bg-white py-2 w-1/3 rounded-l-md"
+                                : "text-black w-1/3 py-2 rounded-l-md"
+                            }
+                            onClick={() => setSelectedIndex(0)}
+                          >
+                            Active
+                          </Tab>
+                          {admin ? (
+                            <>
+                              <Tab
+                                className={
+                                  selectedIndex === 1
+                                    ? "text-red-500 underline bg-white py-2 w-1/3 "
+                                    : "text-black w-1/3 py-2"
+                                }
+                                onClick={() => setSelectedIndex(1)}
+                              >
+                                Pending
+                              </Tab>
+                              <Tab
+                                className={
+                                  selectedIndex === 2
+                                    ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
+                                    : "text-black w-1/3 py-2 rounded-r-md"
+                                }
+                                onClick={() => setSelectedIndex(2)}
+                              >
+                                Disapproved
+                              </Tab>
+                            </>
+                          ) : (
+                            localData &&
+                            localData?.id === userData?.id && (
+                              <>
+                                <Tab
+                                  className={
+                                    selectedIndex === 1
+                                      ? "text-red-500 underline bg-white py-2 w-1/3 "
+                                      : "text-black w-1/3 py-2"
+                                  }
+                                  onClick={() => setSelectedIndex(1)}
+                                >
+                                  Pending
+                                </Tab>
+                                <Tab
+                                  className={
+                                    selectedIndex === 2
+                                      ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
+                                      : "text-black w-1/3 py-2 rounded-r-md"
+                                  }
+                                  onClick={() => setSelectedIndex(2)}
+                                >
+                                  Disapproved
+                                </Tab>
+                              </>
+                            )
+                          )}
+                        </TabList>
 
-              <TabPanels>
-                <TabPanel>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                    {approvedFundraisers.map((data, index) => (
-                      <div className="p-4" key={index}>
-                        <Link to={`/fundraisers/${data.id}`}>
-                          <ViewCard {...data} />
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </TabPanel>
+                        <TabPanels>
+                          <TabPanel>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                              {approvedFundraisers.map((data, index) => (
+                                <div className="p-4" key={index}>
+                                  <Link to={`/fundraisers/${data.id}`}>
+                                    <ViewCard {...data} />
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          </TabPanel>
 
-                <TabPanel>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                    {pendingFundraisers.map((data, index) => (
-                      <div className="p-4" key={index}>
-                        <Link to={`/fundraisers/${data.id}`}>
-                          <ViewCard {...data} />
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </TabPanel>
-                <TabPanel>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                    {disapprovedFundraisers.map((data, index) => (
-                      <div className="p-4" key={index}>
-                        <Link to={`/fundraisers/${data.id}`}>
-                          <ViewCard {...data} />
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </TabPanel>
-              </TabPanels>
+                          <TabPanel>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                              {pendingFundraisers.map((data, index) => (
+                                <div className="p-4" key={index}>
+                                  <Link to={`/fundraisers/${data.id}`}>
+                                    <ViewCard {...data} />
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          </TabPanel>
+                          <TabPanel>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                              {disapprovedFundraisers.map((data, index) => (
+                                <div className="p-4" key={index}>
+                                  <Link to={`/fundraisers/${data.id}`}>
+                                    <ViewCard {...data} />
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          </TabPanel>
+                        </TabPanels>
+                      </Tabs>
+                    </div>
+                  </TabPanel>
+                  <TabPanel><div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                  {allUserDonations.map((data, index) => (
+                                <div className="" key={index}>
+                                  <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                                  <DonateFund {...data}  />
+                                  </Link>
+                                </div>
+                              ))}
+                 
+                    </div></TabPanel>
+                </TabPanels>
+              
+
+              {/* ........................ */}
             </Tabs>
           </div>
         </div>

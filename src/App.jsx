@@ -11,6 +11,7 @@ import { userAtom } from "./atom/userAtom"
 import UserProfile from "./pages/UserProfile"
 import ActiveFundraisers from "./pages/ActiveFundraisers"
 import ScrollToTop from "./components/ScrollToTop"
+import UserUpdate from "./pages/UserUpdate"
 
 
 
@@ -32,6 +33,7 @@ function App() {
       <Route path='/user-profile/:id' element={<UserProfile/>} />
       <Route path='/fundraisers/:id' element={<Fundraisers/>} />
       <Route path='/all-fundraisers' element={<ActiveFundraisers/>} />
+      <Route path='/user-update' element={<UserUpdate/>} />
       
 
 

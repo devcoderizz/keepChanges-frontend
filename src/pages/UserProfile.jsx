@@ -365,8 +365,8 @@ const UserProfile = () => {
     }
   };
 
-  const handleUpdateSubmit = async () => {
- 
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault()
     const payload = new FormData();
     const { name, about, password, email, phone } = userUpdateForm;
 
@@ -401,7 +401,7 @@ const UserProfile = () => {
           body: payload,
         }
       );
-
+      window.location.reload(false)
       if (res.status != 200) {
         handleError(res.status);
         return;

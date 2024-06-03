@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Textarea } from "@chakra-ui/react";
 import ViewCard from "../components/ViewCard";
 
 // import useAuth from "../utils/IsAuthenticated";
@@ -14,10 +14,10 @@ import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
 // import Fundraisers from "./Fundraisers";
 import handleError from "../utils/ErrorHandler";
 import { BsBank2 } from "react-icons/bs";
-import { MdEdit } from "react-icons/md";
 import DonateFund from "../components/modal/DonateFund";
 
 const UserProfile = () => {
+  const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   // eslint-disable-next-line no-unused-vars
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const { fetchAccess, isAccessTokenValid } = useAuth();
@@ -42,9 +42,10 @@ const UserProfile = () => {
   const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
   const [isUpdateShow, setIsUpdateShow] = useState(false);
   const [userUpdateForm, setUserUpdateForm] = useState({});
-  const [displayImage, setDisplayImage] = useState(false);
+  const [displayImage, setDisplayImage] = useState(null);
   const [isPanDetails, setIsPanDetails] = useState([]);
   const [allUserDonations, setAllUserDonations] = useState([])
+  
   console.log("pandetails state", isPanDetails);
   const { id } = useParams();
 
@@ -187,12 +188,7 @@ const UserProfile = () => {
     setIsUpdateShow(true);
     setUserUpdateForm({});
   };
-  const showModalProfile = () => {
-    setDisplayImage(true);
-  };
-  const handleCancelProfile = () => {
-    setDisplayImage(false);
-  };
+
 
   const handleCancelAccount = () => {
     setIsModalOpenAccount(false);
@@ -219,11 +215,15 @@ const UserProfile = () => {
     });
   };
   const handleChangeUpdate = (e) => {
+   
     setUserUpdateForm({
       ...userUpdateForm,
       [e.target.id]: e.target.value,
     });
   };
+
+  
+
 
   const handleFileChange = (e) => {
     setDisplayImage(e.target.files[0]);
@@ -365,8 +365,8 @@ const UserProfile = () => {
     }
   };
 
-  const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
+  const handleUpdateSubmit = async () => {
+ 
     const payload = new FormData();
     const { name, about, password, email, phone } = userUpdateForm;
 
@@ -383,7 +383,8 @@ const UserProfile = () => {
     if (displayImage) {
       payload.append("profileImage", displayImage);
     }
-    // console.log("payload " , payload);
+    console.log("displayImage", displayImage)
+    console.log("payload " , payload);
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -436,7 +437,7 @@ const UserProfile = () => {
       console.log(error);
     }
   };
-
+console.log("User Data", userData)
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
       <div className="w-[90vw] h-full py-10">
@@ -454,24 +455,13 @@ const UserProfile = () => {
                 <div className="relative">
                   <div className=" w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-black overflow-hidden shadow-xl rounded-md ">
                     <img
-                      src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715890998/1636820072193_ktwjrf.jpg"
+                      src={`${VITE_BASE_IMAGE_URL}${userData.displayImage}`}
                       alt=""
                       className="object-contain"
                     />
                   </div>
-                  {localData && localData?.id === userData?.id && (
-                    <button onClick={showModalProfile}>
-                      <MdEdit className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white hover:text-yellow-500 text-xl rounded-full p-1 w-[30px] h-[30px] cursor-pointer hover:drop-shadow-xl " />
-                    </button>
-                  )}
-                  <Modal
-                    title="Edit Profile"
-                    open={displayImage}
-                    onCancel={handleCancelProfile}
-                    footer={null}
-                  >
-                    <form action=""></form>
-                  </Modal>
+                 
+                 
                 </div>
                 <div className="relative h-full mt-1 w-[300px] md:w-[700px] ">
                   <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold flex items-center  gap-2 ">
@@ -497,7 +487,7 @@ const UserProfile = () => {
                 </button>
               )}
               <Modal
-                title="Add Account"
+                title="Update User Detials "
                 open={isUpdateShow}
                 onCancel={handleCancelUpdate}
                 footer={null}
@@ -511,7 +501,7 @@ const UserProfile = () => {
                       type="text"
                       name="name"
                       id="name"
-                      value={userData.name}
+                      defaultValue={userData.name}
                       onChange={handleChangeUpdate}
                       placeholder="Name"
                       className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
@@ -525,9 +515,11 @@ const UserProfile = () => {
                       type="email"
                       name="email"
                       id="email"
+                      disabled
+                      defaultValue={userData.email}
                       onChange={handleChangeUpdate}
                       placeholder="Email"
-                      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md opacity-60 "
                     />
                   </div>
                   <div className="flex flex-col ">
@@ -538,6 +530,7 @@ const UserProfile = () => {
                       type="number"
                       name="phone"
                       id="phone"
+                      defaultValue={userData.phone}
                       onChange={handleChangeUpdate}
                       placeholder="Phone"
                       className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
@@ -545,29 +538,18 @@ const UserProfile = () => {
                   </div>
                   <div className="flex flex-col ">
                     <label htmlFor="" className="font-semibold">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      id="password"
-                      onChange={handleChangeUpdate}
-                      placeholder="Password"
-                      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                    />
-                  </div>
-                  <div className="flex flex-col ">
-                    <label htmlFor="" className="font-semibold">
                       About
                     </label>
-                    <input
+                    <Textarea
                       type="text"
                       name="about"
                       id="about"
+                      defaultValue={userData.about}
                       onChange={handleChangeUpdate}
                       placeholder="About"
+                      maxlength ="500"
                       className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                    />
+                    ></Textarea>
                   </div>
                   <div className="flex flex-col ">
                     <label htmlFor="" className="font-semibold">

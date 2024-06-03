@@ -136,7 +136,7 @@ const StartFundraiser = () => {
       if (response.ok) {
         toast.success("Fundraiser created successfully!");
         urlParams.set('fundraiserId', data.id);
-        // navigate(`/fundraisers/${data.id}`)
+        navigate(`/fundraisers/${data.id}`)
       } else {
         // toast.error(data.error || "Error creating fundraiser");
       }

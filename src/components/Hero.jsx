@@ -19,7 +19,7 @@ const Hero = () => {
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
   const [allFundraiser, setAllFundraiser] = useState([])
-  const [allCetegories, setAllCetegories] = useState([])
+  const [allCategories, setAllCategories] = useState([])
   
 
   const goNext = () => {
@@ -73,8 +73,8 @@ const Hero = () => {
           }
         const data = await res.json();
         console.log("get cetegories data",data);
-        setAllCetegories(data)
-        console.log("kajbaskbc",allCetegories);
+        setAllCategories(data)
+        console.log("kajbaskbc",allCategories);
       
     
   
@@ -173,11 +173,13 @@ const Hero = () => {
       onSlideChange={() => console.log("slide change")}
       onSwiper={(swiper) => console.log(swiper)}
     >
-      {allCetegories.map((data, index) => (
-        <SwiperSlide key={index}>
+      {allCategories.map((data) => (
+        <SwiperSlide key={data.id}>
           <div className="h-[60px] w-[60px] object-fill overflow-hidden">
+          <Link to={`all-fundraisers/${data.id}`}>
           <img src={`${VITE_BASE_IMAGE_URL}${data.categorySvg}`} alt=""   />
           
+          </Link>
           </div>
         </SwiperSlide>
       ))}

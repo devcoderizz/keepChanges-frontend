@@ -35,13 +35,13 @@ const ViewCard = ({...data}) => {
   );
 };
 
-ViewCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  imageSrc: PropTypes.string.isRequired,
-  raisedAmount: PropTypes.number.isRequired,
-  goalAmount: PropTypes.number.isRequired,
-  Suppoters: PropTypes.number.isRequired,
-  daysLeft: PropTypes.number.isRequired,
-  by: PropTypes.string.isRequired,
-};
+// ViewCard.propTypes = {
+//   title: PropTypes.string.isRequired,
+//   imageSrc: PropTypes.string.isRequired,
+//   raisedAmount: PropTypes.number.isRequired,
+//   goalAmount: PropTypes.number.isRequired,
+//   Suppoters: PropTypes.number.isRequired,
+//   daysLeft: PropTypes.number.isRequired,
+//   by: PropTypes.string.isRequired,
+// };
 export default ViewCard;

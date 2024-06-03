@@ -32,12 +32,9 @@ function App() {
       <Route path='/startFundraiser' element={<StartFundraiser/>} />
       <Route path='/user-profile/:id' element={<UserProfile/>} />
       <Route path='/fundraisers/:id' element={<Fundraisers/>} />
-      <Route path='/all-fundraisers' element={<ActiveFundraisers/>} />
+      <Route path='/all-fundraisers/:id?' element={<ActiveFundraisers/>} />
       <Route path='/user-update' element={<UserUpdate/>} />
       
-
-
-
       <Route path="*" element={ <Navigate to="/" /> }  />
 
 

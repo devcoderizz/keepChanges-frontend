@@ -4,7 +4,7 @@ import ViewCard from "../components/ViewCard";
 
 // import useAuth from "../utils/IsAuthenticated";
 // import { Tabs } from 'antd';
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "antd";
 import toast from "react-hot-toast";
 import useAuth from "../utils/IsAuthenticated";
@@ -45,6 +45,8 @@ const UserProfile = () => {
   const [displayImage, setDisplayImage] = useState(null);
   const [isPanDetails, setIsPanDetails] = useState([]);
   const [allUserDonations, setAllUserDonations] = useState([])
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
   
   console.log("pandetails state", isPanDetails);
   const { id } = useParams();
@@ -67,6 +69,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     const user = async () => {
+     
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
@@ -79,6 +82,8 @@ const UserProfile = () => {
 
         if (res.status != 200) {
           handleError(res.status);
+          navigate(`/user-profile/${localData.id}`)
+          window.location.reload(false)
           return;
         }
         const res2 = await fetch(
@@ -95,6 +100,7 @@ const UserProfile = () => {
         setAllFundraisers(fundraiserInfo);
       } catch (error) {
         console.log(error);
+       
       }
     };
     user();
@@ -367,6 +373,7 @@ const UserProfile = () => {
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const payload = new FormData();
     const { name, about, password, email, phone } = userUpdateForm;
 
@@ -404,10 +411,12 @@ const UserProfile = () => {
       window.location.reload(false)
       if (res.status != 200) {
         handleError(res.status);
+        setLoading(false)
         return;
       }
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
 
@@ -451,19 +460,17 @@ console.log("User Data", userData)
           </div>
           <div className="absolute">
             <div className="relative top-[50px] md:top-[150px] w-[75vw] flex flex-col md:flex-row items-center justify-between gap-5 md:gap-0">
-              <div className="flex flex-col md:flex-row items-center gap-5   ">
+              <div className="flex flex-col  md:flex-row items-center gap-5   ">
                 <div className="relative">
-                  <div className=" w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-black overflow-hidden shadow-xl rounded-md ">
+                  <div className=" w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-black overflow-hidden shadow-xl rounded-md object-cover">
                     <img
                       src={`${VITE_BASE_IMAGE_URL}${userData.displayImage}`}
                       alt=""
-                      className="object-contain"
+                      className="object-fill"
                     />
                   </div>
-                 
-                 
                 </div>
-                <div className="relative h-full mt-1 w-[300px] md:w-[700px] ">
+                <div className="flex flex-col items-center md:items-start md:relative h-full mt-1 w-[300px] md:w-[700px] ">
                   <h1 className="text-2xl md:text-3xl text-center md:text-start font-semibold flex items-center  gap-2 ">
                     {userData.name}
                     <h1 className="text-sm mt-2 text-red-500 italic font-medium   ">
@@ -473,7 +480,7 @@ console.log("User Data", userData)
                   <p className="font-semibold text-[#5D5D5D] ">
                     {userData.email}
                   </p>
-                  <p className=" absolute font-medium text-[#1f1f1f] text-sm mt-5    ">
+                  <p className=" absolute  top-72 md:top-16 font-semibold text-[#1f1f1f] text-[12px] md:text-sm mt-5    ">
                     {userData.about}
                   </p>
                 </div>
@@ -544,6 +551,7 @@ console.log("User Data", userData)
                       type="text"
                       name="about"
                       id="about"
+                      rows={4}
                       defaultValue={userData.about}
                       onChange={handleChangeUpdate}
                       placeholder="About"
@@ -569,7 +577,7 @@ console.log("User Data", userData)
                     onClick={handleUpdateSubmit}
                     className=" py-1 px-2 bg-transparent border-[#EF5757] border-2 font-bold text-lg"
                   >
-                    Submit
+                   {loading ? "Loading..." : "Submit"}
                   </button>
                 </form>
               </Modal>
@@ -577,7 +585,7 @@ console.log("User Data", userData)
           </div>
         </div>
 
-        <div className="w-full h-full flex md:flex-row flex-col items-center md:items-start justify-center md:justify-center   ">
+        <div className="w-full h-full mt-48 md:mt-0 flex md:flex-row flex-col items-center md:items-start justify-center md:justify-center   ">
           {localData && localData?.id === userData?.id && (
             <div className="w-[30%] h-[100vh] pt-[52px] flex  flex-col gap-5 items-center justify-start  ">
               <div className="w-[300px] min-h-[300px] max-h-[500px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">

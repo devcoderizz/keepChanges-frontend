@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import ViewCard from "../components/ViewCard";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import handleError from "../utils/ErrorHandler";
 
 const ActiveFundraisers = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const APIBASEURL= import.meta.env.VITE_API_BASEURL;
   const [query, setQuery] = useState("");
   const [activeFundraiser, setActiveFundraiser] = useState([])
   const [allCategories, setAllCategories] = useState([])
   const [fundraisersByCategory, setfundraisersByCategory] = useState([])
-  const categoriesId = [];
+  const [selectedCategory, setSelectedCategory] = useState([])
+  // const categoriesId = [];
 
-  allCategories.map((data)=>{
-    categoriesId.push(data.id);
-  })
-  console.log("category ids" , categoriesId);
+  // allCategories.map((data)=>{
+  //   categoriesId.push(data.id);
+  // })
+  // console.log("category ids" , categoriesId);
 
 
   const handleInputChange = (event) => {
@@ -26,6 +28,21 @@ const ActiveFundraisers = () => {
   // const handleSearch = () => {
   //   onSearch(query);
   // };
+  const handleChange = (event) => {
+    const { name, checked } = event.target;
+    setSelectedCategory(prevState => {
+        if (checked) {
+            return [...prevState, name];
+        } else {
+            return prevState.filter(id => id !== name);
+        }
+    });
+};
+  console.log("selectedCategory", selectedCategory);
+
+  const handleCategoriesSubmit=(e)=>{
+    e.preventDefault();
+  }
 
   useEffect(() => {
 const getAllCategories =async()=>{
@@ -44,8 +61,6 @@ const getAllCategories =async()=>{
         setAllCategories(data)
         console.log("kajbaskbc",allCategories);
       
-    
-  
       } catch (error) {
         console.log(error);
       }
@@ -70,27 +85,28 @@ const getAllCategories =async()=>{
      fundraiserDetails()
 
      
-     allCategories.map((data) => {
-      if (categoriesId.includes(data.id)) {
-        const getFundraiserById =async()=>{
-          try {
-            const res = await fetch(`${APIBASEURL}/fundraisers/category/${id}`, {
-              method: "GET",
-            });
-            if(res.status!=200){
-              handleError(res.status); 
-              }
-            const data = await res.json();
-            console.log("Fundraiser by id ",data);
-            setfundraisersByCategory(data);
-          } catch (error) {
-            console.log(error);
-          }
-         }
-         getFundraiserById()
-      }})
-
      
+
+     if(id){
+     const getFundraiserById =async()=>{
+      try {
+        const res = await fetch(`${APIBASEURL}/fundraisers/category/${id}`, {
+          method: "GET",
+        });
+        if(res.status!=200){
+          handleError(res.status); 
+          navigate("/");
+          return
+          }
+        const data = await res.json();
+        console.log("Fundraiser by id ",data);
+        setfundraisersByCategory(data);
+      } catch (error) {
+        console.log(error);
+      }
+     }
+     getFundraiserById()
+    }
 
   }, [APIBASEURL, id])
   
@@ -109,12 +125,12 @@ const getAllCategories =async()=>{
           <ul className="text-sm flex flex-row flex-wrap gap-4 md:flex-col w-full md:w-[200px] font-semibold my-4">
           {allCategories.map((data) => (
     <li className="p-2" key={data.id}>
-        <input type="checkbox" id={`item${data.id}`} className="mx-2" name={`item${data.id}`} />
+        <input onChange={handleChange} type="checkbox" id={`item${data.id}`} className="mx-2" name={data.id} />
         <label htmlFor={`item${data.id}`}>{data.categoryName}</label>
     </li>
 ))}
-            
           </ul>
+          <button onClick={handleCategoriesSubmit}  className="bg-red-500 hover:bg-red-600 text-white px-5 py-1 rounded-md border-2 border-red-500 text-xl font-semibold focus:outline-none">Search</button>
         </form>
 
         <div className="flex flex-col w-full md:w-[70vw] my-12">
@@ -125,7 +141,7 @@ const getAllCategories =async()=>{
                 placeholder="Search..."
                 value={query}
                 onChange={handleInputChange}
-                className="border-2 border-red-300 rounded-full focus-within:ring-1 focus-within:ring-red-400 flex-grow outline-none px-4 sm:px-12 py-2 sm:py-3 bg-transparent rounded-l-full rounded-r-none"
+                className="border-2 border-red-300 rounded-full  flex-grow outline-none px-4 sm:px-12 py-2 sm:py-3 bg-transparent rounded-l-full rounded-r-none "
               />
               <button
                 // onClick={handleSearch}
@@ -150,18 +166,6 @@ const getAllCategories =async()=>{
                 </Link>
               </div>
             )))}
-
-
-
-
-
-            {/* {activeFundraiser.map((data, index) => (
-              <div key={index} className="min-h-[400px] h-auto md:h-full">
-                <Link to={`/fundraisers/${data.id}`}>
-                  <ViewCard {...data} />
-                </Link>
-              </div>
-            ))} */}
           </div>
         </div>
       </div>

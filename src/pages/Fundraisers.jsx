@@ -412,13 +412,13 @@ const Fundraisers = ({
                   {isUser ? (
                     <>
                       <button className="hover:text-blue-600">
-                        <FiEdit />
+                        <FiEdit title="Edit" />
                       </button>
                       <button
                         className="hover:text-rose-600"
                         onClick={handleDeleteFundraiser}
                       >
-                        <RiDeleteBin6Line />
+                        <RiDeleteBin6Line title="delete" />
                       </button>
                     </>
                   ) : (
@@ -914,10 +914,12 @@ const Fundraisers = ({
               <FaCircleUser size={35} color="gray" className="mt-2" />
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
-                <span className="font-semibold">
+                <span className="font-semibold hover:text-red-500 underline">
+                  <Link to={`/user-profile/${fundraiserDetails?.postedBy?.id}`}>
                   {fundraiserDetails.postedBy
                     ? fundraiserDetails.postedBy.name
                     : "Anonymous"}
+                    </Link>
                 </span>
               </div>
             </div>

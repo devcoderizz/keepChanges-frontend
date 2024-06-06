@@ -11,18 +11,15 @@ import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin2Fill, RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
-import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
-import { TiArrowBack } from "react-icons/ti";
+import {  IoMdAddCircle } from "react-icons/io";
 import useAuth from "../utils/IsAuthenticated";
-import handleError from '../utils/ErrorHandler'; 
-const Fundraisers = ({
-  benefactors = 69,
-  raisedAmount = 97550,
-  goalAmount = 50000,
-}) => {
+import handleError from "../utils/ErrorHandler";
+import AddDocuments from "../components/AddDocuments";
+import ApproveAdmin from "../components/ApproveAdmin";
+const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
 
@@ -32,19 +29,24 @@ const Fundraisers = ({
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [fundraiserDetails, setFundraiserDetails] = useState({});
+  console.log("details" , fundraiserDetails);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
+  const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
+  const [formDataUpdate, setFormDataUpdate] = useState([]);
+  const [displayImageUpdate, setDisplayImageUpdate] = useState([]);
+  // const [formData, setFormData] = useState({});
+  const [categories, setCategories] = useState([]);
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
   const [allAccount, setAllAccount] = useState([]);
-  console.log("all account",allAccount);
+  console.log("all account", allAccount);
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
-  const [deleteAccount, setDeleteAccount] = useState(true);
   const [inputData, setInputData] = useState(null);
 
   const localData = JSON.parse(localStorage?.getItem("UserData"));
-  console.log("local id" , localData?.id);
+  console.log("local id", localData?.id);
 
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
@@ -77,9 +79,9 @@ const Fundraisers = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      if(res.status!=200){
-        handleError(res.status); 
-        }
+      if (res.status != 200) {
+        handleError(res.status);
+      }
       const data = res.json();
       console.log(data);
       navigate("/");
@@ -95,44 +97,48 @@ const Fundraisers = ({
   const showModalAccount = () => {
     setIsModalOpenAccount(true);
   };
+  const showModalUpdate = () => {
+    setIsModalOpenUpdate(true);
+  };
 
   const handleImageUpload = async (e) => {
     e.preventDefault();
-  
+
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
-  
+
     const accessToken = localStorage?.getItem("accessToken");
-  
+
     try {
       const formData = new FormData();
-  
+
       // Append each image individually to the FormData object
       images1?.forEach((image) => {
         formData.append("images", image);
       });
-  
-      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-            
-        },
-        body: formData,
-      });
-  
+
+      const res = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+        }
+      );
+
       if (res.status !== 200) {
         handleError(res.status);
       }
-  
+
       const data = await res.json();
       console.log("Upload successful:", data);
     } catch (error) {
       console.error("Error uploading images:", error);
     }
   };
-  
 
   const handleCancel = () => {
     setImages([]);
@@ -141,6 +147,19 @@ const Fundraisers = ({
   const handleCancelAccount = () => {
     // setSelectedImages([]);
     setIsModalOpenAccount(false);
+  };
+  const handleCancelUpdate = () => {
+    setIsModalOpenUpdate(false);
+  };
+
+  const handleChangeUpdate = (e) => {
+    setFormDataUpdate({
+      ...formDataUpdate,
+      [e.target.id]: e.target.value,
+    });
+  };
+  const handleFileChangeUpdate = (e) => {
+    setDisplayImageUpdate(e.target.files[0]);
   };
 
   const handleSeeMore = () => {
@@ -189,15 +208,27 @@ const Fundraisers = ({
           method: "GET",
           headers: {},
         });
-        if(res.status!=200){
-          handleError(res.status); 
-          }
+        if (res.status != 200) {
+          handleError(res.status);
+        }
         const data = await res.json();
         console.log("fundraiser data", data);
         setFundraiserDetails(data);
-        if (!data.ok) {
-          return;
+
+        const response = await fetch(`${APIBASEURL}/categories/getall`, {
+          method: "GET",
+          headers: {
+            // "Authorization": `Bearer ${accessToken}I`,
+          },
+        });
+
+        if (response.status != 200) {
+          handleError(response.status);
         }
+
+        const data2 = await response.json();
+        setCategories(data2);
+        console.log("categories", categories);
       } catch (error) {
         console.log(error);
       }
@@ -211,15 +242,16 @@ const Fundraisers = ({
       // const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(`${APIBASEURL}/accounts/account/user_${localData.id}`, {
-          method: "GET",
-          headers: {
-          
-          },
-        });
-        if(res.status!=200){
-          handleError(res.status); 
+        const res = await fetch(
+          `${APIBASEURL}/accounts/account/user_${localData.id}`,
+          {
+            method: "GET",
+            headers: {},
           }
+        );
+        if (res.status != 200) {
+          handleError(res.status);
+        }
         const data = await res.json();
         // console.log("bank data", data);
         setAllAccount(data);
@@ -233,7 +265,6 @@ const Fundraisers = ({
     Accounts();
   }, [APIBASEURL, currentUser, id]);
 
-  
   const copylink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
@@ -273,27 +304,21 @@ const Fundraisers = ({
           body: JSON.stringify(accountFormData),
         }
       );
-      if(res.status!=200){
-        handleError(res.status); 
-        }
+      if (res.status != 200) {
+        handleError(res.status);
+      }
       const data = await res.json();
       console.log("add bank data", data);
       // setAllAccount(data);
-      if(res.status===200){
-        toast.success("Account Added")
+      if (res.status === 200) {
+        toast.success("Account Added");
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-
-
-  const handleDeleteForm = (e) => {
-    e.preventDefault();
-    setDeleteAccount(!deleteAccount);
-  };
-
+ 
 
   const handleInputChange = (e) => {
     setInputData({
@@ -301,8 +326,6 @@ const Fundraisers = ({
     });
   };
   console.log(inputData);
-
-
 
   const handleAccountSelect = async (e) => {
     e.preventDefault();
@@ -323,13 +346,13 @@ const Fundraisers = ({
           body: JSON.stringify(inputData.id),
         }
       );
-      if(res.status!=200){
-        handleError(res.status); 
-        }
+      if (res.status != 200) {
+        handleError(res.status);
+      }
       const data = await res.json();
       console.log("account added", data);
-      if(res.status===200){
-        toast.success("Account Selected")
+      if (res.status === 200) {
+        toast.success("Account Selected");
       }
       // setAllAccount(data);
     } catch (error) {
@@ -337,36 +360,78 @@ const Fundraisers = ({
     }
   };
 
-
   
 
-  const handleAccountDelete = async (e) => {
-    e.preventDefault()
+
+
+  const handleSubmitUpdate = async (e) => {
+ e.preventDefault()
+
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
     const accessToken = localStorage.getItem("accessToken");
 
+    const {
+      fundraiserTitle,
+      raiseGoal,
+      endDate,
+      id,
+      email,
+      phone,
+      fundraiserDescription,
+      beneficiary,
+    } = formDataUpdate;
+
+    const fundraiserData = {
+      fundraiserTitle,
+      raiseGoal,
+      endDate,
+      email,
+      phone,
+      fundraiserDescription,
+      beneficiary,
+    };
+
+    const payload = new FormData();
+    payload.append("fundraiserData", JSON.stringify(fundraiserData));
+
+    if (displayImageUpdate) {
+      payload.append("displayImage", displayImageUpdate);
+    }
+
+    payload.append("categoryId", id);
+
+    console.log("payload", payload);
+
+  
+
     try {
-      const res = await fetch(
-        `${APIBASEURL}/accounts/account_${inputData.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(inputData.id),
-        }
-      );
-      if(res.status!=200){
-        handleError(res.status); 
-        }
-      const data = await res.json();
-      console.log("delete data", data);
-      // setAllAccount(data);
+      const response = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: payload,
+      });
+
+      console.log("payload", payload);
+      const data = await response.json();
+      // console.log("response", response);
+  
+      if (response.status != 200) {
+        handleError(response.status);
+      }
+
+      if (response.ok) {
+        toast.success("Fundraiser created successfully!");
+        window.location.reload(false)
+        navigate(`/fundraisers/${data.id}`);
+      } else {
+        // toast.error(data.error || "Error creating fundraiser");
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error creating fundraiser:", error);
     }
   };
 
@@ -375,7 +440,9 @@ const Fundraisers = ({
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
           <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
-          <span>✅</span>
+          {fundraiserDetails.approval === "APPROVED" &&
+          (<span>✅</span>)
+          }
         </div>
 
         <div className="flex flex-col md:flex-row w-[90%] gap-8 my-4 md:ml-0  ">
@@ -411,9 +478,173 @@ const Fundraisers = ({
                 <div className="flex items-center pl-16 -mt-10 gap-3 ml-5 text-xl  ">
                   {isUser ? (
                     <>
-                      <button className="hover:text-blue-600">
+                      <button
+                        onClick={showModalUpdate}
+                        className="hover:text-blue-600"
+                      >
                         <FiEdit title="Edit" />
                       </button>
+                      <Modal
+                        title="Edit Fundraiser Details"
+                        open={isModalOpenUpdate}
+                        onCancel={handleCancelUpdate}
+                        footer={null}
+                      >
+                        <form
+                          onSubmit={handleSubmitUpdate}
+                          className=" flex flex-col items-center gap-4 p-5"
+                        >
+                          <div className="flex flex-col items-start w-full">
+                            <label
+                              htmlFor="fundraiserTitle"
+                              className="font-bold"
+                            >
+                              Fundraiser Title*
+                            </label>
+                            <input
+                         
+                              type="text"
+                              name="fundraiserTitle"
+                              id="fundraiserTitle"
+                              placeholder="Give your fundraiser a name"
+                              defaultValue={fundraiserDetails.fundraiserTitle}
+                              onChange={handleChangeUpdate}
+                              className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                            />
+                          </div>
+                          <div className="flex flex-col items-start w-full">
+                            <label htmlFor="Beneficiary" className="font-bold">
+                              Beneficiary*
+                            </label>
+                            <input
+                           
+                              type="text"
+                              name="beneficiary"
+                              id="beneficiary"
+                              placeholder="This fundraiser will benefit"
+                              defaultValue={fundraiserDetails.beneficiary}
+                              onChange={handleChangeUpdate}
+                              className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                            />
+                          </div>
+                          <div className="flex flex-col md:flex-row items-center justify-between gap-5 w-full">
+                            <div className="relative flex flex-col items-start w-full md:w-1/2">
+                              <label htmlFor="raiseGoal" className="font-bold">
+                                Goal*
+                              </label>
+                              <input
+                             
+                                type="number"
+                                name="raiseGoal"
+                                id="raiseGoal"
+                                placeholder="Amount in Rupees"
+                                defaultValue={fundraiserDetails.raiseGoal}
+                                onChange={handleChangeUpdate}
+                                className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md pr-7 focus:outline-none"
+                              />
+                              <p className="absolute bottom-2.5 right-3 font-bold">
+                                ₹
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-start w-full md:w-1/2">
+                              <label htmlFor="endDate" className="font-bold">
+                                End date*
+                              </label>
+                              <input
+                          
+                                type="date"
+                                name="endDate"
+                                id="endDate"
+                                placeholder="mm/dd/yyyy"
+                                defaultValue={fundraiserDetails.endDate}
+                                onChange={handleChangeUpdate}
+                                className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-start w-full">
+                            <label htmlFor="categoryName" className="font-bold">
+                              Category*
+                            </label>
+                            <select
+                            
+                              name="id"
+                              id="id"
+                              defaultValue={fundraiserDetails.id}
+                              onChange={handleChangeUpdate}
+                              placeholder="Select category"
+                              className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                            >
+                              <option>Select category</option>
+                              {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                  {category.categoryName}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="flex flex-col md:flex-row items-center justify-between gap-5 w-full">
+                            <div className="flex flex-col items-start w-full md:w-1/2">
+                              <label htmlFor="email" className="font-bold">
+                                Email*
+                              </label>
+                              <input
+                            
+                                name="email"
+                                id="email"
+                                disabled
+                                placeholder="abc@xyz.com"
+                                defaultValue={fundraiserDetails.email}
+                                onChange={handleChangeUpdate}
+                                className="p-2 w-full opacity-50 border-2 border-[#FF5C5C] border-opacity-55 rounded-md pr-7 focus:outline-none"
+                              />
+                            </div>
+                            <div className="relative flex flex-col items-start w-full md:w-1/2">
+                              <label htmlFor="phone" className="font-bold">
+                                Phone*
+                              </label>
+                              <input
+                                type="number"
+                                name="phone"
+                                id="phone"
+                                placeholder="0123456789"
+                                defaultValue={fundraiserDetails.phone}
+                                onChange={handleChangeUpdate}
+                                className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                              />
+                              {/* <p className="absolute -bottom-6 text-sm  text-red-500" >{validationMessage}</p> */}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-start w-full">
+                            <label
+                              htmlFor="fundraiserDescription"
+                              className="font-bold"
+                            >
+                              Description*
+                            </label>
+                            <textarea
+                              name="fundraiserDescription"
+                              id="fundraiserDescription"
+                              placeholder="Description....."
+                              defaultValue={
+                                fundraiserDetails.fundraiserDescription
+                              }
+                              onChange={handleChangeUpdate}
+                              className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                            />
+                          </div>
+                          <div className="w-full">
+                            <input
+                              type="file"
+                              onChange={handleFileChangeUpdate}
+                              className="flex items-center gap-5 px-4 py-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                            />
+                          </div>
+                          <button className="gap-5 px-4 py-2.5 w-full bg-[#FF5C5C] text-lg font-bold text-white rounded-md focus:outline-none">
+                            Update fundraiser
+                          </button>
+                        </form>
+                      </Modal>
                       <button
                         className="hover:text-rose-600"
                         onClick={handleDeleteFundraiser}
@@ -476,23 +707,7 @@ const Fundraisers = ({
                               : "Select existing account"}
                           </button>
 
-                          <button
-                            onClick={handleDeleteForm}
-                            className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400"
-                          >
-                            {deleteAccount ? (
-                              <h1 className="flex items-center gap-1">
-                                <RiDeleteBin2Fill />
-                                account
-                              </h1>
-                            ) : (
-                              <h1 className="flex items-center gap-1">
-                                {" "}
-                                <TiArrowBack /> back
-                              </h1>
-                            )}
-                          </button>
-                          {deleteAccount ? (
+                          
                             <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
                               <label
                                 htmlFor=""
@@ -520,46 +735,15 @@ const Fundraisers = ({
                                   </option>
                                 ))}
                               </select>
-                              <button onClick={handleAccountSelect} className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold">
-                                    <IoMdAddCircle /> Add
-                              </button>
-                            </form>
-                          ) : (
-                            <form className=" flex flex-col w-full gap-3 bg-red-200 p-4 rounded-md">
-                              <label
-                                htmlFor=""
-                                className="font-bold text-red-500 "
-                              >
-                                *Delete User Accounts
-                              </label>
-                              <select
-                                name="id"
-                                id="id"
-                                value={allAccount.id}
-                                onChange={handleInputChange}
-                                className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                              >
-                                <option
-                                  value=""
-                                  className="font-bold text-[#696763]"
-                                >
-                                  select an account
-                                </option>
-
-                                {allAccount.map((accounts) => (
-                                  <option key={accounts.id} value={accounts.id}>
-                                    {accounts.bankName}
-                                  </option>
-                                ))}
-                              </select>
                               <button
-                                onClick={handleAccountDelete}
+                                onClick={handleAccountSelect}
                                 className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
                               >
-                              <IoIosRemoveCircle /> Remove    
+                                <IoMdAddCircle /> Add
                               </button>
                             </form>
-                          )}
+                         
+                            
                         </div>
                       ) : (
                         <form
@@ -723,14 +907,15 @@ const Fundraisers = ({
                       </form>
                     </Modal>
                   </div>
-                  <div className="w-full flex flex-col justify-center px-10">
+                  {/* <div className="w-full flex flex-col justify-center px-10">
                     <h1 className="text-md my-4 ml-16 font-semibold ">
                       Add your bank account
                     </h1>
                     <button className="text-md text-green-500 py-3 px-6 text-nowrap border border-green-500 mx-10 rounded-xl font-semibold  hover:bg-green-500 hover:text-white">
                       Documnets
                     </button>
-                  </div>
+                  </div> */}
+                  <AddDocuments  fundraiserDetails={fundraiserDetails} />
                 </div>
               </div>
             ) : (
@@ -810,41 +995,42 @@ const Fundraisers = ({
           </div>
         </div>
         {isAdmin && (
-          <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-20 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
-            <div className="flex flex-col gap-2 px-4 my-4">
-              <h1 className="text-lg font-bold">Review Fundraiser</h1>
-              <textarea
-                className="resize-none  rounded-md p-2 border-red-500 border-2  focus:border-[#ab4543]  "
-                rows="4"
-                cols="70"
-                placeholder="Enter your message..."
-              />
-              <button className="text-md text-white py-3 md:mr-96 mt-1 border border-red-500 bg-red-500 rounded-xl font-semibold hover:bg-red-600 ">
-                Submit
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 my-4 px-4">
-              <h1 className="text-lg font-semibold">Set Status</h1>
-              <select
-                id="mySelect"
-                name="mySelect"
-                className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
-              >
-                <option value="option1" className="font-semibold">
-                  Option 1
-                </option>
-                <option value="option2" className="font-semibold">
-                  Option 2
-                </option>
-                <option value="option3" className="font-semibold">
-                  Option 3
-                </option>
-                <option value="option4" className="font-semibold">
-                  Option 4
-                </option>
-              </select>
-            </div>
-          </div>
+          // <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-20 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
+          //   <div className="flex flex-col gap-2 px-4 my-4">
+          //     <h1 className="text-lg font-bold">Review Fundraiser</h1>
+          //     <textarea
+          //       className="resize-none  rounded-md p-2 border-red-500 border-2  focus:border-[#ab4543]  "
+          //       rows="4"
+          //       cols="70"
+          //       placeholder="Enter your message..."
+          //     />
+          //     <button className="text-md text-white py-3 md:mr-96 mt-1 border border-red-500 bg-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+          //       Submit
+          //     </button>
+          //   </div>
+          //   <div className="flex flex-col gap-2 my-4 px-4">
+          //     <h1 className="text-lg font-semibold">Set Status</h1>
+          //     <select
+          //       id="mySelect"
+          //       name="mySelect"
+          //       className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
+          //     >
+          //       <option value="option1" className="font-semibold">
+          //         Option 1
+          //       </option>
+          //       <option value="option2" className="font-semibold">
+          //         Option 2
+          //       </option>
+          //       <option value="option3" className="font-semibold">
+          //         Option 3
+          //       </option>
+          //       <option value="option4" className="font-semibold">
+          //         Option 4
+          //       </option>
+          //     </select>
+          //   </div>
+          // </div>
+          <ApproveAdmin  fundraiserDetails={fundraiserDetails} />
         )}
 
         <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-96 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
@@ -916,10 +1102,10 @@ const Fundraisers = ({
                 <span className="font-semibold  text-gray-500">Created by</span>
                 <span className="font-semibold hover:text-red-500 underline">
                   <Link to={`/user-profile/${fundraiserDetails?.postedBy?.id}`}>
-                  {fundraiserDetails.postedBy
-                    ? fundraiserDetails.postedBy.name
-                    : "Anonymous"}
-                    </Link>
+                    {fundraiserDetails.postedBy
+                      ? fundraiserDetails.postedBy.name
+                      : "Anonymous"}
+                  </Link>
                 </span>
               </div>
             </div>

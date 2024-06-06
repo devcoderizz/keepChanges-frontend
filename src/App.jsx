@@ -12,6 +12,8 @@ import UserProfile from "./pages/UserProfile"
 import ActiveFundraisers from "./pages/ActiveFundraisers"
 import ScrollToTop from "./components/ScrollToTop"
 import UserUpdate from "./pages/UserUpdate"
+import AdminDashboard from "./pages/AdminDashboard"
+import Dashboard from "./components/AdminDashboard/Dashboard"
 
 
 
@@ -34,6 +36,8 @@ function App() {
       <Route path='/fundraisers/:id' element={<Fundraisers/>} />
       <Route path='/all-fundraisers/:id?' element={<ActiveFundraisers/>} />
       <Route path='/user-update' element={<UserUpdate/>} />
+      <Route path='/AdminDashbaord' element={<AdminDashboard/>} />
+      <Route path='/dashboard' element={<Dashboard/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

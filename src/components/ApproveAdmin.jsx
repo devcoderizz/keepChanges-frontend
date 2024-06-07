@@ -10,6 +10,9 @@ const ApproveAdmin = ({fundraiserDetails}) => {
     const { fetchAccess, isAccessTokenValid } = useAuth();
     const [approvalFormData, setApprovalFormData] = useState("")
 
+
+    
+
     const handleChange = (e) => {
         setApprovalFormData({
           ...approvalFormData,
@@ -29,12 +32,10 @@ const ApproveAdmin = ({fundraiserDetails}) => {
         const { adminRemark, adminStatus  } = approvalFormData;
 
    
-        const adminRemarks = {
-            adminRemark
-        };
+  
     
         const payload = new FormData();
-        payload.append("adminRemarks", JSON.stringify(adminRemarks));
+        payload.append("adminRemarks", JSON.stringify(adminRemark));
         
         payload.append("adminStatus",adminStatus);
         console.log("admin status ", adminStatus);
@@ -60,8 +61,8 @@ const ApproveAdmin = ({fundraiserDetails}) => {
         
             if (response.ok) {
               toast.success("Fundraiser Approved successfully!");
-            window.location.reload(false)
-              Navigate(`/fundraisers/${data.id}`)
+            // window.location.reload(false)
+              // Navigate(`/fundraisers/${data.id}`)
             } else {
               toast.error(data.error || "Error Approving fundraiser");
             }
@@ -85,6 +86,7 @@ const ApproveAdmin = ({fundraiserDetails}) => {
               <textarea
               onChange={handleChange}
               id="adminRemark"
+              defaultValue={fundraiserDetails?.adminRemarks}
                 className="resize-none  rounded-md p-2 border-red-500 border-2  focus:border-[#ab4543]  "
                 rows="4"
                 cols="70"
@@ -100,6 +102,7 @@ const ApproveAdmin = ({fundraiserDetails}) => {
               <select
                 id="adminStatus"
                 name="adminStatus"
+                defaultValue={fundraiserDetails.approval}
                 onChange={handleChange}
                 className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
               >

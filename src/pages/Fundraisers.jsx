@@ -40,13 +40,13 @@ const Fundraisers = () => {
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
   const [allAccount, setAllAccount] = useState([]);
-  console.log("all account", allAccount);
+  // console.log("all account", allAccount);
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
   const [inputData, setInputData] = useState(null);
 
   const localData = JSON.parse(localStorage?.getItem("UserData"));
-  console.log("local id", localData?.id);
+  // console.log("local id", localData?.id);
 
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
@@ -212,8 +212,21 @@ const Fundraisers = () => {
           handleError(res.status);
         }
         const data = await res.json();
-        console.log("fundraiser data", data);
+        // console.log("fundraiser data", data);
         setFundraiserDetails(data);
+        
+        if (
+          data.approval === "APPROVED" || 
+          localData?.id === data.postedBy?.id || 
+          (localData?.roles[1]?.id || localData?.roles[0]?.id === 501)
+        ) {
+         console.log(" ");
+        } else { 
+          navigate("/")
+        }
+        
+
+
 
         const response = await fetch(`${APIBASEURL}/categories/getall`, {
           method: "GET",
@@ -228,7 +241,7 @@ const Fundraisers = () => {
 
         const data2 = await response.json();
         setCategories(data2);
-        console.log("categories", categories);
+        // console.log("categories", categories);
       } catch (error) {
         console.log(error);
       }
@@ -308,7 +321,7 @@ const Fundraisers = () => {
         handleError(res.status);
       }
       const data = await res.json();
-      console.log("add bank data", data);
+      // console.log("add bank data", data);
       // setAllAccount(data);
       if (res.status === 200) {
         toast.success("Account Added");
@@ -350,7 +363,7 @@ const Fundraisers = () => {
         handleError(res.status);
       }
       const data = await res.json();
-      console.log("account added", data);
+      // console.log("account added", data);
       if (res.status === 200) {
         toast.success("Account Selected");
       }
@@ -441,12 +454,13 @@ const Fundraisers = () => {
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
           <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
           {fundraiserDetails.approval === "APPROVED" &&
-          (<span>✅</span>)
+          (<span title="Approved By Admin">✅</span>)
           }
         </div>
 
         <div className="flex flex-col md:flex-row w-[90%] gap-8 my-4 md:ml-0  ">
           <div className="flex flex-col items-start justify-start">
+            <div className="flex items-center justify-between w-full px-2">
             <span className="text-[12px] md:text-sm">
               Capmaign by{" "}
               <Link to={"/"} className="text-red-500 underline  ">
@@ -454,6 +468,9 @@ const Fundraisers = () => {
                 Keep changes
               </Link>
             </span>
+            {fundraiserDetails.approval === "APPROVED" &&
+            <span className="text-red-500 text-[12px] underline">Approved By Admin</span>}
+            </div>
             <div className="flex flex-row gap-8">
               <img
                 className="md:w-[50vw] md:h-[50vh] h-[30vh] w-[90vw] object-cover rounded-xl "
@@ -995,41 +1012,6 @@ const Fundraisers = () => {
           </div>
         </div>
         {isAdmin && (
-          // <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-20 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
-          //   <div className="flex flex-col gap-2 px-4 my-4">
-          //     <h1 className="text-lg font-bold">Review Fundraiser</h1>
-          //     <textarea
-          //       className="resize-none  rounded-md p-2 border-red-500 border-2  focus:border-[#ab4543]  "
-          //       rows="4"
-          //       cols="70"
-          //       placeholder="Enter your message..."
-          //     />
-          //     <button className="text-md text-white py-3 md:mr-96 mt-1 border border-red-500 bg-red-500 rounded-xl font-semibold hover:bg-red-600 ">
-          //       Submit
-          //     </button>
-          //   </div>
-          //   <div className="flex flex-col gap-2 my-4 px-4">
-          //     <h1 className="text-lg font-semibold">Set Status</h1>
-          //     <select
-          //       id="mySelect"
-          //       name="mySelect"
-          //       className="w-[300px] md:w-[400px] h-[40px] rounded-md p-2 "
-          //     >
-          //       <option value="option1" className="font-semibold">
-          //         Option 1
-          //       </option>
-          //       <option value="option2" className="font-semibold">
-          //         Option 2
-          //       </option>
-          //       <option value="option3" className="font-semibold">
-          //         Option 3
-          //       </option>
-          //       <option value="option4" className="font-semibold">
-          //         Option 4
-          //       </option>
-          //     </select>
-          //   </div>
-          // </div>
           <ApproveAdmin  fundraiserDetails={fundraiserDetails} />
         )}
 

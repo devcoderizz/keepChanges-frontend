@@ -13,6 +13,8 @@ const ActiveFundraisers = () => {
   const [allCategories, setAllCategories] = useState([])
   const [fundraisersByCategory, setfundraisersByCategory] = useState([])
   const [selectedCategory, setSelectedCategory] = useState([])
+  const [multipleCategoryFundraiser,setMultipleCategoryFundraiser ] = useState([])
+  const [showMultipleCategoryData, setShowMultipleCategoryData] = useState(false)
   // const categoriesId = [];
 
   // allCategories.map((data)=>{
@@ -40,9 +42,36 @@ const ActiveFundraisers = () => {
 };
   console.log("selectedCategory", selectedCategory);
 
-  const handleCategoriesSubmit=(e)=>{
+  const handleCategoriesSubmit = async (e) => {
     e.preventDefault();
-  }
+    
+    try {
+      const queryParams = new URLSearchParams();
+      selectedCategory.forEach(id => queryParams.append('categoryIds', id));
+  
+      const res = await fetch(`${APIBASEURL}/fundraisers/category/?${queryParams.toString()}`, {
+        method: "GET",
+        headers: {
+          // "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+      
+      if (res.status !== 200) {
+        handleError(res.status);
+        return 
+      } else {
+        const data = await res.json();
+        console.log(data); // Handle the response data
+        setMultipleCategoryFundraiser(data)
+        if(multipleCategoryFundraiser){
+          setShowMultipleCategoryData(true)
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   useEffect(() => {
 const getAllCategories =async()=>{
@@ -112,8 +141,6 @@ const getAllCategories =async()=>{
   
 
 
-
-
   return (
     <div className="w-full flex flex-col items-center mb-10 overflow-x-hidden">
       <h1 className="text-4xl font-extrabold py-8 pl-8 md:pl-0">
@@ -159,13 +186,19 @@ const getAllCategories =async()=>{
                   <ViewCard {...data} />
                 </Link>
               </div>
-            ))) : (activeFundraiser.map((data, index) => (
+            ))) : ( showMultipleCategoryData ? ( (multipleCategoryFundraiser.map((data, index) => (
               <div key={index} className="min-h-[400px] h-auto md:h-full">
                 <Link to={`/fundraisers/${data.id}`}>
                   <ViewCard {...data} />
                 </Link>
               </div>
-            )))}
+            )))) :  (activeFundraiser.map((data, index) => (
+              <div key={index} className="min-h-[400px] h-auto md:h-full">
+                <Link to={`/fundraisers/${data.id}`}>
+                  <ViewCard {...data} />
+                </Link>
+              </div>
+            ))))   }
           </div>
         </div>
       </div>

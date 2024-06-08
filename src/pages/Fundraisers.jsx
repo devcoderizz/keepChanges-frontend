@@ -950,9 +950,10 @@ const Fundraisers = () => {
                     69 Donators{" "}
                   </span>
                 </div>
-                <button className="bg-[#FF5C5C] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
+                
+                <Link to={"/donation-page"} className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
                   Donate now
-                </button>
+                </Link>
 
                 <div className="border-t border-black  mt-8 w-[280px] mx-6 "></div>
 
@@ -1026,9 +1027,9 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
-            <button className="bg-red-500 text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+            <Link to={"/donation-page"} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
               Donate now{" "}
-            </button>
+            </Link>
           </div>
         </div>
 

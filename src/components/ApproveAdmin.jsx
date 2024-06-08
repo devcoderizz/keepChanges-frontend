@@ -2,7 +2,7 @@ import { useState } from "react";
 import useAuth from "../utils/IsAuthenticated";
 import handleError from "../utils/ErrorHandler";
 import toast from "react-hot-toast";
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
 
 
 const ApproveAdmin = ({fundraiserDetails}) => {
@@ -61,7 +61,7 @@ const ApproveAdmin = ({fundraiserDetails}) => {
         
             if (response.ok) {
               toast.success("Fundraiser Approved successfully!");
-            // window.location.reload(false)
+            window.location.reload(false)
               // Navigate(`/fundraisers/${data.id}`)
             } else {
               toast.error(data.error || "Error Approving fundraiser");

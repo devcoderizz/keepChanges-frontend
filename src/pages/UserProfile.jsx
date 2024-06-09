@@ -8,13 +8,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "antd";
 import toast from "react-hot-toast";
 import useAuth from "../utils/IsAuthenticated";
-import { RiDeleteBin2Fill } from "react-icons/ri";
-import { TiArrowBack } from "react-icons/ti";
-import { IoIosRemoveCircle, IoMdAddCircle } from "react-icons/io";
+import {  IoMdAddCircle } from "react-icons/io";
 // import Fundraisers from "./Fundraisers";
 import handleError from "../utils/ErrorHandler";
-import { BsBank2 } from "react-icons/bs";
 import DonateFund from "../components/modal/DonateFund";
+import EditAndDeleteAccount from "../components/EditAndDeleteAccount";
 
 const UserProfile = () => {
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
@@ -23,16 +21,15 @@ const UserProfile = () => {
   // const { fetchAccess, isAccessTokenValid } = useAuth();
   const [userData, setUserData] = useState({});
   const [allFundraisers, setAllFundraisers] = useState([]);
-  const [approvedFundraisers, setApprovedFundraisers] = useState([]);
+  const [openFundraisers, setOpenFundraisers] = useState([]);
   const [pendingFundraisers, setPendingFundraisers] = useState([]);
   const [disapprovedFundraisers, setDisapprovedFundraisers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
   const [allAccount, setAllAccount] = useState([]);
-  const [allreadyAccount, setallreadyAccount] = useState(true);
+  console.log("all accounts", allAccount);
   const [accountFormData, setAccountFormData] = useState({});
-  const [deleteAccount, setDeleteAccount] = useState(true);
-  const [inputData, setInputData] = useState(null);
+
   const [panFormData, setPanFormData] = useState({});
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const { fetchAccess, isAccessTokenValid } = useAuth();
@@ -52,19 +49,21 @@ const UserProfile = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    const approved = allFundraisers.filter(
-      (fundraiser) => fundraiser.approval === "APPROVED"
+    const open = allFundraisers.filter(
+      (fundraiser) => fundraiser.status === "OPEN"
     );
-    const pending = allFundraisers.filter(
-      (fundraiser) => fundraiser.approval === "PENDING"
+    const complete = allFundraisers.filter(
+      (fundraiser) => fundraiser.status === "INACTIVE"
     );
-    const rejected = allFundraisers.filter(
-      (fundraiser) => fundraiser.approval === "DISAPPROVED"
+    const cancel = allFundraisers.filter(
+      (fundraiser) => fundraiser.status === "CANCELLED"
     );
+   
 
-    setApprovedFundraisers(approved);
-    setPendingFundraisers(pending);
-    setDisapprovedFundraisers(rejected);
+    setOpenFundraisers(open);
+    setPendingFundraisers(complete);
+    setDisapprovedFundraisers(cancel);
+
   }, [allFundraisers]);
 
   useEffect(() => {
@@ -105,7 +104,8 @@ const UserProfile = () => {
     };
     user();
 
-    const Accounts = async () => {
+    const Accounts = async (e) => {
+      e.preventDefault()
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
@@ -209,10 +209,10 @@ const UserProfile = () => {
     setIsUpdateShow(false);
   };
 
-  const handleAccountShown = (e) => {
-    e.preventDefault();
-    setallreadyAccount(!allreadyAccount);
-  };
+  // const handleAccountShown = (e) => {
+  //   e.preventDefault();
+  //   setallreadyAccount(!allreadyAccount);
+  // };
 
   const handleChange = (e) => {
     setAccountFormData({
@@ -236,6 +236,7 @@ const UserProfile = () => {
   };
 
   const handleAccountAdd = async () => {
+ 
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -251,28 +252,31 @@ const UserProfile = () => {
         body: JSON.stringify(accountFormData),
       });
 
-      if (res.status === 200) {
-        toast.success("Account Added");
-      }
-      if (res.status != 200) {
-        handleError(res.status);
-        return;
+      if (res.status === 201) {
+        toast.success("Account Added")
+        window.location.reload(false)
+      }else {
+        handleError(res.status)
+        toast.error("this Account is Already exist")
+        console.log( "kuch text",res.status);
+        return
+
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleDeleteForm = (e) => {
-    e.preventDefault();
-    setDeleteAccount(!deleteAccount);
-  };
+  // const handleDeleteForm = (e) => {
+  //   e.preventDefault();
+  //   setDeleteAccount(!deleteAccount);
+  // };
 
-  const handleInputChange = (e) => {
-    setInputData({
-      [e.target.id]: e.target.value,
-    });
-  };
+  // const handleInputChange = (e) => {
+  //   setInputData({
+  //     [e.target.id]: e.target.value,
+  //   });
+  // };
 
   const handleInputPanChange = (e) => {
     setPanFormData({
@@ -281,66 +285,38 @@ const UserProfile = () => {
     });
   };
 
-  const handleAccountSelect = async (e) => {
-    e.preventDefault();
-    if (!isAccessTokenValid()) {
-      await fetchAccess();
-    }
-    const accessToken = localStorage.getItem("accessToken");
+  // const handleAccountSelect = async (e) => {
+  //   e.preventDefault();
+  //   if (!isAccessTokenValid()) {
+  //     await fetchAccess();
+  //   }
+  //   const accessToken = localStorage.getItem("accessToken");
 
-    try {
-      const res = await fetch(
-        `${APIBASEURL}/fundraisers/fundraiser_${id}/account_${inputData.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(inputData.id),
-        }
-      );
+  //   try {
+  //     const res = await fetch(
+  //       `${APIBASEURL}/fundraisers/fundraiser_${id}/account_${inputData.id}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(inputData.id),
+  //       }
+  //     );
 
-      if (res.status === 200) {
-        toast.success("Account Selected");
-      }
-      if (res.status != 200) {
-        handleError(res.status);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     if (res.status === 200) {
+  //       toast.success("Account Selected");
+  //     }
+  //     if (res.status != 200) {
+  //       handleError(res.status);
+  //       return;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const handleAccountDelete = async (e) => {
-    e.preventDefault();
-    if (!isAccessTokenValid()) {
-      await fetchAccess();
-    }
-    const accessToken = localStorage.getItem("accessToken");
-
-    try {
-      const res = await fetch(
-        `${APIBASEURL}/accounts/account_${inputData.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(inputData.id),
-        }
-      );
-
-      if (res.status != 200) {
-        handleError(res.status);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handlePanSubmit = async (e) => {
     e.preventDefault();
@@ -597,7 +573,7 @@ console.log("User Data", userData)
                     onClick={showModalAccount}
                     className="text-md text-red-500 py-3 px-6 text-nowrap border border-red-500 mx-10 rounded-xl font-semibold hover:bg-red-500 hover:text-white "
                   >
-                    Account Details
+                   Add Account 
                   </button>
                   <Modal
                     title="Add Account"
@@ -605,118 +581,11 @@ console.log("User Data", userData)
                     onCancel={handleCancelAccount}
                     footer={null}
                   >
-                    {allreadyAccount ? (
-                      <div className="px-5  py-3 flex flex-col items-end  gap-2 mb-10">
-                        <button
-                          onClick={handleAccountShown}
-                          className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
-                        >
-                          {allreadyAccount
-                            ? "Add New Account"
-                            : "Select existing account"}
-                        </button>
-
-                        <button
-                          onClick={handleDeleteForm}
-                          className="flex items-center gap-2 bg-gray-400  p-1 rounded font-bold text-white hover:bg-red-400"
-                        >
-                          {deleteAccount ? (
-                            <h1 className="flex items-center gap-1">
-                              <RiDeleteBin2Fill />
-                              account
-                            </h1>
-                          ) : (
-                            <h1 className="flex items-center gap-1">
-                              {" "}
-                              <TiArrowBack /> back
-                            </h1>
-                          )}
-                        </button>
-                        {deleteAccount ? (
-                          <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
-                            <label
-                              htmlFor=""
-                              className="font-bold text-[#696763] "
-                            >
-                              User Accounts
-                            </label>
-                            <select
-                              name="id"
-                              id="id"
-                              value={allAccount.id}
-                              onChange={handleInputChange}
-                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                            >
-                              <option
-                                value=""
-                                className="font-bold text-[#696763]"
-                              >
-                                select an account
-                              </option>
-
-                              {allAccount.map((accounts) => (
-                                <option key={accounts.id} value={accounts.id}>
-                                  {accounts.bankName}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={handleAccountSelect}
-                              className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
-                            >
-                              <IoMdAddCircle /> Add
-                            </button>
-                          </form>
-                        ) : (
-                          <form className=" flex flex-col w-full gap-3 bg-red-200 p-4 rounded-md">
-                            <label
-                              htmlFor=""
-                              className="font-bold text-red-500 "
-                            >
-                              *Delete User Accounts
-                            </label>
-                            <select
-                              name="id"
-                              id="id"
-                              value={allAccount.id}
-                              onChange={handleInputChange}
-                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                            >
-                              <option
-                                value=""
-                                className="font-bold text-[#696763]"
-                              >
-                                select an account
-                              </option>
-
-                              {allAccount.map((accounts) => (
-                                <option key={accounts.id} value={accounts.id}>
-                                  {accounts.bankName}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={handleAccountDelete}
-                              className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
-                            >
-                              <IoIosRemoveCircle /> Remove
-                            </button>
-                          </form>
-                        )}
-                      </div>
-                    ) : (
                       <form
                         action=""
                         className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
                       >
-                        <button
-                          onClick={handleAccountShown}
-                          className="gap-2 p-2 bg-[#ed6a6a] rounded-md text-white text-xs font-bold "
-                        >
-                          {allreadyAccount
-                            ? "Add New Account"
-                            : "Select existing account"}
-                        </button>
+                        
                         <div className=" flex flex-col gap-3 w-full">
                           <label
                             htmlFor=""
@@ -767,30 +636,16 @@ console.log("User Data", userData)
                         </div>
                         <button
                           onClick={handleAccountAdd}
+                          type="button"
                           className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
                         >
                           <IoMdAddCircle /> Add
                         </button>
                       </form>
-                    )}
+              
                   </Modal>
-                  <div className=" flex flex-col items-center border-t-2 pt-2 w-full h-full">
-                    <h1 className="font-semibold mb-2 text-center text-[#636363]">
-                      Bank accounts
-                    </h1>
-                    <ul className="flex flex-col  text-sm text-red-500 font-semibold capitalize ml-5">
-                      {allAccount.map((accounts) => (
-                        <li
-                          className="flex items-center gap-2 "
-                          key={accounts.id}
-                          value={accounts.id}
-                        >
-                          <BsBank2 className="text-green-600 text-[15px]" />{" "}
-                          {accounts.bankName}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  
+                  <EditAndDeleteAccount/>
                 </div>
               </div>
               <div className="w-[300px] h-[200px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg ">
@@ -1075,7 +930,7 @@ console.log("User Data", userData)
                         <TabPanels>
                           <TabPanel>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                              {approvedFundraisers.map((data, index) => (
+                              {openFundraisers.map((data, index) => (
                                 <div className="p-4" key={index}>
                                   <Link to={`/fundraisers/${data.id}`}>
                                     <ViewCard {...data} />

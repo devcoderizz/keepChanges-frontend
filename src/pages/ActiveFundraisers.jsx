@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import handleError from "../utils/ErrorHandler";
 
 const ActiveFundraisers = () => {
-  const { id } = useParams();
+  let { id } = useParams();
   const navigate = useNavigate();
   const APIBASEURL= import.meta.env.VITE_API_BASEURL;
   const [query, setQuery] = useState("");
@@ -44,6 +44,7 @@ const ActiveFundraisers = () => {
 
   const handleCategoriesSubmit = async (e) => {
     e.preventDefault();
+   navigate('/all-fundraisers')
     
     try {
       const queryParams = new URLSearchParams();

@@ -951,7 +951,7 @@ const Fundraisers = () => {
                   </span>
                 </div>
                 
-                <Link to={"/donation-page"} className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
+                <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
                   Donate now
                 </Link>
 
@@ -976,7 +976,6 @@ const Fundraisers = () => {
               </div>
             )}
 
-            {}
 
             <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
               <img

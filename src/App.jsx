@@ -39,7 +39,7 @@ function App() {
       <Route path='/user-update' element={<UserUpdate/>} />
       <Route path='/AdminDashbaord' element={<AdminDashboard/>} />
       <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/donation-page' element={<DonationPage/>} />
+      <Route path='/donation-page/:id' element={<DonationPage/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

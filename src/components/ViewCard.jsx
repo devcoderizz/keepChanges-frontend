@@ -6,14 +6,14 @@ const ViewCard = ({...data}) => {
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const completionPercentage = (300005 / data.raiseGoal) * 100;
 
-  // const truncatedTitle = fundraiserTitle.length > 70 ? fundraiserTitle.substring(0, 70) + ' ...' : fundraiserTitle;
+  const truncatedTitle = data.fundraiserTitle.length > 70 ? data.fundraiserTitle.substring(0, 80) + ' ...' : data.fundraiserTitle;
 
   return (
     
       <div className="md:w-[400px] w-[80vw] h-[70vh]  mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
           <img className="w-full md:h-[300px] h-[240px] object-cover  object-center " src={`${VITE_BASE_IMAGE_URL}${data.displayPhoto}`} alt="Donation" />
           <div className="px-6 py-4">
-              <h1 className="  flex flex-row font-bold text-lg mb-2 truncate w-[290px] md:w-[350px] text-wrap ">{data.fundraiserTitle}</h1>
+              <h1 className="  flex flex-row font-bold text-sm md:text-lg mb-2 truncate w-[290px] md:w-[400px] text-wrap pr-2  md:pr-0 ">{truncatedTitle}</h1>
               <span className=' my-1  text-gray-500 font-semibold'>{data?.postedBy ? data?.postedBy.name : 'Anonymous'}</span> <br/>
               <div className='mt-4'>
                 <div className='flex flex-row gap-28 justify-between'>

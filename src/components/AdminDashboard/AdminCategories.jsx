@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import handleError from "../../utils/ErrorHandler";
 import { Button, message, Popconfirm } from "antd";
 import useAuth from "../../utils/IsAuthenticated";
+import toast from "react-hot-toast";
 
 const AdminCategories = () => {
   const [allCategories, setAllCategories] = useState([]);
@@ -75,7 +76,9 @@ const AdminCategories = () => {
         body: payload,
       });
       
+      console.log("res", res)
       if (res.status !== 200) {
+      
         handleError(res.status);
       }
       const data = await res.json();
@@ -84,6 +87,7 @@ const AdminCategories = () => {
       setAllCategories([...allCategories, data]);
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
 
@@ -225,7 +229,7 @@ const AdminCategories = () => {
             ))}
           </div>
         </div>
-        <div className="flex items-start mt-4 md:mt-0 p-6 md:p-0">
+        <div className="flex items-start mt-0 md:mt-0 p-[2] md:p-0">
           <Button
             type="primary"
             className="bg-red-500 text-white hover:bg-red-600"

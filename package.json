@@ -30,6 +30,7 @@
     "react-responsive": "^10.0.0",
     "react-router-dom": "^6.23.0",
     "recoil": "^0.7.7",
+    "rsuite": "^5.64.0",
     "swiper": "^11.1.1",
     "yup": "^1.4.0"
   },

@@ -1,6 +1,4 @@
-import React from 'react';
-import { PanelGroup, Panel, Placeholder } from 'rsuite';
-import 'rsuite/dist/rsuite.min.css';
+
 
 const AdminFundraisers = () => {
   return (
@@ -19,17 +17,7 @@ const AdminFundraisers = () => {
           </div>
         </div>
         <div className="my-4">
-          <PanelGroup accordion bordered className="w-[95%] ">
-            <Panel header="Panel 1" defaultExpanded>
-              <Placeholder.Paragraph />
-            </Panel>
-            <Panel header="Panel 2">
-              <Placeholder.Paragraph />
-            </Panel>
-            <Panel header="Panel 3">
-              <Placeholder.Paragraph />
-            </Panel>
-          </PanelGroup>
+         
         </div>
       </div>
       <div className="h-16"></div> {/* Spacer to ensure footer is not overlapped */}

@@ -1,5 +1,3 @@
-import { PanelGroup, Panel, Placeholder } from 'rsuite';
-import 'rsuite/dist/rsuite.min.css';
 
 const AdminDonations = () => {
   return (
@@ -17,18 +15,7 @@ const AdminDonations = () => {
      </div>
    </div>
    <div className='my-4' >
-   <PanelGroup accordion bordered className='w-[95%]' >
- <Panel header="Panel 1" defaultExpanded>
-   <Placeholder.Paragraph />
-
- </Panel>
- <Panel header="Panel 2">
-   <Placeholder.Paragraph />
- </Panel>
- <Panel header="Panel 3">
-   <Placeholder.Paragraph />
- </Panel>
-</PanelGroup>
+  
  </div>
  </div>
   )

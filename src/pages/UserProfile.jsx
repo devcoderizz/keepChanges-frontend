@@ -13,6 +13,7 @@ import {  IoMdAddCircle } from "react-icons/io";
 import handleError from "../utils/ErrorHandler";
 import DonateFund from "../components/modal/DonateFund";
 import EditAndDeleteAccount from "../components/EditAndDeleteAccount";
+import Button from "../components/Button";
 
 const UserProfile = () => {
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
@@ -462,13 +463,17 @@ console.log("User Data", userData)
                 </div>
               </div>
               {localData && localData?.id === userData?.id && (
+                <>
                 <button
                   onClick={showModalUpdate}
                   className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
                 >
                   Edit
                 </button>
+                <Button/>
+                </>
               )}
+              
               <Modal
                 title="Update User Detials "
                 open={isUpdateShow}

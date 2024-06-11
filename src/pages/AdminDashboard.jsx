@@ -58,7 +58,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center text-2xl text-white bg-red-500 w-full py-2 font-extrabold uppercase">
         <span>Admin Dashboard</span>
       </div>
-      <div className=" md:flex-grow flex-grow-0 hidden md:flex">
+      <div className=" md:flex-grow flex-grow-0 hidden md:flex h-screen ">
         <Sidebar className="h-full bg-[#cb3f43] text-black">
           <Menu className="mt-8">
             <MenuItem className="text-black hover:text-black" onClick={() => setCurrentView('Dashboard')}>

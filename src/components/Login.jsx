@@ -25,13 +25,14 @@ const Login = () => {
     e.preventDefault();
     setLoading(true)
     try {
-      const res = await fetch(`${APIBASEURL}/auth/login`, {
+      const res = await fetch(`${APIBASEURL}/auth/login1`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
       if(res.status!=200){
         handleError(res.status); 
         }
@@ -133,9 +134,9 @@ const Login = () => {
                 <button className="w-[270px] px-2.5 py-2 rounded-full bg-[#FF5C5C] text-2xl font-bold text-white ">
                   {loading ? "Loading...": "Login"}
                 </button>
-                <a href="/" className=" ml-5 text-[13px] font-semibold">
+                <Link to={"/forget-password"} className=" ml-5 text-[13px] font-semibold hover:text-red-400 hover:underline">
                   Forget Password ?
-                </a>
+                </Link>
               </div>
             </div>
             <h1 className="text-[15px] font-bold">

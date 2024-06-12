@@ -320,7 +320,7 @@ const Fundraisers = () => {
       if (res.status != 200) {
         handleError(res.status);
       }
-      const data = await res.json();
+      // const data = await res.json();
       // console.log("add bank data", data);
       // setAllAccount(data);
       if (res.status === 200) {
@@ -362,7 +362,7 @@ const Fundraisers = () => {
       if (res.status != 200) {
         handleError(res.status);
       }
-      const data = await res.json();
+      // const data = await res.json();
       // console.log("account added", data);
       if (res.status === 200) {
         toast.success("Account Selected");

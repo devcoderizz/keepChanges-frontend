@@ -14,6 +14,7 @@
     "@chakra-ui/tabs": "^3.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "antd": "^5.17.0",
+    "antd-input-otp": "^2.1.0",
     "flowbite-react": "^0.9.0",
     "formik": "^2.4.6",
     "hamburger-react": "^2.5.0",

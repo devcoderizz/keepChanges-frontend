@@ -838,10 +838,6 @@ console.log("User Data", userData)
             </div>
           )}
           <div className="w-full h-full md:w-[70%]">
-            <h1 className="text-xl md:text-2xl font-semibold mb-5  text-center md:text-left">
-              Fundraisers that you have created
-            </h1>
-
             <Tabs className="bg-white min-h-[600px] flex flex-col  rounded-md">
               <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
                 <Tab
@@ -868,6 +864,9 @@ console.log("User Data", userData)
                 <TabPanels>
                   <TabPanel>
                     <div>
+                    <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
+              Fundraisers that you have created
+            </h1>
                       <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md py-5">
                         <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
                           <Tab
@@ -933,6 +932,7 @@ console.log("User Data", userData)
                         </TabList>
 
                         <TabPanels>
+                          
                           <TabPanel>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
                               {openFundraisers.map((data, index) => (
@@ -971,7 +971,11 @@ console.log("User Data", userData)
                       </Tabs>
                     </div>
                   </TabPanel>
-                  <TabPanel><div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                  <TabPanel>
+                  <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
+              Donation that you have Made
+            </h1>
+                    <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
                   {allUserDonations.map((data, index) => (
                                 <div className="" key={index}>
                                   <Link to={`/fundraisers/${data.fundraiser.id}`}>

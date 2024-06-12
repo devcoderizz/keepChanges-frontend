@@ -15,6 +15,8 @@ import UserUpdate from "./pages/UserUpdate"
 import AdminDashboard from "./pages/AdminDashboard"
 import Dashboard from "./components/AdminDashboard/Dashboard"
 import DonationPage from "./components/DonationPage"
+import ForgetPassword from "./components/ForgetPassword"
+import VerifyOtp from "./components/VerifyOtp"
 
 
 
@@ -40,6 +42,8 @@ function App() {
       <Route path='/Admin/Dashboard' element={<AdminDashboard/>} />
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/donation-page/:id' element={<DonationPage/>} />
+      <Route path='/forget-password' element={<ForgetPassword/>} />
+      <Route path='/forget-password/verify-otp' element={<VerifyOtp/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

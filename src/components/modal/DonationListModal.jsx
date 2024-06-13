@@ -1,6 +1,6 @@
 import { FaCircleUser } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
-const DonationListModal = ({onClose}) => {
+const DonationListModal = ({onClose, fundraiserDetails}) => {
   
   const agentData = [
     { name: "Agent 1", donation: 69.69 },
@@ -28,19 +28,22 @@ const DonationListModal = ({onClose}) => {
       <h1 className="text-2xl  mb-6 text-red-500 border-b-2 border-spacing-2 border-dashed border-gray-500 font-semibold ">
         Change Agents
       </h1>
-    <div className="h-[350px]  overflow-y-scroll w-[90%] md:w-[65%] px-4 rounded-lg bg-[#f7e4e4] " >
-      {agentData.map((agent, index) => (
-        <div key={index} className="flex flex-row gap-10 my-2">
-          <FaCircleUser size={40} color="gray" className="mt-4" />
-          <div className="flex flex-col gap-1">
-            <p className="text-xl text-[#858585]">{agent.name}</p>
-            <p>Donation: ${agent.donation}</p>
-            <span className="text-gray-500 font-medium">
-              Thank you for being an agent
-            </span>
-          </div>
-        </div>
-      ))}
+    <div className="h-[350px]  overflow-y-scroll w-[90%] md:w-[90%] px-4 rounded-lg bg-[#f7e4e4] " >
+    {fundraiserDetails?.donations?.map((agent, index) => (
+              <>
+                <div key={index} className="flex flex-row gap-10 my-2">
+                  <FaCircleUser size={40} color="gray" className="mt-4" />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl text-[#858585]"> {agent.donor.name}</p>
+                    <p>Donation: ${agent.donationAmount}</p>
+                    <span className="text-gray-500 font-medium ">
+                      Thank you for being an agent
+                    </span>
+                  </div>
+                </div>
+                <div className="border-t-2 border-gray-300 w-[280px] md:w-[450px]"></div>
+              </>
+            ))}
     </div>
     </div>
   );

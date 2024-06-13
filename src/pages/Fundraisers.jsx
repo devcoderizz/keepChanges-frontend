@@ -44,6 +44,8 @@ const Fundraisers = () => {
   const [accountFormData, setAccountFormData] = useState({});
   const [inputData, setInputData] = useState(null);
   const localData = JSON.parse(localStorage?.getItem("UserData"));
+
+
   const navigate = useNavigate();
   const { fetchAccess, isAccessTokenValid } = useAuth();
   const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
@@ -292,7 +294,6 @@ const Fundraisers = () => {
   console.log(accountFormData);
 
   const handleAccountAdd = async (e) => {
-    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -332,7 +333,6 @@ const Fundraisers = () => {
   console.log(inputData);
 
   const handleAccountSelect = async (e) => {
-    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -961,6 +961,9 @@ const Fundraisers = () => {
               </div>
             )}
 
+
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
+
             <Tabs className="bg-white min-h-[600px] w-[380px] flex flex-col rounded-md">
               <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
                 <Tab
@@ -989,6 +992,7 @@ const Fundraisers = () => {
                 <TabPanel>
                   {/* <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10"> */}
                   <div className=" grid md:grid-cols-2 grid-cols-1 gap-2 ">
+
               <img
                 className="md:w-[25vw] md:h-[30vh]"
                 src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
@@ -1047,6 +1051,8 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
+
+            
             <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
             </Link>
           </div>
@@ -1058,21 +1064,25 @@ const Fundraisers = () => {
               Change Agents
             </h1>
 
-            {agentData.map((agent, index) => (
-              <>
-                <div key={index} className="flex flex-row gap-10 my-2">
+            {fundraiserDetails?.donations?.slice(0, 5).map((agent, index) => (
+              <div key={index}>
+                <div className="flex flex-row gap-10 my-2">
                   <FaCircleUser size={40} color="gray" className="mt-4" />
                   <div className="flex flex-col gap-1">
-                    <p className="text-xl text-[#858585]"> {agent.name}</p>
-                    <p>Donation: ${agent.donation}</p>
+                    <p className="text-xl text-[#858585]">
+                      {" "}
+                      {agent.donor.name}
+                    </p>
+                    <p>Donation: ${agent.donationAmount}</p>
                     <span className="text-gray-500 font-medium ">
                       Thank you for being an agent
                     </span>
                   </div>
                 </div>
                 <div className="border-t-2 border-gray-300 w-[280px] md:w-[450px]"></div>
-              </>
+              </div>
             ))}
+
             <button
               onClick={handleSeeMore}
               className="text-xl my-5 underline font-semibold "
@@ -1091,7 +1101,7 @@ const Fundraisers = () => {
                     onClick={handleSeeMore}
                     className="relative z-50 cursor-pointer text-red-500 top-8 md:left-[450px] hover:text-red-800 "
                   />{" "}
-                  <DonationListModal onClose={() => setShowModal(false)} />
+                  <DonationListModal fundraiserDetails={fundraiserDetails} onClose={() => setShowModal(false)} />
                 </div>
               </div>
             )}

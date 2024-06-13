@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Textarea } from "@chakra-ui/react";
+import {
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Textarea,
+} from "@chakra-ui/react";
 import ViewCard from "../components/ViewCard";
 
 // import useAuth from "../utils/IsAuthenticated";
@@ -8,7 +15,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "antd";
 import toast from "react-hot-toast";
 import useAuth from "../utils/IsAuthenticated";
-import {  IoMdAddCircle } from "react-icons/io";
+import { IoMdAddCircle } from "react-icons/io";
 // import Fundraisers from "./Fundraisers";
 import handleError from "../utils/ErrorHandler";
 import DonateFund from "../components/modal/DonateFund";
@@ -42,10 +49,10 @@ const UserProfile = () => {
   const [userUpdateForm, setUserUpdateForm] = useState({});
   const [displayImage, setDisplayImage] = useState(null);
   const [isPanDetails, setIsPanDetails] = useState([]);
-  const [allUserDonations, setAllUserDonations] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [allUserDonations, setAllUserDonations] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  
+
   console.log("pandetails state", isPanDetails);
   const { id } = useParams();
 
@@ -59,17 +66,14 @@ const UserProfile = () => {
     const cancel = allFundraisers.filter(
       (fundraiser) => fundraiser.status === "CANCELLED"
     );
-   
 
     setOpenFundraisers(open);
     setPendingFundraisers(complete);
     setDisapprovedFundraisers(cancel);
-
   }, [allFundraisers]);
 
   useEffect(() => {
     const user = async () => {
-     
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
@@ -82,8 +86,8 @@ const UserProfile = () => {
 
         if (res.status != 200) {
           handleError(res.status);
-          navigate(`/user-profile/${localData.id}`)
-          window.location.reload(false)
+          navigate(`/user-profile/${localData.id}`);
+          window.location.reload(false);
           return;
         }
         const res2 = await fetch(
@@ -100,13 +104,12 @@ const UserProfile = () => {
         setAllFundraisers(fundraiserInfo);
       } catch (error) {
         console.log(error);
-       
       }
     };
     user();
 
     const Accounts = async (e) => {
-      e.preventDefault()
+      e.preventDefault();
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
@@ -173,16 +176,13 @@ const UserProfile = () => {
           return;
         }
         const data = await res.json();
-        setAllUserDonations(data)
-        console.log("donations ",data);
+        setAllUserDonations(data);
+        console.log("donations ", data);
       } catch (error) {
         console.log(error);
       }
     };
     getUserDonations();
-
-
-
   }, [APIBASEURL]);
 
   const showModalAccount = () => {
@@ -195,7 +195,6 @@ const UserProfile = () => {
     setIsUpdateShow(true);
     setUserUpdateForm({});
   };
-
 
   const handleCancelAccount = () => {
     setIsModalOpenAccount(false);
@@ -222,22 +221,17 @@ const UserProfile = () => {
     });
   };
   const handleChangeUpdate = (e) => {
-   
     setUserUpdateForm({
       ...userUpdateForm,
       [e.target.id]: e.target.value,
     });
   };
 
-  
-
-
   const handleFileChange = (e) => {
     setDisplayImage(e.target.files[0]);
   };
 
   const handleAccountAdd = async () => {
- 
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -254,14 +248,13 @@ const UserProfile = () => {
       });
 
       if (res.status === 201) {
-        toast.success("Account Added")
-        window.location.reload(false)
-      }else {
-        handleError(res.status)
-        toast.error("this Account is Already exist")
-        console.log( "kuch text",res.status);
-        return
-
+        toast.success("Account Added");
+        window.location.reload(false);
+      } else {
+        handleError(res.status);
+        toast.error("this Account is Already exist");
+        console.log("kuch text", res.status);
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -318,7 +311,6 @@ const UserProfile = () => {
   //   }
   // };
 
-
   const handlePanSubmit = async (e) => {
     e.preventDefault();
     if (!isAccessTokenValid()) {
@@ -349,8 +341,8 @@ const UserProfile = () => {
   };
 
   const handleUpdateSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     const payload = new FormData();
     const { name, about, password, email, phone } = userUpdateForm;
 
@@ -367,8 +359,8 @@ const UserProfile = () => {
     if (displayImage) {
       payload.append("profileImage", displayImage);
     }
-    console.log("displayImage", displayImage)
-    console.log("payload " , payload);
+    console.log("displayImage", displayImage);
+    console.log("payload ", payload);
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -385,15 +377,15 @@ const UserProfile = () => {
           body: payload,
         }
       );
-      window.location.reload(false)
+      window.location.reload(false);
       if (res.status != 200) {
         handleError(res.status);
-        setLoading(false)
+        setLoading(false);
         return;
       }
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -423,7 +415,7 @@ const UserProfile = () => {
       console.log(error);
     }
   };
-console.log("User Data", userData)
+  console.log("User Data", userData);
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
       <div className="w-[90vw] h-full py-10">
@@ -464,16 +456,16 @@ console.log("User Data", userData)
               </div>
               {localData && localData?.id === userData?.id && (
                 <>
-                <button
-                  onClick={showModalUpdate}
-                  className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
-                >
-                  Edit
-                </button>
-                <Button/>
+                  <button
+                    onClick={showModalUpdate}
+                    className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
+                  >
+                    Edit
+                  </button>
+                  <Button />
                 </>
               )}
-              
+
               <Modal
                 title="Update User Detials "
                 open={isUpdateShow}
@@ -536,7 +528,7 @@ console.log("User Data", userData)
                       defaultValue={userData.about}
                       onChange={handleChangeUpdate}
                       placeholder="About"
-                      maxlength ="500"
+                      maxlength="500"
                       className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
                     ></Textarea>
                   </div>
@@ -558,7 +550,7 @@ console.log("User Data", userData)
                     onClick={handleUpdateSubmit}
                     className=" py-1 px-2 bg-transparent border-[#EF5757] border-2 font-bold text-lg"
                   >
-                   {loading ? "Loading..." : "Submit"}
+                    {loading ? "Loading..." : "Submit"}
                   </button>
                 </form>
               </Modal>
@@ -578,7 +570,7 @@ console.log("User Data", userData)
                     onClick={showModalAccount}
                     className="text-md text-red-500 py-3 px-6 text-nowrap border border-red-500 mx-10 rounded-xl font-semibold hover:bg-red-500 hover:text-white "
                   >
-                   Add Account 
+                    Add Account
                   </button>
                   <Modal
                     title="Add Account"
@@ -586,71 +578,66 @@ console.log("User Data", userData)
                     onCancel={handleCancelAccount}
                     footer={null}
                   >
-                      <form
-                        action=""
-                        className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                    <form
+                      action=""
+                      className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
+                    >
+                      <div className=" flex flex-col gap-3 w-full">
+                        <label htmlFor="" className="font-bold text-[#696763] ">
+                          Add a new account{" "}
+                        </label>
+                        <input
+                          type="text"
+                          name="bankName"
+                          id="bankName"
+                          onChange={handleChange}
+                          placeholder="Enter bank Name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                        <input
+                          type="number"
+                          name="accountNumber"
+                          id="accountNumber"
+                          onChange={handleChange}
+                          placeholder="Enter account number"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                        <input
+                          type="text"
+                          name="branch"
+                          id="branch"
+                          onChange={handleChange}
+                          placeholder="Enter branch name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                        <input
+                          type="text"
+                          name="ifsc"
+                          id="ifsc"
+                          onChange={handleChange}
+                          placeholder="Enter IFSC code"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                        <input
+                          type="text"
+                          name="holderName"
+                          id="holderName"
+                          onChange={handleChange}
+                          placeholder="Enter account holder’s name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                      </div>
+                      <button
+                        onClick={handleAccountAdd}
+                        type="button"
+                        className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
                       >
-                        
-                        <div className=" flex flex-col gap-3 w-full">
-                          <label
-                            htmlFor=""
-                            className="font-bold text-[#696763] "
-                          >
-                            Add a new account{" "}
-                          </label>
-                          <input
-                            type="text"
-                            name="bankName"
-                            id="bankName"
-                            onChange={handleChange}
-                            placeholder="Enter bank Name"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="number"
-                            name="accountNumber"
-                            id="accountNumber"
-                            onChange={handleChange}
-                            placeholder="Enter account number"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            name="branch"
-                            id="branch"
-                            onChange={handleChange}
-                            placeholder="Enter branch name"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            name="ifsc"
-                            id="ifsc"
-                            onChange={handleChange}
-                            placeholder="Enter IFSC code"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                          <input
-                            type="text"
-                            name="holderName"
-                            id="holderName"
-                            onChange={handleChange}
-                            placeholder="Enter account holder’s name"
-                            className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                          />
-                        </div>
-                        <button
-                          onClick={handleAccountAdd}
-                          type="button"
-                          className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
-                        >
-                          <IoMdAddCircle /> Add
-                        </button>
-                      </form>
-              
+                        <IoMdAddCircle /> Add
+                      </button>
+                    </form>
                   </Modal>
-                  
-                  <EditAndDeleteAccount/>
+
+                  <EditAndDeleteAccount />
                 </div>
               </div>
               <div className="w-[300px] h-[200px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg ">
@@ -860,26 +847,51 @@ console.log("User Data", userData)
                 >
                   Donated Funds
                 </Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel>
-                    <div>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <div>
                     <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
-              Fundraisers that you have created
-            </h1>
-                      <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md py-5">
-                        <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
-                          <Tab
-                            className={
-                              selectedIndex === 0
-                                ? "text-red-500 underline bg-white py-2 w-1/3 rounded-l-md"
-                                : "text-black w-1/3 py-2 rounded-l-md"
-                            }
-                            onClick={() => setSelectedIndex(0)}
-                          >
-                            Active
-                          </Tab>
-                          {admin ? (
+                      Fundraisers that you have created
+                    </h1>
+                    <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md py-5">
+                      <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
+                        <Tab
+                          className={
+                            selectedIndex === 0
+                              ? "text-red-500 underline bg-white py-2 w-1/3 rounded-l-md"
+                              : "text-black w-1/3 py-2 rounded-l-md"
+                          }
+                          onClick={() => setSelectedIndex(0)}
+                        >
+                          Active
+                        </Tab>
+                        {admin ? (
+                          <>
+                            <Tab
+                              className={
+                                selectedIndex === 1
+                                  ? "text-red-500 underline bg-white py-2 w-1/3 "
+                                  : "text-black w-1/3 py-2"
+                              }
+                              onClick={() => setSelectedIndex(1)}
+                            >
+                              Pending
+                            </Tab>
+                            <Tab
+                              className={
+                                selectedIndex === 2
+                                  ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
+                                  : "text-black w-1/3 py-2 rounded-r-md"
+                              }
+                              onClick={() => setSelectedIndex(2)}
+                            >
+                              Disapproved
+                            </Tab>
+                          </>
+                        ) : (
+                          localData &&
+                          localData?.id === userData?.id && (
                             <>
                               <Tab
                                 className={
@@ -902,91 +914,64 @@ console.log("User Data", userData)
                                 Disapproved
                               </Tab>
                             </>
-                          ) : (
-                            localData &&
-                            localData?.id === userData?.id && (
-                              <>
-                                <Tab
-                                  className={
-                                    selectedIndex === 1
-                                      ? "text-red-500 underline bg-white py-2 w-1/3 "
-                                      : "text-black w-1/3 py-2"
-                                  }
-                                  onClick={() => setSelectedIndex(1)}
-                                >
-                                  Pending
-                                </Tab>
-                                <Tab
-                                  className={
-                                    selectedIndex === 2
-                                      ? "text-red-500 underline bg-white py-2 w-1/3 rounded-r-md"
-                                      : "text-black w-1/3 py-2 rounded-r-md"
-                                  }
-                                  onClick={() => setSelectedIndex(2)}
-                                >
-                                  Disapproved
-                                </Tab>
-                              </>
-                            )
-                          )}
-                        </TabList>
+                          )
+                        )}
+                      </TabList>
 
-                        <TabPanels>
-                          
-                          <TabPanel>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                              {openFundraisers.map((data, index) => (
-                                <div className="p-4" key={index}>
-                                  <Link to={`/fundraisers/${data.id}`}>
-                                    <ViewCard {...data} />
-                                  </Link>
-                                </div>
-                              ))}
-                            </div>
-                          </TabPanel>
+                      <TabPanels>
+                        <TabPanel>
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                            {openFundraisers.map((data, index) => (
+                              <div className="p-4" key={index}>
+                                <Link to={`/fundraisers/${data.id}`}>
+                                  <ViewCard {...data} />
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </TabPanel>
 
-                          <TabPanel>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                              {pendingFundraisers.map((data, index) => (
-                                <div className="p-4" key={index}>
-                                  <Link to={`/fundraisers/${data.id}`}>
-                                    <ViewCard {...data} />
-                                  </Link>
-                                </div>
-                              ))}
-                            </div>
-                          </TabPanel>
-                          <TabPanel>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
-                              {disapprovedFundraisers.map((data, index) => (
-                                <div className="p-4" key={index}>
-                                  <Link to={`/fundraisers/${data.id}`}>
-                                    <ViewCard {...data} />
-                                  </Link>
-                                </div>
-                              ))}
-                            </div>
-                          </TabPanel>
-                        </TabPanels>
-                      </Tabs>
-                    </div>
-                  </TabPanel>
-                  <TabPanel>
+                        <TabPanel>
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                            {pendingFundraisers.map((data, index) => (
+                              <div className="p-4" key={index}>
+                                <Link to={`/fundraisers/${data.id}`}>
+                                  <ViewCard {...data} />
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full h-[90%] overflow-y-scroll overflow-x-hidden no-scrollbar ">
+                            {disapprovedFundraisers.map((data, index) => (
+                              <div className="p-4" key={index}>
+                                <Link to={`/fundraisers/${data.id}`}>
+                                  <ViewCard {...data} />
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </TabPanel>
+                      </TabPanels>
+                    </Tabs>
+                  </div>
+                </TabPanel>
+                <TabPanel>
                   <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
-              Donation that you have Made
-            </h1>
-                    <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
-                  {allUserDonations.map((data, index) => (
-                                <div className="" key={index}>
-                                  <Link to={`/fundraisers/${data.fundraiser.id}`}>
-                                  <DonateFund {...data}  />
-                                  </Link>
-                                </div>
-                              ))}
-                 
-                    </div></TabPanel>
-                </TabPanels>
-              
+                    Donation that you have Made
+                  </h1>
+                  <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                    {allUserDonations.map((data, index) => (
+                      <div className="" key={index}>
+                        <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                          <DonateFund {...data} />
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </TabPanel>
+              </TabPanels>
 
               {/* ........................ */}
             </Tabs>

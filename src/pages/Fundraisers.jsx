@@ -6,7 +6,7 @@ import DonationCircle from "../components/LoadingCircle";
 import { useEffect, useRef, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
-import { Modal } from "antd";
+import { Modal  } from "antd";
 import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
@@ -19,6 +19,7 @@ import useAuth from "../utils/IsAuthenticated";
 import handleError from "../utils/ErrorHandler";
 import AddDocuments from "../components/AddDocuments";
 import ApproveAdmin from "../components/ApproveAdmin";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
@@ -35,23 +36,19 @@ const Fundraisers = () => {
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
   const [formDataUpdate, setFormDataUpdate] = useState([]);
   const [displayImageUpdate, setDisplayImageUpdate] = useState([]);
-  // const [formData, setFormData] = useState({});
   const [categories, setCategories] = useState([]);
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
   const [allAccount, setAllAccount] = useState([]);
-  // console.log("all account", allAccount);
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
   const [inputData, setInputData] = useState(null);
-
   const localData = JSON.parse(localStorage?.getItem("UserData"));
-  // console.log("local id", localData?.id);
-  console.log("donation", fundraiserDetails.donations);
-  // const accessToken = localStorage.getItem("accessToken");
-  const navigate = useNavigate();
 
+
+  const navigate = useNavigate();
   const { fetchAccess, isAccessTokenValid } = useAuth();
+  const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
 
   // console.log("image1", images1)
 
@@ -964,7 +961,38 @@ const Fundraisers = () => {
               </div>
             )}
 
+
             <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
+
+            <Tabs className="bg-white min-h-[600px] w-[380px] flex flex-col rounded-md">
+              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
+                <Tab
+                  className={
+                    selectedHeadIndex === 0
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedHeadIndex(0)}
+                >
+                  Images
+                </Tab>
+                <Tab
+                  className={
+                    selectedHeadIndex === 1
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedHeadIndex(1)}
+                >
+                  Documents
+                </Tab>
+              </TabList>
+
+              <TabPanels className=" h-full overflow-y-scroll no-scrollbar pt-5 ">
+                <TabPanel>
+                  {/* <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10"> */}
+                  <div className=" grid md:grid-cols-2 grid-cols-1 gap-2 ">
+
               <img
                 className="md:w-[25vw] md:h-[30vh]"
                 src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
@@ -996,6 +1024,18 @@ const Fundraisers = () => {
                 alt=""
               />
             </div>
+                  {/* </div> */}
+                </TabPanel>
+
+                <TabPanel>
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+                    Documents
+                  </div>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+
+            
           </div>
         </div>
         {isAdmin && <ApproveAdmin fundraiserDetails={fundraiserDetails} />}
@@ -1011,10 +1051,10 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
-            <Link
-              to={`/donation-page/${fundraiserDetails.id}`}
-              className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "
-            >
+
+            
+            <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+         
               Donate now{" "}
             </Link>
           </div>

@@ -14,7 +14,7 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
-import {  IoMdAddCircle } from "react-icons/io";
+import { IoMdAddCircle } from "react-icons/io";
 import useAuth from "../utils/IsAuthenticated";
 import handleError from "../utils/ErrorHandler";
 import AddDocuments from "../components/AddDocuments";
@@ -29,7 +29,7 @@ const Fundraisers = () => {
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [fundraiserDetails, setFundraiserDetails] = useState({});
-  console.log("details" , fundraiserDetails);
+  console.log("details", fundraiserDetails);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
@@ -47,7 +47,7 @@ const Fundraisers = () => {
 
   const localData = JSON.parse(localStorage?.getItem("UserData"));
   // console.log("local id", localData?.id);
-
+  console.log("donation", fundraiserDetails.donations);
   // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -214,19 +214,17 @@ const Fundraisers = () => {
         const data = await res.json();
         // console.log("fundraiser data", data);
         setFundraiserDetails(data);
-        
+
         if (
-          data.approval === "APPROVED" || 
-          localData?.id === data.postedBy?.id || 
-          (localData?.roles[1]?.id || localData?.roles[0]?.id === 501)
+          data.approval === "APPROVED" ||
+          localData?.id === data.postedBy?.id ||
+          localData?.roles[1]?.id ||
+          localData?.roles[0]?.id === 501
         ) {
-         console.log(" ");
-        } else { 
-          navigate("/")
+          console.log(" ");
+        } else {
+          navigate("/");
         }
-        
-
-
 
         const response = await fetch(`${APIBASEURL}/categories/getall`, {
           method: "GET",
@@ -299,7 +297,6 @@ const Fundraisers = () => {
   console.log(accountFormData);
 
   const handleAccountAdd = async (e) => {
-    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -331,8 +328,6 @@ const Fundraisers = () => {
     }
   };
 
- 
-
   const handleInputChange = (e) => {
     setInputData({
       [e.target.id]: e.target.value,
@@ -341,7 +336,6 @@ const Fundraisers = () => {
   console.log(inputData);
 
   const handleAccountSelect = async (e) => {
-    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -373,12 +367,8 @@ const Fundraisers = () => {
     }
   };
 
-  
-
-
-
   const handleSubmitUpdate = async (e) => {
- e.preventDefault()
+    e.preventDefault();
 
     if (!isAccessTokenValid()) {
       await fetchAccess();
@@ -417,28 +407,29 @@ const Fundraisers = () => {
 
     console.log("payload", payload);
 
-  
-
     try {
-      const response = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: payload,
-      });
+      const response = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: payload,
+        }
+      );
 
       console.log("payload", payload);
       const data = await response.json();
       // console.log("response", response);
-  
+
       if (response.status != 200) {
         handleError(response.status);
       }
 
       if (response.ok) {
         toast.success("Fundraiser created successfully!");
-        window.location.reload(false)
+        window.location.reload(false);
         navigate(`/fundraisers/${data.id}`);
       } else {
         // toast.error(data.error || "Error creating fundraiser");
@@ -453,23 +444,26 @@ const Fundraisers = () => {
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
           <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
-          {fundraiserDetails.approval === "APPROVED" &&
-          (<span title="Approved By Admin">✅</span>)
-          }
+          {fundraiserDetails.approval === "APPROVED" && (
+            <span title="Approved By Admin">✅</span>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row w-[90%] gap-8 my-4 md:ml-0  ">
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-between w-full px-2">
-            <span className="text-[12px] md:text-sm">
-              Capmaign by{" "}
-              <Link to={"/"} className="text-red-500 underline  ">
-                {" "}
-                Keep changes
-              </Link>
-            </span>
-            {fundraiserDetails.approval === "APPROVED" &&
-            <span className="text-red-500 text-[12px] underline">Approved By Admin</span>}
+              <span className="text-[12px] md:text-sm">
+                Capmaign by{" "}
+                <Link to={"/"} className="text-red-500 underline  ">
+                  {" "}
+                  Keep changes
+                </Link>
+              </span>
+              {fundraiserDetails.approval === "APPROVED" && (
+                <span className="text-red-500 text-[12px] underline">
+                  Approved By Admin
+                </span>
+              )}
             </div>
             <div className="flex flex-row gap-8">
               <img
@@ -519,7 +513,6 @@ const Fundraisers = () => {
                               Fundraiser Title*
                             </label>
                             <input
-                         
                               type="text"
                               name="fundraiserTitle"
                               id="fundraiserTitle"
@@ -534,7 +527,6 @@ const Fundraisers = () => {
                               Beneficiary*
                             </label>
                             <input
-                           
                               type="text"
                               name="beneficiary"
                               id="beneficiary"
@@ -550,7 +542,6 @@ const Fundraisers = () => {
                                 Goal*
                               </label>
                               <input
-                             
                                 type="number"
                                 name="raiseGoal"
                                 id="raiseGoal"
@@ -568,7 +559,6 @@ const Fundraisers = () => {
                                 End date*
                               </label>
                               <input
-                          
                                 type="date"
                                 name="endDate"
                                 id="endDate"
@@ -584,7 +574,6 @@ const Fundraisers = () => {
                               Category*
                             </label>
                             <select
-                            
                               name="id"
                               id="id"
                               defaultValue={fundraiserDetails.id}
@@ -606,7 +595,6 @@ const Fundraisers = () => {
                                 Email*
                               </label>
                               <input
-                            
                                 name="email"
                                 id="email"
                                 disabled
@@ -724,43 +712,40 @@ const Fundraisers = () => {
                               : "Select existing account"}
                           </button>
 
-                          
-                            <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
-                              <label
-                                htmlFor=""
-                                className="font-bold text-[#696763] "
+                          <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                              User Accounts
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
+                            >
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
                               >
-                                User Accounts
-                              </label>
-                              <select
-                                name="id"
-                                id="id"
-                                value={allAccount.id}
-                                onChange={handleInputChange}
-                                className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                              >
-                                <option
-                                  value=""
-                                  className="font-bold text-[#696763]"
-                                >
-                                  select an account
-                                </option>
+                                select an account
+                              </option>
 
-                                {allAccount.map((accounts) => (
-                                  <option key={accounts.id} value={accounts.id}>
-                                    {accounts.bankName}
-                                  </option>
-                                ))}
-                              </select>
-                              <button
-                                onClick={handleAccountSelect}
-                                className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
-                              >
-                                <IoMdAddCircle /> Add
-                              </button>
-                            </form>
-                         
-                            
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={handleAccountSelect}
+                              className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
+                            >
+                              <IoMdAddCircle /> Add
+                            </button>
+                          </form>
                         </div>
                       ) : (
                         <form
@@ -932,7 +917,7 @@ const Fundraisers = () => {
                       Documnets
                     </button>
                   </div> */}
-                  <AddDocuments  fundraiserDetails={fundraiserDetails} />
+                  <AddDocuments fundraiserDetails={fundraiserDetails} />
                 </div>
               </div>
             ) : (
@@ -950,8 +935,11 @@ const Fundraisers = () => {
                     69 Donators{" "}
                   </span>
                 </div>
-                
-                <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
+
+                <Link
+                  to={`/donation-page/${fundraiserDetails.id}`}
+                  className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] "
+                >
                   Donate now
                 </Link>
 
@@ -975,7 +963,6 @@ const Fundraisers = () => {
                 </button>
               </div>
             )}
-
 
             <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
               <img
@@ -1011,9 +998,7 @@ const Fundraisers = () => {
             </div>
           </div>
         </div>
-        {isAdmin && (
-          <ApproveAdmin  fundraiserDetails={fundraiserDetails} />
-        )}
+        {isAdmin && <ApproveAdmin fundraiserDetails={fundraiserDetails} />}
 
         <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-96 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
           <div className="py-4 px-2 ">
@@ -1026,7 +1011,10 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
-            <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+            <Link
+              to={`/donation-page/${fundraiserDetails.id}`}
+              className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "
+            >
               Donate now{" "}
             </Link>
           </div>
@@ -1038,21 +1026,25 @@ const Fundraisers = () => {
               Change Agents
             </h1>
 
-            {agentData.map((agent, index) => (
-              <>
-                <div key={index} className="flex flex-row gap-10 my-2">
+            {fundraiserDetails?.donations?.slice(0, 5).map((agent, index) => (
+              <div key={index}>
+                <div className="flex flex-row gap-10 my-2">
                   <FaCircleUser size={40} color="gray" className="mt-4" />
                   <div className="flex flex-col gap-1">
-                    <p className="text-xl text-[#858585]"> {agent.name}</p>
-                    <p>Donation: ${agent.donation}</p>
+                    <p className="text-xl text-[#858585]">
+                      {" "}
+                      {agent.donor.name}
+                    </p>
+                    <p>Donation: ${agent.donationAmount}</p>
                     <span className="text-gray-500 font-medium ">
                       Thank you for being an agent
                     </span>
                   </div>
                 </div>
                 <div className="border-t-2 border-gray-300 w-[280px] md:w-[450px]"></div>
-              </>
+              </div>
             ))}
+
             <button
               onClick={handleSeeMore}
               className="text-xl my-5 underline font-semibold "
@@ -1071,7 +1063,7 @@ const Fundraisers = () => {
                     onClick={handleSeeMore}
                     className="relative z-50 cursor-pointer text-red-500 top-8 md:left-[450px] hover:text-red-800 "
                   />{" "}
-                  <DonationListModal onClose={() => setShowModal(false)} />
+                  <DonationListModal fundraiserDetails={fundraiserDetails} onClose={() => setShowModal(false)} />
                 </div>
               </div>
             )}

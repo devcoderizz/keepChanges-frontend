@@ -21,7 +21,8 @@ import ForgetPassword from "./components/ForgetPassword"
 
 function App() {
   const user = useRecoilValue(userAtom)
-  
+  const localData = JSON.parse(localStorage?.getItem("UserData"));
+  const admin = localData?.roles[1]?.id || localData?.roles[0]?.id === 501
 
   return (
     <div className=" w-full  bg-[#FFF1F1] ">
@@ -38,7 +39,7 @@ function App() {
       <Route path='/fundraisers/:id' element={<Fundraisers/>} />
       <Route path='/all-fundraisers/:id?' element={<ActiveFundraisers/>} />
       <Route path='/user-update' element={<UserUpdate/>} />
-      <Route path='/Admin/Dashboard' element={<AdminDashboard/>} />
+      <Route path='/Admin/Dashboard' element={!admin ?  <Navigate to={'/'} /> : <AdminDashboard/>} />
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/donation-page/:id' element={<DonationPage/>} />
       <Route path='/forget-password' element={<ForgetPassword/>} />

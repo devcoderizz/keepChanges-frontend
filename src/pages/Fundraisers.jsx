@@ -292,7 +292,7 @@ const Fundraisers = () => {
   console.log(accountFormData);
 
   const handleAccountAdd = async (e) => {
-    e.preventDefault();
+    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -332,7 +332,7 @@ const Fundraisers = () => {
   console.log(inputData);
 
   const handleAccountSelect = async (e) => {
-    e.preventDefault();
+    
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -1047,6 +1047,7 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
+            <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
             <Link
               to={"/donation-page"}
               className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "

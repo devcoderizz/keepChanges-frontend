@@ -54,7 +54,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col md:h-[200vh] h-full ">
       <div className="flex items-center justify-center text-2xl text-white bg-red-500 w-full py-2 font-extrabold uppercase">
         <span>Admin Dashboard</span>
       </div>

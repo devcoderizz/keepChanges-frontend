@@ -25,7 +25,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true)
     try {
-      const res = await fetch(`${APIBASEURL}/auth/login1`, {
+      const res = await fetch(`${APIBASEURL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

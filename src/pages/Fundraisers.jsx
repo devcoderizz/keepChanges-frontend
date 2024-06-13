@@ -6,7 +6,7 @@ import DonationCircle from "../components/LoadingCircle";
 import { useEffect, useRef, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
-import { Modal } from "antd";
+import { Modal  } from "antd";
 import { ImImages } from "react-icons/im";
 import { MdDeleteForever } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
@@ -14,11 +14,12 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { HiLink } from "react-icons/hi";
-import {  IoMdAddCircle } from "react-icons/io";
+import { IoMdAddCircle } from "react-icons/io";
 import useAuth from "../utils/IsAuthenticated";
 import handleError from "../utils/ErrorHandler";
 import AddDocuments from "../components/AddDocuments";
 import ApproveAdmin from "../components/ApproveAdmin";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
@@ -29,29 +30,23 @@ const Fundraisers = () => {
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [fundraiserDetails, setFundraiserDetails] = useState({});
-  console.log("details" , fundraiserDetails);
+  console.log("details", fundraiserDetails);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenAccount, setIsModalOpenAccount] = useState(false);
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
   const [formDataUpdate, setFormDataUpdate] = useState([]);
   const [displayImageUpdate, setDisplayImageUpdate] = useState([]);
-  // const [formData, setFormData] = useState({});
   const [categories, setCategories] = useState([]);
   const imgUploadRef = useRef(null);
   const [images1, setImages] = useState([]);
   const [allAccount, setAllAccount] = useState([]);
-  // console.log("all account", allAccount);
   const [allreadyAccount, setallreadyAccount] = useState(true);
   const [accountFormData, setAccountFormData] = useState({});
   const [inputData, setInputData] = useState(null);
-
   const localData = JSON.parse(localStorage?.getItem("UserData"));
-  // console.log("local id", localData?.id);
-
-  // const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
-
   const { fetchAccess, isAccessTokenValid } = useAuth();
+  const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
 
   // console.log("image1", images1)
 
@@ -214,19 +209,17 @@ const Fundraisers = () => {
         const data = await res.json();
         // console.log("fundraiser data", data);
         setFundraiserDetails(data);
-        
+
         if (
-          data.approval === "APPROVED" || 
-          localData?.id === data.postedBy?.id || 
-          (localData?.roles[1]?.id || localData?.roles[0]?.id === 501)
+          data.approval === "APPROVED" ||
+          localData?.id === data.postedBy?.id ||
+          localData?.roles[1]?.id ||
+          localData?.roles[0]?.id === 501
         ) {
-         console.log(" ");
-        } else { 
-          navigate("/")
+          console.log(" ");
+        } else {
+          navigate("/");
         }
-        
-
-
 
         const response = await fetch(`${APIBASEURL}/categories/getall`, {
           method: "GET",
@@ -331,8 +324,6 @@ const Fundraisers = () => {
     }
   };
 
- 
-
   const handleInputChange = (e) => {
     setInputData({
       [e.target.id]: e.target.value,
@@ -373,12 +364,8 @@ const Fundraisers = () => {
     }
   };
 
-  
-
-
-
   const handleSubmitUpdate = async (e) => {
- e.preventDefault()
+    e.preventDefault();
 
     if (!isAccessTokenValid()) {
       await fetchAccess();
@@ -417,28 +404,29 @@ const Fundraisers = () => {
 
     console.log("payload", payload);
 
-  
-
     try {
-      const response = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: payload,
-      });
+      const response = await fetch(
+        `${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: payload,
+        }
+      );
 
       console.log("payload", payload);
       const data = await response.json();
       // console.log("response", response);
-  
+
       if (response.status != 200) {
         handleError(response.status);
       }
 
       if (response.ok) {
         toast.success("Fundraiser created successfully!");
-        window.location.reload(false)
+        window.location.reload(false);
         navigate(`/fundraisers/${data.id}`);
       } else {
         // toast.error(data.error || "Error creating fundraiser");
@@ -453,23 +441,26 @@ const Fundraisers = () => {
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
           <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
-          {fundraiserDetails.approval === "APPROVED" &&
-          (<span title="Approved By Admin">✅</span>)
-          }
+          {fundraiserDetails.approval === "APPROVED" && (
+            <span title="Approved By Admin">✅</span>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row w-[90%] gap-8 my-4 md:ml-0  ">
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-between w-full px-2">
-            <span className="text-[12px] md:text-sm">
-              Capmaign by{" "}
-              <Link to={"/"} className="text-red-500 underline  ">
-                {" "}
-                Keep changes
-              </Link>
-            </span>
-            {fundraiserDetails.approval === "APPROVED" &&
-            <span className="text-red-500 text-[12px] underline">Approved By Admin</span>}
+              <span className="text-[12px] md:text-sm">
+                Capmaign by{" "}
+                <Link to={"/"} className="text-red-500 underline  ">
+                  {" "}
+                  Keep changes
+                </Link>
+              </span>
+              {fundraiserDetails.approval === "APPROVED" && (
+                <span className="text-red-500 text-[12px] underline">
+                  Approved By Admin
+                </span>
+              )}
             </div>
             <div className="flex flex-row gap-8">
               <img
@@ -519,7 +510,6 @@ const Fundraisers = () => {
                               Fundraiser Title*
                             </label>
                             <input
-                         
                               type="text"
                               name="fundraiserTitle"
                               id="fundraiserTitle"
@@ -534,7 +524,6 @@ const Fundraisers = () => {
                               Beneficiary*
                             </label>
                             <input
-                           
                               type="text"
                               name="beneficiary"
                               id="beneficiary"
@@ -550,7 +539,6 @@ const Fundraisers = () => {
                                 Goal*
                               </label>
                               <input
-                             
                                 type="number"
                                 name="raiseGoal"
                                 id="raiseGoal"
@@ -568,7 +556,6 @@ const Fundraisers = () => {
                                 End date*
                               </label>
                               <input
-                          
                                 type="date"
                                 name="endDate"
                                 id="endDate"
@@ -584,7 +571,6 @@ const Fundraisers = () => {
                               Category*
                             </label>
                             <select
-                            
                               name="id"
                               id="id"
                               defaultValue={fundraiserDetails.id}
@@ -606,7 +592,6 @@ const Fundraisers = () => {
                                 Email*
                               </label>
                               <input
-                            
                                 name="email"
                                 id="email"
                                 disabled
@@ -724,43 +709,40 @@ const Fundraisers = () => {
                               : "Select existing account"}
                           </button>
 
-                          
-                            <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
-                              <label
-                                htmlFor=""
-                                className="font-bold text-[#696763] "
+                          <form className=" flex flex-col w-full gap-3  p-4 rounded-md">
+                            <label
+                              htmlFor=""
+                              className="font-bold text-[#696763] "
+                            >
+                              User Accounts
+                            </label>
+                            <select
+                              name="id"
+                              id="id"
+                              value={allAccount.id}
+                              onChange={handleInputChange}
+                              className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
+                            >
+                              <option
+                                value=""
+                                className="font-bold text-[#696763]"
                               >
-                                User Accounts
-                              </label>
-                              <select
-                                name="id"
-                                id="id"
-                                value={allAccount.id}
-                                onChange={handleInputChange}
-                                className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
-                              >
-                                <option
-                                  value=""
-                                  className="font-bold text-[#696763]"
-                                >
-                                  select an account
-                                </option>
+                                select an account
+                              </option>
 
-                                {allAccount.map((accounts) => (
-                                  <option key={accounts.id} value={accounts.id}>
-                                    {accounts.bankName}
-                                  </option>
-                                ))}
-                              </select>
-                              <button
-                                onClick={handleAccountSelect}
-                                className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
-                              >
-                                <IoMdAddCircle /> Add
-                              </button>
-                            </form>
-                         
-                            
+                              {allAccount.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                  {accounts.bankName}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={handleAccountSelect}
+                              className="flex  items-center gap-2 p-2 bg-green-500 rounded-md text-white text-[15px] font-bold"
+                            >
+                              <IoMdAddCircle /> Add
+                            </button>
+                          </form>
                         </div>
                       ) : (
                         <form
@@ -932,7 +914,7 @@ const Fundraisers = () => {
                       Documnets
                     </button>
                   </div> */}
-                  <AddDocuments  fundraiserDetails={fundraiserDetails} />
+                  <AddDocuments fundraiserDetails={fundraiserDetails} />
                 </div>
               </div>
             ) : (
@@ -950,8 +932,11 @@ const Fundraisers = () => {
                     69 Donators{" "}
                   </span>
                 </div>
-                
-                <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] ">
+
+                <Link
+                  to={`/donation-page/${fundraiserDetails.id}`}
+                  className="bg-[#FF5C5C] text-center rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#da5151] "
+                >
                   Donate now
                 </Link>
 
@@ -976,8 +961,34 @@ const Fundraisers = () => {
               </div>
             )}
 
+            <Tabs className="bg-white min-h-[600px] w-[380px] flex flex-col rounded-md">
+              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
+                <Tab
+                  className={
+                    selectedHeadIndex === 0
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedHeadIndex(0)}
+                >
+                  Images
+                </Tab>
+                <Tab
+                  className={
+                    selectedHeadIndex === 1
+                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                      : "text-black w-1/2 py-2 rounded-l-md"
+                  }
+                  onClick={() => setSelectedHeadIndex(1)}
+                >
+                  Documents
+                </Tab>
+              </TabList>
 
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-2 md:pr-5">
+              <TabPanels className=" h-full overflow-y-scroll no-scrollbar pt-5 ">
+                <TabPanel>
+                  {/* <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10"> */}
+                  <div className=" grid md:grid-cols-2 grid-cols-1 gap-2 ">
               <img
                 className="md:w-[25vw] md:h-[30vh]"
                 src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
@@ -1009,11 +1020,21 @@ const Fundraisers = () => {
                 alt=""
               />
             </div>
+                  {/* </div> */}
+                </TabPanel>
+
+                <TabPanel>
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+                    Documents
+                  </div>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+
+            
           </div>
         </div>
-        {isAdmin && (
-          <ApproveAdmin  fundraiserDetails={fundraiserDetails} />
-        )}
+        {isAdmin && <ApproveAdmin fundraiserDetails={fundraiserDetails} />}
 
         <div className="w-[90%] md:w-[90%]  flex flex-col md:flex-row gap-6 md:gap-96 my-8 md:ml-28 bg-[#FFE3E3] rounded-lg">
           <div className="py-4 px-2 ">
@@ -1026,7 +1047,10 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
-            <Link to={"/donation-page"} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+            <Link
+              to={"/donation-page"}
+              className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "
+            >
               Donate now{" "}
             </Link>
           </div>

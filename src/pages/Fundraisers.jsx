@@ -1048,6 +1048,7 @@ const Fundraisers = () => {
               Share
             </button>
             <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+            </Link>
             <Link
               to={"/donation-page"}
               className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "

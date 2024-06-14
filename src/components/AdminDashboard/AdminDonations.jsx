@@ -114,7 +114,7 @@ const AdminDonations = () => {
               </span>
             </AccordionSummary>
             <AccordionDetails>
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 overflow-scroll max-h-[100vh]">
               {allDonation?.map((data, index) => (
                    <div className="" key={index}>
                    <Link to={`/fundraisers/${data.fundraiser.id}`}>

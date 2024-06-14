@@ -6,10 +6,10 @@ import DonationCircle from "../components/LoadingCircle";
 import { useEffect, useRef, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
-import { Modal  } from "antd";
-import { ImImages } from "react-icons/im";
-import { MdDeleteForever } from "react-icons/md";
-import { LuUpload } from "react-icons/lu";
+import { Modal } from "antd";
+// import { ImImages } from "react-icons/im";
+// import { MdDeleteForever } from "react-icons/md";
+// import { LuUpload } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
@@ -47,8 +47,11 @@ const Fundraisers = () => {
   const navigate = useNavigate();
   const { fetchAccess, isAccessTokenValid } = useAuth();
   const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // console.log("image1", images1)
+  console.log("imagesfundraiser", fundraiserDetails?.photos);
 
   const currentUser = fundraiserDetails.postedBy
     ? fundraiserDetails.postedBy.id
@@ -96,8 +99,19 @@ const Fundraisers = () => {
     setIsModalOpenUpdate(true);
   };
 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    setImages((prevImages) => [...prevImages, ...selectedFiles]);
+  };
+
+  const handleDeleteImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
   const handleImageUpload = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     if (!isAccessTokenValid()) {
       await fetchAccess();
@@ -108,10 +122,12 @@ const Fundraisers = () => {
     try {
       const formData = new FormData();
 
-      // Append each image individually to the FormData object
+      // formData.append("images", images1);
+
       images1?.forEach((image) => {
         formData.append("images", image);
       });
+      console.log("form data", formData.get("images"));
 
       const res = await fetch(
         `${APIBASEURL}/fundraisers/fundraiser_${id}/add-photos`,
@@ -119,6 +135,8 @@ const Fundraisers = () => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            // "Content-Type": "multipart/form-data"
+            // content-type: ‘multipart/form-data’,
           },
           body: formData,
         }
@@ -132,6 +150,8 @@ const Fundraisers = () => {
       console.log("Upload successful:", data);
     } catch (error) {
       console.error("Error uploading images:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,30 +180,23 @@ const Fundraisers = () => {
   const handleSeeMore = () => {
     setShowModal(!showModal);
   };
-  const onSelectFile = (event) => {
-    const selectedFiles = event.target.files;
-    const selectedFilesArray = Array.from(selectedFiles);
+  // const onSelectFile = (event) => {
+  //   const selectedFiles = event.target.files;
+  //   const selectedFilesArray = Array.from(selectedFiles);
 
-    const imagesArray = selectedFilesArray.map((file) => {
-      return URL.createObjectURL(file);
-    });
+  //   const imagesArray = selectedFilesArray.map((file) => {
+  //     return URL.createObjectURL(file);
+  //   });
 
-    setImages((previousImages) => previousImages.concat(imagesArray));
+  //   setImages((previousImages) => previousImages.concat(imagesArray));
 
-    event.target.value = "";
-  };
+  //   event.target.value = "";
+  // };
 
-  function deleteHandler(image) {
-    setImages(images1.filter((e) => e !== image));
-    URL.revokeObjectURL(image);
-  }
-
-  const agentData = [
-    { name: "Agent 1", donation: 69.69 },
-    { name: "Agent 2", donation: 50.5 },
-    { name: "Agent 3", donation: 100.0 },
-    { name: "Agent 4", donation: 80.0 },
-  ];
+  // function deleteHandler(image) {
+  //   setImages(images1.filter((e) => e !== image));
+  //   URL.revokeObjectURL(image);
+  // }
 
   useEffect(() => {
     if (localData?.id === currentUser) {
@@ -291,8 +304,7 @@ const Fundraisers = () => {
   };
   console.log(accountFormData);
 
-  const handleAccountAdd = async (e) => {
-    
+  const handleAccountAdd = async () => {
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -313,9 +325,6 @@ const Fundraisers = () => {
       if (res.status != 200) {
         handleError(res.status);
       }
-      // const data = await res.json();
-      // console.log("add bank data", data);
-      // setAllAccount(data);
       if (res.status === 200) {
         toast.success("Account Added");
       }
@@ -331,8 +340,7 @@ const Fundraisers = () => {
   };
   console.log(inputData);
 
-  const handleAccountSelect = async (e) => {
-    
+  const handleAccountSelect = async () => {
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
@@ -831,89 +839,68 @@ const Fundraisers = () => {
                       onCancel={handleCancel}
                       footer={null}
                     >
-                      <form action="">
-                        {images1.length < 6 && (
-                          <div
-                            onClick={() => imgUploadRef.current.click()}
-                            className="w-full h-[200px] flex flex-col items-center justify-center bg-red-100 cursor-pointer "
-                          >
-                            <ImImages className=" text-7xl opacity-30" />
-                            <p className=" text-xl font-bold   opacity-50">
-                              Select atmost six Images
-                            </p>
-                          </div>
-                        )}
-                        <input
-                          ref={imgUploadRef}
-                          type="file"
-                          name="images"
-                          id="images"
-                          onChange={onSelectFile}
-                          accept="image/*"
-                          multiple
-                          style={{ display: "none" }}
-                          disabled={images1.length >= 6}
-                        />
-                        <div>
-                          <div className="images flex flex-wrap gap-5  mt-5">
-                            {images1 &&
-                              images1.map((image, index) => {
-                                return (
-                                  <div key={image} className="relative ">
-                                    <img
-                                      src={image}
-                                      height="200"
-                                      alt="upload"
-                                      className="w-[100px] h-[100px] object-cover"
-                                    />
-                                    <button
-                                      onClick={() => deleteHandler(image)}
-                                      className="absolute text-red-600 text-2xl bg-zinc-300 hover:bg-rose-400 hover:text-white rounded-full p-1 -top-3 -right-3"
-                                    >
-                                      <MdDeleteForever />
-                                    </button>
-                                    <div className="flex justify-center absolute -bottom-3 right-1/3  ">
-                                      <p className="text-xs w-[30px] font-bold text-center p-2 rounded-full bg-slate-950 text-white">
-                                        {index + 1}
-                                      </p>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                        <div className="mt-5 p-5 relative  ">
-                          {images1.length > 0 &&
-                            (images1.length > 6 ? (
-                              <p className="text-center font-bold text-red-600">
-                                *You can&apos;t upload more than 6 images!{" "}
-                                <br />
-                                <span>
-                                  please delete <b> {images1.length - 6} </b> of
-                                  them{" "}
-                                </span>
-                              </p>
-                            ) : (
-                              <button
-                                type="submit"
-                                className=" absolute right-0 bottom-5 flex items-center  gap-2 text-xl text-white bg-green-600 p-2 rounded-lg"
-                                onClick={handleImageUpload}
-                              >
-                                <LuUpload /> Upload
-                              </button>
+                      <div>
+                        <form
+                          action=""
+                          className="flex flex-col items-center gap-5  py-5"
+                        >
+                          <input
+                            type="file"
+                            ref={imgUploadRef}
+                            multiple
+                            onChange={handleFileChange}
+                            hidden
+                            accept="image/*"
+                          />
+                          {images1.length > 5 ? (
+                            " "
+                          ) : (
+                            <div
+                              onClick={() => {
+                                imgUploadRef.current.click();
+                              }}
+                              className="w-full h-[150px] bg-slate-200 flex items-center justify-center text-2xl font-bold text-slate-400 cursor-pointer"
+                            >
+                              Upload Images
+                            </div>
+                          )}
+                          <div className="flex flex-wrap gap-4 mt-5">
+                            {images1.map((image, index) => (
+                              <div key={index} className="relative">
+                                <img
+                                  className="md:w-[100px] md:h-[100px] object-cover"
+                                  src={URL.createObjectURL(image)}
+                                  alt={`Selected image ${index + 1}`}
+                                />
+                                <button
+                                  onClick={() => handleDeleteImage(index)}
+                                  className="absolute top-0 right-0 bg-red-500 text-white px-1.5 rounded-full"
+                                >
+                                  &times;
+                                </button>
+                              </div>
                             ))}
-                        </div>
-                      </form>
+                          </div>
+                          {images1.length > 6 ? (
+                            <h1 className="text-red-500 font-bold">
+                              *Images Selected More than 6
+                            </h1>
+                          ) : (
+                            <button
+                              onClick={handleImageUpload}
+                              className="text-xl px-4 py-2 bg-red-400 hover:bg-red-500 text-white font-semibold rounded-md capitalize"
+                              disabled={loading}
+                            >
+                              {loading ? "Uploading..." : "Upload"}
+                            </button>
+                          )}
+                        </form>
+
+                        {error && <p className="text-red-500">{error}</p>}
+                      </div>
                     </Modal>
                   </div>
-                  {/* <div className="w-full flex flex-col justify-center px-10">
-                    <h1 className="text-md my-4 ml-16 font-semibold ">
-                      Add your bank account
-                    </h1>
-                    <button className="text-md text-green-500 py-3 px-6 text-nowrap border border-green-500 mx-10 rounded-xl font-semibold  hover:bg-green-500 hover:text-white">
-                      Documnets
-                    </button>
-                  </div> */}
+
                   <AddDocuments fundraiserDetails={fundraiserDetails} />
                 </div>
               </div>
@@ -961,8 +948,8 @@ const Fundraisers = () => {
               </div>
             )}
 
-            <Tabs className="bg-white min-h-[600px] w-[380px] flex flex-col rounded-md">
-              <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
+            <Tabs className="bg-white min-h-[600px] w-[340px] md:w-[380px] flex flex-col rounded-md">
+              <TabList className="flex flex-row items-center justify-center md:justify-around  text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
                 <Tab
                   className={
                     selectedHeadIndex === 0
@@ -986,52 +973,46 @@ const Fundraisers = () => {
               </TabList>
 
               <TabPanels className=" h-full overflow-y-scroll no-scrollbar pt-5 ">
-                <TabPanel>
-                  {/* <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10"> */}
-                  <div className=" grid md:grid-cols-2 grid-cols-1 gap-2 ">
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-              <img
-                className="md:w-[25vw] md:h-[30vh]"
-                src="https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715707962/1636820098720_gcweet.jpg"
-                alt=""
-              />
-            </div>
-                  {/* </div> */}
-                </TabPanel>
+                {/* <TabPanel className="flex items-center justify-center">
+                 
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
+                    SDVASDVASDVA
+                  </div>
+                
+                </TabPanel> */}
 
                 <TabPanel>
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
-                    Documents
+                  <div className="flex items-center justify-center">
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
+                    
+                      {" "}
+                      {fundraiserDetails?.photos?.map((image) => (
+                        <img
+                          key={image.id}
+                          className="w-[75vw] md:w-[25vw] md:h-[30vh] object-cover"
+                          src={`${VITE_BASE_IMAGE_URL}${image.photoUrl}`}
+                          alt=""
+                        />
+                      ))}
+                  </div>
+                  </div>
+                </TabPanel>
+                <TabPanel>
+                <div className="flex items-center justify-center">
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
+                    {fundraiserDetails?.documents?.map((documents) => (
+                      <img
+                        key={documents.id}
+                        className="w-[75vw] md:w-[25vw] md:h-[30vh] object-cover"
+                        src={`${VITE_BASE_IMAGE_URL}${documents.documentUrl}`}
+                        alt=""
+                      />
+                    ))}
+                  </div>
                   </div>
                 </TabPanel>
               </TabPanels>
             </Tabs>
-
-            
           </div>
         </div>
         {isAdmin && <ApproveAdmin fundraiserDetails={fundraiserDetails} />}
@@ -1047,9 +1028,12 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
-            <Link to={`/donation-page/${fundraiserDetails.id}`} className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 ">
+            <Link
+              to={`/donation-page/${fundraiserDetails.id}`}
+              className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "
+            >
+              Donate Now
             </Link>
-
           </div>
         </div>
 
@@ -1095,7 +1079,10 @@ const Fundraisers = () => {
                     onClick={handleSeeMore}
                     className="relative z-50 cursor-pointer text-red-500 top-8 md:left-[450px] hover:text-red-800 "
                   />{" "}
-                  <DonationListModal fundraiserDetails={fundraiserDetails} onClose={() => setShowModal(false)} />
+                  <DonationListModal
+                    fundraiserDetails={fundraiserDetails}
+                    onClose={() => setShowModal(false)}
+                  />
                 </div>
               </div>
             )}

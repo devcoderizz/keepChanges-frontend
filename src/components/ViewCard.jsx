@@ -6,7 +6,7 @@ const ViewCard = ({...data}) => {
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const completionPercentage = (300005 / data.raiseGoal) * 100;
 
-  const truncatedTitle = data.fundraiserTitle.length > 70 ? data.fundraiserTitle.substring(0, 80) + ' ...' : data.fundraiserTitle;
+  const truncatedTitle = data.fundraiserTitle?.length > 70 ? data.fundraiserTitle.substring(0, 80) + ' ...' : data.fundraiserTitle;
 
   return (
     

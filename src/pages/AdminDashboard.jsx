@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         setSelectedComponent(<AdminQueries />);
         break;
       default:
-        setSelectedComponent(1);
+     
         break;
     }
   };

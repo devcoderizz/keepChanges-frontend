@@ -8,6 +8,7 @@ import ViewCard from "../ViewCard";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
+
 const AdminFundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const [allFundraisers, setAllFundraisers] = useState([]);
@@ -137,7 +138,7 @@ const AdminFundraisers = () => {
                 }
                 onClick={() => setSelectedHeadIndex(0)}
               >
-                Active &nbsp; <span className="text-xl "> ({active.length})</span>
+                Active &nbsp; <span className="text-xl hidden md:block "> ({active.length})</span>
               </Tab>
               <Tab
                 className={
@@ -148,7 +149,7 @@ const AdminFundraisers = () => {
                 onClick={() => setSelectedHeadIndex(1)}
               >
                 Pending
-                &nbsp; <span className="text-xl "> ({pending.length})</span>
+                &nbsp; <span className="text-xl hidden  md:block "> ({pending.length})</span>
               </Tab>
               <Tab
                 className={
@@ -159,7 +160,7 @@ const AdminFundraisers = () => {
                 onClick={() => setSelectedHeadIndex(2)}
               >
                 Disapproved
-                &nbsp; <span className="text-xl "> ({disapproved.length})</span>
+                &nbsp; <span className="text-xl hidden  md:block "> ({disapproved.length})</span>
               </Tab>
               <Tab
                 className={
@@ -170,7 +171,7 @@ const AdminFundraisers = () => {
                 onClick={() => setSelectedHeadIndex(3)}
               >
                 Completed
-                &nbsp; <span className="text-xl "> ({completed.length})</span>
+                &nbsp; <span className="text-xl hidden md:block"> ({completed.length})</span>
               </Tab>
               <Tab
                 className={
@@ -181,7 +182,7 @@ const AdminFundraisers = () => {
                 onClick={() => setSelectedHeadIndex(4)}
               >
                 Closed
-                &nbsp; <span className="text-xl "> ({closed.length})</span>
+                &nbsp; <span className="text-xl hidden  md:block"> ({closed.length})</span>
               </Tab>
             </TabList>
 

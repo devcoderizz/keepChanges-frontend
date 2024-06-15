@@ -7,13 +7,14 @@ import handleError from "../../utils/ErrorHandler";
 import ViewCard from "../ViewCard";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-
+import { Select } from 'antd';
 
 const AdminFundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const [allFundraisers, setAllFundraisers] = useState([]);
   const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
   const [fundrasierStats, setFundraiserStats] = useState([])
+  const [selectedComponent, setSelectedComponent] = useState(null);
   console.log("fundraiserStats", fundrasierStats);
 
   const active = allFundraisers.filter(
@@ -41,7 +42,68 @@ const AdminFundraisers = () => {
   );
 
 
-
+  const handleChange = (value) => {
+    switch (value) {
+      case '1':
+        setSelectedComponent(   <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+          {active.map((data, index) => (
+            <div key={index} className="min-h-[400px]">
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>);
+        break;
+      case '2':
+        setSelectedComponent(   <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+          {pending.map((data, index) => (
+            <div key={index} className="min-h-[400px]">
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>);
+        break;
+      case '3':
+        setSelectedComponent(   <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+          {disapproved.map((data, index) => (
+            <div key={index} className="min-h-[400px]">
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>);
+        break;
+      case '4':
+        setSelectedComponent(   <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+          {completed.map((data, index) => (
+            <div key={index} className="min-h-[400px]">
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>);
+        break;
+      case '5':
+        setSelectedComponent(   <div className="w-full grid grid-cols-1 md:grid-cols-2 my-4 gap-10">
+          {closed.map((data, index) => (
+            <div key={index} className="min-h-[400px]">
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
+        </div>);
+        break;
+      default:
+     
+        break;
+    }
+  };
 
 
 
@@ -103,7 +165,7 @@ const AdminFundraisers = () => {
             </div>
           </div>
         </div>
-        <div className="w-full md:w-[100%] h-full my-4 overflow-y-scroll max-h-[150vh] no-scrollbar ">
+        <div className="w-full md:w-[100%] h-full my-4 overflow-y-scroll max-h-[80vh]  ">
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -127,7 +189,7 @@ const AdminFundraisers = () => {
             </AccordionDetails>
           </Accordion>
         </div>
-        <div className="my-8">
+        <div className="my-8 md:block hidden ">
           <Tabs className="bg-white min-h-[600px] flex flex-col rounded-md">
             <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
               <Tab
@@ -245,6 +307,54 @@ const AdminFundraisers = () => {
             </TabPanels>
           </Tabs>
         </div>
+      <div className="md:hidden items-center flex flex-col" >
+      <Select
+        showSearch
+        style={{
+          width: 300,
+        }}
+        placeholder="Explore Advanced Administrative Tools "
+        optionFilterProp="children"
+        filterOption={(input, option) => (option?.label ?? '').includes(input)}
+        onChange={handleChange}
+        options={[
+          {
+            value: '1',
+            label: 'Active',
+          },
+          {
+            value: '2',
+            label: 'Pending',
+          },
+          {
+            value: '3',
+            label: 'Dissapproved',
+          },
+          {
+            value: '4',
+            label: 'Completed',
+          },
+          {
+            value: '5',
+            label: 'Closed',
+          },
+        
+        ]}
+      />
+      {/* Render the selected custom component */}
+      <div>
+      {selectedComponent}
+      </div>
+      </div>
+
+
+
+
+
+
+
+
+
       </div>
       <div className="h-16 flex-shrink-0"></div>{" "}
       {/* Spacer to ensure footer is not overlapped */}

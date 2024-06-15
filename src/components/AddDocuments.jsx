@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { Modal } from "antd";
 import handleError from "../utils/ErrorHandler";
 import useAuth from "../utils/IsAuthenticated";
+import { RxCross2 } from "react-icons/rx";
+import toast from "react-hot-toast";
 
 const AddDocuments = ({ fundraiserDetails }) => {
     const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -10,10 +12,11 @@ const AddDocuments = ({ fundraiserDetails }) => {
     const [isModalOpenDocuments, setIsModalOpenDocuments] = useState(false);
     const [images1, setImages] = useState([]);
     const [uploadImagesSelected, setuploadImagesSelected] = useState([])
-    const [response, setResponse] = useState([]);
-    const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
+
     const [error, setError] = useState(null);
+    const [photos, setPhotos] = useState(fundraiserDetails?.documents);
+    const [loading, setLoading] = useState(null);
     const imgUploadRef = useRef(null);
     console.log("selected images", uploadImagesSelected);
 
@@ -50,6 +53,10 @@ const AddDocuments = ({ fundraiserDetails }) => {
             }
           );
     
+          if (res.status === 200) {
+            toast.success("Image Uploaded");
+            window.location.reload(false)
+           }
           if (res.status !== 200) {
             handleError(res.status);
           }
@@ -80,65 +87,35 @@ const AddDocuments = ({ fundraiserDetails }) => {
         setIsModalOpenDocuments(false);
       };
 
-    // const handleImageChange = (e) => {
-    //     const selectedFiles = e.target.files;
-    // const selectedFilesArray = Array.from(selectedFiles);
-
-    // const imagesArray = selectedFilesArray.map((file) => {
-    //   return file.name;
-    // });
-
-    // setuploadImagesSelected((previousImages) => previousImages.concat(imagesArray));
-
-    //     const files = Array.from(e.target.files);
-    //     const validFiles = files.filter(file => file.type.startsWith('image/'));
-
-    //     const readers = validFiles.map(file => {
-    //         return new Promise((resolve, reject) => {
-    //             const reader = new FileReader();
-    //             reader.onloadend = () => resolve({ src: reader.result, name: file.name });
-    //             reader.onerror = reject;
-    //             reader.readAsDataURL(file);
-    //         });
-    //     });
-
-    //     Promise.all(readers).then(images => setSelectedImages(images));
-    // };
-
+      const deleteImages = async (imageId) => {
+        if (!isAccessTokenValid()) {
+          await fetchAccess();
+        }
+        const accessToken = localStorage.getItem("accessToken");
     
-
-    // const uploadDocuments = async (e) => {
-    //     e.preventDefault()
-    //     // Append selected images to the documents array
-    //     setDocuments(prevDocuments => [...prevDocuments, ...selectedImages]);
-    //     // Clear selected images and close modal
-    //     setSelectedImages([]);
-    //     setIsModalOpenDocuments(false);
-
-
-
-    //     if (!isAccessTokenValid()) {
-    //         await fetchAccess();
-    //     }
-    //     const accessToken = localStorage?.getItem("accessToken");
-    //     try {
-    //         const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}/add-documents`, {
-    //             method: "POST",
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //               },
-    //               body:documents ,
-    //         });
-    //         if (res.status !== 200) {
-    //             handleError(res.status);
-    //             return;
-    //         }
-    //         const data = await res.json();
-    //         setResponse(data);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
+        setLoading(imageId); // Set loading state to the current imageId
+        try {
+          const res = await fetch(
+            `${APIBASEURL}/fundraisers/fundraiser_${fundraiserDetails.id}/document_${imageId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          if (res.status === 200) {
+            toast.success("Document Deleted");
+            setPhotos(photos.filter((photo) => photo.id !== imageId)); // Update state to remove deleted image
+          } else {
+            handleError(res.status);
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(null); // Reset loading state
+        }
+      };
 
 
     return (
@@ -167,7 +144,7 @@ const AddDocuments = ({ fundraiserDetails }) => {
           hidden
           accept="image/*"
         />
-        { images1.length>9 ?" " :<div onClick={()=>{imgUploadRef.current.click()}} className="w-full h-[150px] bg-slate-200 flex items-center justify-center text-2xl font-bold text-slate-400 cursor-pointer">
+        { images1.length + photos.length >=10 ?" " :<div onClick={()=>{imgUploadRef.current.click()}} className="w-full h-[150px] bg-slate-200 flex items-center justify-center text-2xl font-bold text-slate-400 cursor-pointer">
           Upload Documents
         </div>}
         <div className="flex flex-wrap gap-4 mt-5">
@@ -187,7 +164,7 @@ const AddDocuments = ({ fundraiserDetails }) => {
           </div>
         ))}
       </div>
-      {images1.length>10 ? <h1 className="text-red-500 font-bold">*Images Selected More than 6</h1> :
+      {images1.length + photos.length >10 ? <h1 className="text-red-500 font-bold">*Select only 10 Documents</h1> :
 
         <button
           onClick={handleDocuments}
@@ -198,6 +175,36 @@ const AddDocuments = ({ fundraiserDetails }) => {
         </button>
       }
       </form>
+      <>
+      {photos.length === 10 && (
+        <h1 className="text-center mb-3 text-red-500 font-bold">
+          Delete upload to upload new
+        </h1>
+      )}
+
+      <div className="grid grid-cols-3 gap-5 bg-[#fde7e7] p-2 rounded-md">
+        {photos.map((image) => (
+          <div key={image.id} className="relative">
+            {loading === image.id && (
+              <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
+                <div className="loader">Loading...</div>
+              </div>
+            )}
+            <img
+              className={`w-[75vw] md:w-[150px] md:h-[150px] object-cover ${
+                loading === image.id ? "opacity-50" : ""
+              }`}
+              src={`${VITE_BASE_IMAGE_URL}${image.documentUrl}`}
+              alt=""
+            />
+            <RxCross2
+              onClick={() => deleteImages(image.id)}
+              className="absolute -right-1 -top-1 text-2xl font-bold p-1 bg-red-500 hover:bg-red-600 cursor-pointer text-white rounded-full"
+            />
+          </div>
+        ))}
+      </div>
+    </>
             </Modal>
         </div>
     );

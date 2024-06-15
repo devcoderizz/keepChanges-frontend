@@ -20,6 +20,7 @@ import handleError from "../utils/ErrorHandler";
 import AddDocuments from "../components/AddDocuments";
 import ApproveAdmin from "../components/ApproveAdmin";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
+import DeleteFundraiserImages from "../components/DeleteFundraiserImages";
 const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
@@ -142,6 +143,11 @@ const Fundraisers = () => {
         }
       );
 
+      if (res.status === 200) {
+        toast.success("Image Uploaded");
+        window.location.reload(false)
+       }
+
       if (res.status !== 200) {
         handleError(res.status);
       }
@@ -222,6 +228,7 @@ const Fundraisers = () => {
         const data = await res.json();
         // console.log("fundraiser data", data);
         setFundraiserDetails(data);
+        
 
         if (
           data.approval === "APPROVED" ||
@@ -852,7 +859,10 @@ const Fundraisers = () => {
                             hidden
                             accept="image/*"
                           />
-                          {images1.length > 5 ? (
+                         
+                           
+                          
+                          {images1?.length + (fundraiserDetails.photos).length >= 6 ? (
                             " "
                           ) : (
                             <div
@@ -863,9 +873,28 @@ const Fundraisers = () => {
                             >
                               Upload Images
                             </div>
+                            
+                          )
+                          }
+                 
+
+                          {images1?.length + (fundraiserDetails.photos)?.length > 6 ? (
+                            <h1 className="text-red-500 font-bold">
+                              *You can select only 6 images
+                            </h1>
+                          ) : (
+                            <button
+                              onClick={handleImageUpload}
+                              className="text-xl px-4 py-2 bg-red-400 hover:bg-red-500 text-white font-semibold rounded-md capitalize"
+                              disabled={loading}
+                            >
+                              {loading ? "Uploading..." : "Upload"}
+                            </button>
                           )}
+
+
                           <div className="flex flex-wrap gap-4 mt-5">
-                            {images1.map((image, index) => (
+                            {images1?.map((image, index) => (
                               <div key={index} className="relative">
                                 <img
                                   className="md:w-[100px] md:h-[100px] object-cover"
@@ -881,22 +910,12 @@ const Fundraisers = () => {
                               </div>
                             ))}
                           </div>
-                          {images1.length > 6 ? (
-                            <h1 className="text-red-500 font-bold">
-                              *Images Selected More than 6
-                            </h1>
-                          ) : (
-                            <button
-                              onClick={handleImageUpload}
-                              className="text-xl px-4 py-2 bg-red-400 hover:bg-red-500 text-white font-semibold rounded-md capitalize"
-                              disabled={loading}
-                            >
-                              {loading ? "Uploading..." : "Upload"}
-                            </button>
-                          )}
+                          
                         </form>
 
                         {error && <p className="text-red-500">{error}</p>}
+
+                        <DeleteFundraiserImages fundraiserDetails={fundraiserDetails} />
                       </div>
                     </Modal>
                   </div>
@@ -972,7 +991,7 @@ const Fundraisers = () => {
                 </Tab>
               </TabList>
 
-              <TabPanels className=" h-full overflow-y-scroll no-scrollbar pt-5 ">
+              <TabPanels className=" h-full max-h-[700px] overflow-y-scroll no-scrollbar pt-5 ">
                 {/* <TabPanel className="flex items-center justify-center">
                  
                   <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
@@ -982,7 +1001,7 @@ const Fundraisers = () => {
                 </TabPanel> */}
 
                 <TabPanel>
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center p-2">
                   <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
                     
                       {" "}
@@ -998,12 +1017,14 @@ const Fundraisers = () => {
                   </div>
                 </TabPanel>
                 <TabPanel>
-                <div className="flex items-center justify-center">
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
-                    {fundraiserDetails?.documents?.map((documents) => (
+                  <div className="flex items-center justify-center p-2">
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
+                    
+                      {" "}
+                      {fundraiserDetails?.documents?.map((documents) => (
                       <img
                         key={documents.id}
-                        className="w-[75vw] md:w-[25vw] md:h-[30vh] object-cover"
+                        className="w-[75vw] md:w-[27vw] md:h-[30vh] object-cover"
                         src={`${VITE_BASE_IMAGE_URL}${documents.documentUrl}`}
                         alt=""
                       />
@@ -1011,6 +1032,8 @@ const Fundraisers = () => {
                   </div>
                   </div>
                 </TabPanel>
+
+                
               </TabPanels>
             </Tabs>
           </div>

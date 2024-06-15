@@ -28,7 +28,7 @@ function App() {
     <div className=" w-full  bg-[#FFF1F1] ">
     <Navbar/>
     <ScrollToTop/>
-
+  <div className="h-full">
   <Routes>
     
 
@@ -48,9 +48,9 @@ function App() {
 
 
   </Routes>
-  
+  </div>
   <Footer/>
-  
+
   </div>
   )
 }

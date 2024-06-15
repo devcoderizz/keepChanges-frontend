@@ -10,7 +10,7 @@ import AdminCategories from '../components/AdminDashboard/AdminCategories';
 import AdminQueries from '../components/AdminDashboard/AdminQueries';
 
 const AdminDashboard = () => {
-  const [currentView, setCurrentView] = useState('Dashboard');
+  const [currentView, setCurrentView] = useState('');
   const [selectedComponent, setSelectedComponent] = useState(null);
 
   const renderContent = () => {

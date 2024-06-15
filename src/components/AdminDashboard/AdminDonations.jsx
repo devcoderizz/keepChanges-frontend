@@ -101,7 +101,7 @@ const AdminDonations = () => {
             </div>
           </div>
         </div>
-        <div className="my-4">
+        <div className="my-4 max-h-[150vh] overflow-y-scroll ">
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}

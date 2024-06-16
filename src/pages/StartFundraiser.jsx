@@ -15,8 +15,11 @@ const StartFundraiser = () => {
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({});
   const [displayImage, setDisplayImage] = useState(null);
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
 // console.log("form data", formData);
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
+  
   
   // const refreshToken = getCookie('refreshToken');
 
@@ -64,6 +67,12 @@ const StartFundraiser = () => {
         console.error("Error fetching categories:", error);
       }
     };
+    const today = new Date();
+const minDate = new Date(today.setDate(today.getDate() + 15));
+const maxDate = new Date(today.setDate(today.getDate() + 365)); // 1 year in the future
+
+setMinDate(minDate.toISOString().split("T")[0]);
+setMaxDate(maxDate.toISOString().split("T")[0]);
     fetchCategories();
   }, [APIBASEURL]);
 
@@ -213,6 +222,8 @@ const StartFundraiser = () => {
                 value={formData.endDate}
                 onChange={handleChange}
                 className="p-2 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
+                min={minDate}
+                max={maxDate}
               />
             </div>
           </div>
@@ -269,6 +280,7 @@ const StartFundraiser = () => {
           <div className="flex flex-col items-start w-full">
             <label htmlFor="fundraiserDescription" className="font-bold">Description*</label>
             <textarea
+            required
               name="fundraiserDescription"
               id="fundraiserDescription"
               placeholder="Description....."

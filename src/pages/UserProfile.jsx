@@ -215,11 +215,13 @@ const UserProfile = () => {
   // };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setAccountFormData({
       ...accountFormData,
-      [e.target.id]: e.target.value,
+      [name]: value,
     });
   };
+  
   const handleChangeUpdate = (e) => {
     setUserUpdateForm({
       ...userUpdateForm,
@@ -232,11 +234,21 @@ const UserProfile = () => {
   };
 
   const handleAccountAdd = async () => {
+    // Perform validation
+    const errors = validateAccountFormData(accountFormData);
+    if (Object.keys(errors).length > 0) {
+      // Display errors to the user
+      for (const [key, value] of Object.entries(errors)) {
+        toast.error(`${key}: ${value}`);
+      }
+      return;
+    }
+  
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
     const accessToken = localStorage.getItem("accessToken");
-
+  
     try {
       const res = await fetch(`${APIBASEURL}/accounts/add`, {
         method: "POST",
@@ -246,20 +258,20 @@ const UserProfile = () => {
         },
         body: JSON.stringify(accountFormData),
       });
-
+  
       if (res.status === 201) {
         toast.success("Account Added");
         window.location.reload(false);
       } else {
         handleError(res.status);
-        toast.error("this Account is Already exist");
-        console.log("kuch text", res.status);
+        toast.error("This account already exists.");
         return;
       }
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   // const handleDeleteForm = (e) => {
   //   e.preventDefault();
@@ -273,51 +285,34 @@ const UserProfile = () => {
   // };
 
   const handleInputPanChange = (e) => {
+    const { name, value } = e.target;
     setPanFormData({
       ...panFormData,
-      [e.target.id]: e.target.value,
+      [name]: value,
     });
   };
+  
 
-  // const handleAccountSelect = async (e) => {
-  //   e.preventDefault();
-  //   if (!isAccessTokenValid()) {
-  //     await fetchAccess();
-  //   }
-  //   const accessToken = localStorage.getItem("accessToken");
-
-  //   try {
-  //     const res = await fetch(
-  //       `${APIBASEURL}/fundraisers/fundraiser_${id}/account_${inputData.id}`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(inputData.id),
-  //       }
-  //     );
-
-  //     if (res.status === 200) {
-  //       toast.success("Account Selected");
-  //     }
-  //     if (res.status != 200) {
-  //       handleError(res.status);
-  //       return;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  
 
   const handlePanSubmit = async (e) => {
     e.preventDefault();
+  
+    // Perform validation
+    const errors = validatePanFormData(panFormData);
+    if (Object.keys(errors).length > 0) {
+      // Display errors to the user
+      for (const [key, value] of Object.entries(errors)) {
+        toast.error(`${key}: ${value}`);
+      }
+      return;
+    }
+  
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
     const accessToken = localStorage.getItem("accessToken");
-
+  
     try {
       const res = await fetch(`${APIBASEURL}/pans/add`, {
         method: "POST",
@@ -327,10 +322,12 @@ const UserProfile = () => {
         },
         body: JSON.stringify(panFormData),
       });
-      if (res.status != 201) {
+  
+      if (res.status !== 201) {
         handleError(res.status);
         return;
       }
+  
       window.location.reload(false);
       if (res.status === 201) {
         toast.success("PAN Added");
@@ -339,6 +336,7 @@ const UserProfile = () => {
       console.log(error);
     }
   };
+  
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
@@ -416,6 +414,92 @@ const UserProfile = () => {
     }
   };
   console.log("User Data", userData);
+
+
+
+  // ---------------------------------- VALIDATIONS LOGIC-----------------------------------
+  const validatePanFormData = (data) => {
+    const errors = {};
+  
+    // PAN Number validation: assuming a typical PAN number format
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!data.panNumber || !panRegex.test(data.panNumber)) {
+      errors.panNumber = "Invalid PAN Number format.";
+    }
+  
+    // Validate name on PAN (should not be empty)
+    if (!data.nameOnPan || data.nameOnPan.trim().length === 0) {
+      errors.nameOnPan = "Name on PAN is required.";
+    }
+  
+    // Validate address (should not be empty)
+    if (!data.address || data.address.trim().length === 0) {
+      errors.address = "Address is required.";
+    }
+  
+    // Validate city (should not be empty)
+    if (!data.city || data.city.trim().length === 0) {
+      errors.city = "City is required.";
+    }
+  
+    // Validate state (should not be empty)
+    if (!data.state || data.state.trim().length === 0) {
+      errors.state = "State is required.";
+    }
+  
+    // Validate country (should not be empty)
+    if (!data.country || data.country.trim().length === 0) {
+      errors.country = "Country is required.";
+    }
+  
+    // Validate pincode (should be a number and not empty)
+    if (!data.pincode || isNaN(data.pincode) || data.pincode.trim().length === 0) {
+      errors.pincode = "Pincode is required and should be a valid number.";
+    }
+  
+    return errors;
+  };
+
+  const validateAccountFormData = (data) => {
+    const errors = {};
+  
+    // Bank Name validation
+    if (!data.bankName || data.bankName.trim().length === 0) {
+      errors.bankName = "Bank name is required.";
+    }
+  
+    // Account Number validation: must be a number and not empty
+    if (!data.accountNumber || isNaN(data.accountNumber) || data.accountNumber.toString().trim().length === 0) {
+      errors.accountNumber = "Valid account number is required.";
+    }
+  
+    // Branch Name validation
+    if (!data.branch || data.branch.trim().length === 0) {
+      errors.branch = "Branch name is required.";
+    }
+  
+    // IFSC Code validation: assuming a typical IFSC code format
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (!data.ifsc || !ifscRegex.test(data.ifsc)) {
+      errors.ifsc = "Invalid IFSC code format.";
+    }
+  
+    // Account Holder's Name validation
+    if (!data.holderName || data.holderName.trim().length === 0) {
+      errors.holderName = "Account holder’s name is required.";
+    }
+  
+    return errors;
+  };
+  
+  
+
+
+
+
+
+
+
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
       <div className="w-[90vw] h-full py-10">
@@ -455,19 +539,19 @@ const UserProfile = () => {
                 </div>
               </div>
               {localData && localData?.id === userData?.id && (
-                <>
+                <div className=" flex items-center gap-5">
                   <button
                     onClick={showModalUpdate}
-                    className="py-1.5 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
+                    className="py-1 px-6 rounded-md text-lg font-bold bg-[#F9BBBB] hover:bg-[#ffa1a1]"
                   >
                     Edit
                   </button>
                   <Button />
-                </>
+                </div>
               )}
 
               <Modal
-                title="Update User Detials "
+                title="Update User Details "
                 open={isUpdateShow}
                 onCancel={handleCancelUpdate}
                 footer={null}
@@ -579,62 +663,80 @@ const UserProfile = () => {
                     footer={null}
                   >
                     <form
-                      action=""
-                      className="px-5  py-3 flex flex-col items-end  gap-2 mb-10"
-                    >
-                      <div className=" flex flex-col gap-3 w-full">
-                        <label htmlFor="" className="font-bold text-[#696763] ">
-                          Add a new account{" "}
-                        </label>
-                        <input
-                          type="text"
-                          name="bankName"
-                          id="bankName"
-                          onChange={handleChange}
-                          placeholder="Enter bank Name"
-                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                        />
-                        <input
-                          type="number"
-                          name="accountNumber"
-                          id="accountNumber"
-                          onChange={handleChange}
-                          placeholder="Enter account number"
-                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                        />
-                        <input
-                          type="text"
-                          name="branch"
-                          id="branch"
-                          onChange={handleChange}
-                          placeholder="Enter branch name"
-                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                        />
-                        <input
-                          type="text"
-                          name="ifsc"
-                          id="ifsc"
-                          onChange={handleChange}
-                          placeholder="Enter IFSC code"
-                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                        />
-                        <input
-                          type="text"
-                          name="holderName"
-                          id="holderName"
-                          onChange={handleChange}
-                          placeholder="Enter account holder’s name"
-                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-                        />
-                      </div>
-                      <button
-                        onClick={handleAccountAdd}
-                        type="button"
-                        className="flex  items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
-                      >
-                        <IoMdAddCircle /> Add
-                      </button>
-                    </form>
+  action=""
+  className="px-5 py-3 flex flex-col items-end gap-2 mb-10"
+>
+<div className="flex flex-col gap-3 w-full">
+    <label htmlFor="bankName" className="font-bold text-[#696763]">
+      Bank Name
+    </label>
+    <input
+      type="text"
+      name="bankName"
+      id="bankName"
+      onChange={handleChange}
+      placeholder="Enter bank name"
+      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+    />
+
+    <label htmlFor="accountNumber" className="font-bold text-[#696763]">
+      Account Number
+    </label>
+    <input
+      type="number"
+      name="accountNumber"
+      id="accountNumber"
+      onChange={handleChange}
+      placeholder="Enter account number"
+      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+    />
+
+    <label htmlFor="branch" className="font-bold text-[#696763]">
+      Branch Name
+    </label>
+    <input
+      type="text"
+      name="branch"
+      id="branch"
+      onChange={handleChange}
+      placeholder="Enter branch name"
+      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+    />
+
+    <label htmlFor="ifsc" className="font-bold text-[#696763]">
+      IFSC Code
+    </label>
+    <input
+      type="text"
+      name="ifsc"
+      id="ifsc"
+      onChange={handleChange}
+      placeholder="Enter IFSC code"
+      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+    />
+
+    <label htmlFor="holderName" className="font-bold text-[#696763]">
+      Account Holder’s Name
+    </label>
+    <input
+      type="text"
+      name="holderName"
+      id="holderName"
+      onChange={handleChange}
+      placeholder="Enter account holder’s name"
+      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+    />
+</div>
+
+  <button
+    onClick={handleAccountAdd}
+    type="button"
+    className="flex items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
+  >
+    <IoMdAddCircle /> Add
+  </button>
+</form>
+
                   </Modal>
 
                   <EditAndDeleteAccount />
@@ -658,65 +760,45 @@ const UserProfile = () => {
                     footer={null}
                   >
                     {isPanDetails.id ? (
-                      <div className="flex flex-col items-center text-xl font-medium gap-5">
-                        <div className="flex flex-col gap-3">
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            PAN Number -{" "}
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.panNumber}{" "}
-                            </span>
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            Name On PAN -
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.nameOnPan}
-                            </span>
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            Address -
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.address}
-                            </span>
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            City -
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.city}
-                            </span>{" "}
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            State -
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.state}
-                            </span>
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            Country -
-                            <span className="text-red-500 font-bold">
-                              {" "}
-                              {isPanDetails.country}
-                            </span>
-                          </h1>
-                          <h1 className="border-2 p-2 px-5 border-red-300">
-                            Pincode -{" "}
-                            <span className="text-red-500 font-bold">
-                              {isPanDetails.pincode}
-                            </span>
-                          </h1>
+                      <div className="flex flex-col items-center text-lg font-medium gap-6 bg-gray-100 py-4 rounded-lg ">
+                      <div className="flex flex-col  w-full max-w-md">
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">PAN Number</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.panNumber}</span>
                         </div>
-
-                        <button
-                          onClick={handleDeletePan}
-                          className="text-[15px] text-red-500 py-2 px-5 text-nowrap border border-red-500 mx-10 rounded-md font-semibold hover:bg-red-500 hover:text-white"
-                        >
-                          DELETE PANCARD
-                        </button>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">Name On PAN</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.nameOnPan}</span>
+                        </div>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">Address</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.address}</span>
+                        </div>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">City</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.city}</span>
+                        </div>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">State</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.state}</span>
+                        </div>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">Country</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.country}</span>
+                        </div>
+                        <div className="border-b-2 px-4 py-2 border-blue-300">
+                          <span className="block text-gray-600">Pincode</span>
+                          <span className="text-blue-600 font-bold">{isPanDetails.pincode}</span>
+                        </div>
                       </div>
+                
+                      <button
+                        onClick={handleDeletePan}
+                        className="text-sm text-red-500 py-2 px-6 border border-red-500 rounded-md font-semibold hover:bg-red-500 hover:text-white transition duration-300"
+                      >
+                        DELETE PANCARD
+                      </button>
+                    </div>
                     ) : (
                       <form action="" className="p-5 flex flex-col gap-3 ">
                         <div className="flex flex-col ">
@@ -837,7 +919,7 @@ const UserProfile = () => {
                 >
                   Fundraisers
                 </Tab>
-                <Tab
+               {admin ? <Tab
                   className={
                     selectedHeadIndex === 1
                       ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
@@ -846,13 +928,25 @@ const UserProfile = () => {
                   onClick={() => setSelectedHeadIndex(1)}
                 >
                   Donated Funds
-                </Tab>
+                </Tab> : (localData &&
+                          localData?.id === userData?.id && <Tab
+                          className={
+                            selectedHeadIndex === 1
+                              ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                              : "text-black w-1/2 py-2 rounded-l-md"
+                          }
+                          onClick={() => setSelectedHeadIndex(1)}
+                        >
+                          Donated Funds
+                        </Tab>)
+
+               } 
               </TabList>
               <TabPanels>
                 <TabPanel>
                   <div>
                     <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
-                      Fundraisers that you have created
+                      Fundraisers that has created
                     </h1>
                     <Tabs className="bg-white min-h-[600px] flex flex-col gap-5 rounded-md py-5">
                       <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-slate-200 shadow-lg rounded-md">
@@ -957,7 +1051,8 @@ const UserProfile = () => {
                     </Tabs>
                   </div>
                 </TabPanel>
-                <TabPanel>
+
+                {admin ?  <TabPanel>
                   <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
                     Donation that you have Made
                   </h1>
@@ -970,7 +1065,23 @@ const UserProfile = () => {
                       </div>
                     ))}
                   </div>
-                </TabPanel>
+                </TabPanel> : (localData &&
+                          localData?.id === userData?.id &&  <TabPanel>
+                          <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
+                            Donation that you have Made
+                          </h1>
+                          <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                            {allUserDonations.map((data, index) => (
+                              <div className="" key={index}>
+                                <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                                  <DonateFund {...data} />
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </TabPanel>)}
+                
+               
               </TabPanels>
 
               {/* ........................ */}

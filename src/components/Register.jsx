@@ -24,6 +24,8 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
+    action : "confirm-email",
+
   };
 
   const handleOtp = (e) => {
@@ -46,7 +48,9 @@ const Register = () => {
   const sendOtp = async () => {
     setFormData(values);
     const { password, ...otpData } = values;
-    
+    // otpData.append(action)
+    console.log("otpdata", otpData);
+  
     try {
       const response = await fetch(
         `${APIBASEURL}/auth/verification/send-otp`,

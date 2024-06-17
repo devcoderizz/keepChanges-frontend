@@ -289,7 +289,7 @@ const Fundraisers = () => {
       }
     };
     Accounts();
-  }, [APIBASEURL, currentUser, id]);
+  }, [APIBASEURL, currentUser, id,setImages]);
 
   const copylink = () => {
     const currentUrl = window.location.href;
@@ -588,8 +588,9 @@ const Fundraisers = () => {
                             <select
                               name="id"
                               id="id"
-                              defaultValue={fundraiserDetails.id}
+                              // defaultValue={fundraiserDetails.id}
                               onChange={handleChangeUpdate}
+                              value={fundraiserDetails.category.id}
                               placeholder="Select category"
                               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
                             >

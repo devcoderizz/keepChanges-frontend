@@ -24,7 +24,7 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
-    action : "confirm-email",
+    action : "CONFIRM_EMAIL",
 
   };
 

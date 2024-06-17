@@ -41,7 +41,7 @@ const ForgetPassword = () => {
                 const data = await res.json();
                 setMainData(data)
                 const { name, email, phone } = data;
-                const action = "reset-password";
+                const action = "RESET_PASSWORD";
 
                 const res2 = await fetch(
                     `${APIBASEURL}/auth/verification/send-otp`,

@@ -128,7 +128,7 @@ const EditAndDeleteAccount = () => {
             <ul className="flex flex-col gap-2 text-sm text-blue-500 font-semibold capitalize ml-5">
                 {allAccount.map((accounts) => (
                     <li
-                        className="flex items-center gap-2 cursor-pointer border-t-[2px] border-blue-400 py-1 border-opacity-50"
+                        className="flex items-center gap-2 cursor-pointer border-t-[2px] border-blue-400 py-1 border-opacity-50 hover:text-red-400"
                         key={accounts.id}
                         value={accounts.id}
                         onClick={() => showModalUpdate(accounts)}

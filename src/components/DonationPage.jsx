@@ -9,14 +9,13 @@ const DonationPage = () => {
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const [donationInput, setDonationInput] = useState("");
   const [fundraiserDetails, setFundraiserDetails] = useState({});
-  const [tipFormData, setTipFormData] = useState({});
+  const [tipFormData, setTipFormData] = useState({ tip: "8" }); 
   const [orderDetails, setOrderDetails] = useState([]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const accessToken = localStorage.getItem("accessToken");
   const localData = JSON.parse(localStorage.getItem("UserData"));
-
-  console.log("donation", donationInput);
-  console.log("donationTip", tipFormData);
-  console.log("userdata", localData);
 
   const handleChange = (e) => {
     setDonationInput({
@@ -30,6 +29,18 @@ const DonationPage = () => {
       ...tipFormData,
       [e.target.id]: e.target.value,
     });
+  };
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePhoneChange = (e) => {
+    setPhone(e.target.value);
   };
 
   function calculatePercentage(base, percentage) {
@@ -63,18 +74,18 @@ const DonationPage = () => {
   const checkOutHandler = async () => {
     const payload = {
       totalAmount: total,
-      name: localData?.name,
-      email: localData.email,
-      phone: localData.phone,
+      // name: localData?.name || name,
+      // email: localData?.email || email,
+      // phone: localData?.phone || phone,
       currency: "INR",
-      fundraiserId: id
+      // fundraiserId: id
     };
 
     try {
       const res = await fetch(`${APIBASEURL}/transactions/create-order`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
+         
           "Content-Type": "application/json"
         },
         body: JSON.stringify(payload),
@@ -91,17 +102,20 @@ const DonationPage = () => {
       if (res.status === 200) {
         const options = {
           key: data.key,
-          amount: data.amount,
+          totalAmount: data.amount,
+          donationAmount: donationInput.Donation ,
+          tipAmount: tip,
           currency: "INR",
           name: "KeepChanges",
           description: "Lodi branch",
           image: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715890998/1636820072193_ktwjrf.jpg",
           order_id: data.orderId,
-          callback_url: "/transactions/save-transaction",
+          callback_url: `/transactions/save-transaction/${id}`,
           prefill: {
-            name: localData?.name,
-            email: localData.email,
-            contact: localData.phone,
+            name: localData?.name || name,
+            email: localData?.email || email,
+            phone: localData?.phone || phone,
+            fundraiserId: id
           },
           notes: {
             address: "Razorpay Corporate Office"
@@ -113,6 +127,10 @@ const DonationPage = () => {
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
       }
+
+
+
+
     } catch (error) {
       console.error(error);
       toast.error("An error occurred during the checkout process.");
@@ -141,7 +159,7 @@ const DonationPage = () => {
                 <span className="text-red-500">₹ {donationInput?.Donation || "000"}</span>
               </div>
               <div className="flex items-center justify-between px-2 font-semibold text-[15px]">
-                <h1>Give Tip: {tipFormData.tip}</h1>
+                <h1>Give Tip: {tipFormData.tip}%</h1>
                 <span className="text-red-500">₹ {tip || "000"}</span>
               </div>
             </div>
@@ -161,6 +179,34 @@ const DonationPage = () => {
         </div>
         <div className="flex flex-col h-[270px] gap-5">
           <div className="w-[300px] md:w-[500px] h-[200px] p-5 flex flex-col gap-3">
+            {!localData && (
+              <div>
+                <h1 className="text-xl font-bold">Name</h1>
+                <input
+                  onChange={handleNameChange}
+                  type="text"
+                  id="name"
+                  placeholder="Enter Name"
+                  className="w-full p-2.5 rounded-lg focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 text-red-500 font-semibold"
+                />
+                <h1 className="text-xl font-bold">Email</h1>
+                <input
+                  onChange={handleEmailChange}
+                  type="email"
+                  id="email"
+                  placeholder="Enter Email"
+                  className="w-full p-2.5 rounded-lg focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 text-red-500 font-semibold"
+                />
+                <h1 className="text-xl font-bold">Phone Number</h1>
+                <input
+                  onChange={handlePhoneChange}
+                  type="number"
+                  id="phone"
+                  placeholder="Enter Phone Number"
+                  className="w-full p-2.5 rounded-lg focus:outline-none border-[#FF5C5C] border-2 border-opacity-50 text-red-500 font-semibold"
+                />
+              </div>
+            )}
             <h1 className="text-xl font-bold">Donation amount</h1>
             <input
               onChange={handleChange}
@@ -176,6 +222,7 @@ const DonationPage = () => {
                   onChange={handleChangeTip}
                   name="tip"
                   id="tip"
+                  value={tipFormData.tip} // Ensure the default value is selected
                   required
                   className="w-[50px] bg-transparent text-red-500 focus:outline-none"
                 >

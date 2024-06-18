@@ -16,6 +16,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import Dashboard from "./components/AdminDashboard/Dashboard"
 import DonationPage from "./components/DonationPage"
 import ForgetPassword from "./components/ForgetPassword"
+import FundraiserOptions from "./components/FundraiserOptions"
 
 
 
@@ -43,6 +44,7 @@ function App() {
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/donation-page/:id' element={<DonationPage/>} />
       <Route path='/forget-password' element={<ForgetPassword/>} />
+      <Route path='/fundraiser-options' element={<FundraiserOptions/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

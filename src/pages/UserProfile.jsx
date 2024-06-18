@@ -1059,7 +1059,7 @@ const UserProfile = () => {
                   <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
                     {allUserDonations.map((data, index) => (
                       <div className="" key={index}>
-                        <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                        <Link to={`/fundraisers/${data.fundraiserId}`}>
                           <DonateFund {...data} />
                         </Link>
                       </div>

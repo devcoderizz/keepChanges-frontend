@@ -117,7 +117,7 @@ const AdminDonations = () => {
               <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 overflow-scroll max-h-[100vh]">
               {allDonation?.map((data, index) => (
                    <div className="" key={index}>
-                   <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                   <Link to={`/fundraisers/${data.fundraiserId}`}>
                      <DonateFund {...data} />
                    </Link>
                  </div>

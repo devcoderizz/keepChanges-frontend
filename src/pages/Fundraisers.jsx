@@ -21,6 +21,7 @@ import AddDocuments from "../components/AddDocuments";
 import ApproveAdmin from "../components/ApproveAdmin";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import DeleteFundraiserImages from "../components/DeleteFundraiserImages";
+import { MdOutlineMoreVert } from "react-icons/md";
 const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
@@ -50,6 +51,11 @@ const Fundraisers = () => {
   const [selectedHeadIndex, setSelectedHeadIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [dropdownOpen2, setDropdownOpen2] = useState(false);
+
+  const toggleDropdown2 = () => {
+    setDropdownOpen2(!dropdownOpen2);
+  };
 
   // console.log("image1", images1)
   console.log("imagesfundraiser", fundraiserDetails?.photos);
@@ -145,8 +151,8 @@ const Fundraisers = () => {
 
       if (res.status === 200) {
         toast.success("Image Uploaded");
-        window.location.reload(false)
-       }
+        window.location.reload(false);
+      }
 
       if (res.status !== 200) {
         handleError(res.status);
@@ -228,7 +234,6 @@ const Fundraisers = () => {
         const data = await res.json();
         // console.log("fundraiser data", data);
         setFundraiserDetails(data);
-        
 
         if (
           data.approval === "APPROVED" ||
@@ -289,7 +294,7 @@ const Fundraisers = () => {
       }
     };
     Accounts();
-  }, [APIBASEURL, currentUser, id,setImages]);
+  }, [APIBASEURL, currentUser, id, setImages]);
 
   const copylink = () => {
     const currentUrl = window.location.href;
@@ -455,11 +460,35 @@ const Fundraisers = () => {
     <>
       <div className="flex flex-col items-center h-full my-12 md:mx-32">
         <div className="text-2xl md:text-4xl font-bold w-[90vw] md:w-[75vw]">
-          <span className="text-wrap">{fundraiserDetails.fundraiserTitle}</span>
+          <span className="text-wrap">
+            {fundraiserDetails.fundraiserTitle}{" "}
+          </span>
+
           {fundraiserDetails.approval === "APPROVED" && (
             <span title="Approved By Admin">✅</span>
           )}
         </div>
+        <button className="origin-top-right absolute right-4 md:right-10 md:mt-2 md:top-28" type="button" onClick={toggleDropdown2}>
+          <MdOutlineMoreVert className="text-3xl hover:text-gray-700 hover:scale-105 duration-50" />
+        </button>
+        {dropdownOpen2 && (
+          <div
+            className="origin-top-right absolute right-4 md:right-10 mt-8 md:mt-5 md:w-auto w-[100px] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="options-menu"
+          >
+            <div className="py-1 md:w-auto w-[100px]" role="none">
+              <Link
+                to={"/fundraiser-options"}
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                role="menuitem"
+              >
+                More
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col md:flex-row w-[90%] gap-8 my-4 md:ml-0  ">
           <div className="flex flex-col items-start justify-start">
@@ -860,10 +889,9 @@ const Fundraisers = () => {
                             hidden
                             accept="image/*"
                           />
-                         
-                           
-                          
-                          {images1?.length + (fundraiserDetails.photos).length >= 6 ? (
+
+                          {images1?.length + fundraiserDetails.photos.length >=
+                          6 ? (
                             " "
                           ) : (
                             <div
@@ -874,12 +902,10 @@ const Fundraisers = () => {
                             >
                               Upload Images
                             </div>
-                            
-                          )
-                          }
-                 
+                          )}
 
-                          {images1?.length + (fundraiserDetails.photos)?.length > 6 ? (
+                          {images1?.length + fundraiserDetails.photos?.length >
+                          6 ? (
                             <h1 className="text-red-500 font-bold">
                               *You can select only 6 images
                             </h1>
@@ -892,7 +918,6 @@ const Fundraisers = () => {
                               {loading ? "Uploading..." : "Upload"}
                             </button>
                           )}
-
 
                           <div className="flex flex-wrap gap-4 mt-5">
                             {images1?.map((image, index) => (
@@ -911,12 +936,13 @@ const Fundraisers = () => {
                               </div>
                             ))}
                           </div>
-                          
                         </form>
 
                         {error && <p className="text-red-500">{error}</p>}
 
-                        <DeleteFundraiserImages fundraiserDetails={fundraiserDetails} />
+                        <DeleteFundraiserImages
+                          fundraiserDetails={fundraiserDetails}
+                        />
                       </div>
                     </Modal>
                   </div>
@@ -1003,8 +1029,7 @@ const Fundraisers = () => {
 
                 <TabPanel>
                   <div className="flex items-center justify-center p-2">
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
-                    
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
                       {" "}
                       {fundraiserDetails?.photos?.map((image) => (
                         <img
@@ -1014,27 +1039,24 @@ const Fundraisers = () => {
                           alt=""
                         />
                       ))}
-                  </div>
+                    </div>
                   </div>
                 </TabPanel>
                 <TabPanel>
                   <div className="flex items-center justify-center p-2">
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
-                    
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
                       {" "}
                       {fundraiserDetails?.documents?.map((documents) => (
-                      <img
-                        key={documents.id}
-                        className="w-[75vw] md:w-[27vw] md:h-[30vh] object-cover"
-                        src={`${VITE_BASE_IMAGE_URL}${documents.documentUrl}`}
-                        alt=""
-                      />
-                    ))}
-                  </div>
+                        <img
+                          key={documents.id}
+                          className="w-[75vw] md:w-[27vw] md:h-[30vh] object-cover"
+                          src={`${VITE_BASE_IMAGE_URL}${documents.documentUrl}`}
+                          alt=""
+                        />
+                      ))}
+                    </div>
                   </div>
                 </TabPanel>
-
-                
               </TabPanels>
             </Tabs>
           </div>

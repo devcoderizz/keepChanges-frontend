@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const DonateFund = ({...data}) => {
     const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
@@ -17,14 +17,14 @@ const DonateFund = ({...data}) => {
             <div className="flex">
                 <div className="w-1/4 h-[80px] md:h-[100px] overflow-hidden rounded-l-lg">
                     <img 
-                        src={`${VITE_BASE_IMAGE_URL}${data.fundraiser.displayPhoto}`} 
+                        src={`${VITE_BASE_IMAGE_URL}${data?.fundraiserDisplayPhoto}`} 
                         alt="Fundraiser" 
                         className="object-cover w-full h-full"
                     />
                 </div>
                 <div className="w-3/4 p-3 flex flex-col justify-center">
                     <h1 className="text-sm md:text-base font-bold text-gray-800">
-                        {truncateTitle(data.fundraiser.fundraiserTitle, 30)}
+                        {truncateTitle(data.fundraiserTitle, 30)}
                     </h1>
                     <div className="mt-1 text-xs md:text-sm text-gray-600">
                         <p className="font-semibold">Amount Donated: <span className="text-green-600">{data.donationAmount}</span></p>

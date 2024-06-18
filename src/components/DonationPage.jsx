@@ -114,7 +114,7 @@ const DonationPage = () => {
           prefill: {
             name: localData?.name || name,
             email: localData?.email || email,
-            phone: localData?.phone || phone,
+            contact: localData?.phone || phone,
             fundraiserId: id
           },
           notes: {

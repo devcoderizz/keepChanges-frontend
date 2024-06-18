@@ -109,8 +109,8 @@ const DonationPage = () => {
           name: "KeepChanges",
           description: "Lodi branch",
           image: "https://res.cloudinary.com/dv6rzh2cp/image/upload/v1715890998/1636820072193_ktwjrf.jpg",
-          order_id: data.orderId,
-          callback_url: `/transactions/save-transaction/${id}`,
+          order_id: data.id,
+          callback_url: `${APIBASEURL}/transactions/verify-transaction`,
           prefill: {
             name: localData?.name || name,
             email: localData?.email || email,

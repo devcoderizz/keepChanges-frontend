@@ -44,7 +44,7 @@ function App() {
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/donation-page/:id' element={<DonationPage/>} />
       <Route path='/forget-password' element={<ForgetPassword/>} />
-      <Route path='/fundraiser-options' element={<FundraiserOptions/>} />
+      <Route path='/fundraiser-options/:id' element={<FundraiserOptions/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

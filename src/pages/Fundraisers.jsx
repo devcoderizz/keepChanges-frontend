@@ -7,9 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import DonationListModal from "../components/modal/DonationListModal";
 import { RxCross2 } from "react-icons/rx";
 import { Modal } from "antd";
-// import { ImImages } from "react-icons/im";
-// import { MdDeleteForever } from "react-icons/md";
-// import { LuUpload } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
@@ -65,36 +62,10 @@ const Fundraisers = () => {
     : " ";
 
   const percentage = Math.floor(
-    (fundraiserDetails.raised
-      ? fundraiserDetails?.raised
-      : 100 / fundraiserDetails?.raiseGoal) * 100
+    (fundraiserDetails.raised / fundraiserDetails?.raiseGoal) * 100
   );
 
-  const handleDeleteFundraiser = async () => {
-    if (!isAccessTokenValid()) {
-      await fetchAccess();
-    }
-    const accessToken = localStorage.getItem("accessToken");
-
-    try {
-      if (!window.confirm("You want to delete Your Fundraiser ?")) return;
-      const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (res.status != 200) {
-        handleError(res.status);
-      }
-      const data = res.json();
-      console.log(data);
-      navigate("/");
-      toast.success("Fundraiser Deleted");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  
 
   const showModal2 = () => {
     setIsModalOpen(true);
@@ -192,23 +163,7 @@ const Fundraisers = () => {
   const handleSeeMore = () => {
     setShowModal(!showModal);
   };
-  // const onSelectFile = (event) => {
-  //   const selectedFiles = event.target.files;
-  //   const selectedFilesArray = Array.from(selectedFiles);
 
-  //   const imagesArray = selectedFilesArray.map((file) => {
-  //     return URL.createObjectURL(file);
-  //   });
-
-  //   setImages((previousImages) => previousImages.concat(imagesArray));
-
-  //   event.target.value = "";
-  // };
-
-  // function deleteHandler(image) {
-  //   setImages(images1.filter((e) => e !== image));
-  //   URL.revokeObjectURL(image);
-  // }
 
   useEffect(() => {
     if (localData?.id === currentUser) {
@@ -249,7 +204,7 @@ const Fundraisers = () => {
         const response = await fetch(`${APIBASEURL}/categories/getall`, {
           method: "GET",
           headers: {
-            // "Authorization": `Bearer ${accessToken}I`,
+           
           },
         });
 
@@ -259,7 +214,7 @@ const Fundraisers = () => {
 
         const data2 = await response.json();
         setCategories(data2);
-        // console.log("categories", categories);
+       
       } catch (error) {
         console.log(error);
       }
@@ -270,7 +225,7 @@ const Fundraisers = () => {
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
-      // const accessToken = localStorage.getItem("accessToken");
+      
 
       try {
         const res = await fetch(
@@ -284,7 +239,7 @@ const Fundraisers = () => {
           handleError(res.status);
         }
         const data = await res.json();
-        // console.log("bank data", data);
+      
         setAllAccount(data);
         if (!data.ok) {
           return;
@@ -468,9 +423,10 @@ const Fundraisers = () => {
             <span title="Approved By Admin">✅</span>
           )}
         </div>
-        <button className="origin-top-right absolute right-4 md:right-10 md:mt-2 md:top-28" type="button" onClick={toggleDropdown2}>
+        {isUser && <button className="origin-top-right absolute right-4 md:right-10 md:mt-2 md:top-28" type="button" onClick={toggleDropdown2}>
           <MdOutlineMoreVert className="text-3xl hover:text-gray-700 hover:scale-105 duration-50" />
-        </button>
+        </button> }
+        
         {dropdownOpen2 && (
           <div
             className="origin-top-right absolute right-4 md:right-10 mt-8 md:mt-5 md:w-auto w-[100px] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
@@ -480,7 +436,7 @@ const Fundraisers = () => {
           >
             <div className="py-1 md:w-auto w-[100px]" role="none">
               <Link
-                to={"/fundraiser-options"}
+                to={`/fundraiser-options/${id}`}
                 class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 role="menuitem"
               >
@@ -521,9 +477,7 @@ const Fundraisers = () => {
                   <span className="text-red-500 mt-2">
                     {" "}
                     Rs&nbsp;
-                    {fundraiserDetails?.raised
-                      ? fundraiserDetails?.raised
-                      : 100}
+                    {fundraiserDetails?.raised}
                   </span>{" "}
                   &nbsp; of <strong> {fundraiserDetails.raiseGoal} </strong>
                 </span>
@@ -694,7 +648,7 @@ const Fundraisers = () => {
                       </Modal>
                       <button
                         className="hover:text-rose-600"
-                        onClick={handleDeleteFundraiser}
+                        
                       >
                         <RiDeleteBin6Line title="delete" />
                       </button>
@@ -709,11 +663,20 @@ const Fundraisers = () => {
                   )}
                 </div>
               </div>
+              
             </div>
+            
+            
+            
             <div className="text-[16px] md:-mt-12 md:ml-[85px] ml-2  ">
               Be a catalyst for change – support our cause and become a{" "}
               <span className="text-red-500"> change agent</span> today.
             </div>
+
+            <div className="text-[16px] pt-3 md:ml-[85px] ml-2 text-black  ">
+            Category: <span className="font-bold text-[15px] text-red-500 underline">{fundraiserDetails?.category?.categoryName}</span>
+            </div>
+            
 
             <div className="py-4 md:mx-[84px]">
               <h1 className="text-red-500 text-xl font-extrabold">Narrative</h1>
@@ -988,9 +951,10 @@ const Fundraisers = () => {
                     69 Shares{" "}
                   </span>
                 </div>
-                <button className="bg-[#2E9732] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#42aa46] ">
+                {/* https://api.whatsapp.com/send?text=Check%20out%20this%20fundraiser!%20https://yourdomain.com/fundraiser/ */}
+                <Link to={`https://api.whatsapp.com/send?text=Check%20out%20this%20fundraiser!%20http://localhost:5173/fundraiser/${id}`} className="bg-[#2E9732] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#42aa46] ">
                   Share now
-                </button>
+                </Link>
               </div>
             )}
 
@@ -1095,12 +1059,12 @@ const Fundraisers = () => {
                   <FaCircleUser size={40} color="gray" className="mt-4" />
                   <div className="flex flex-col gap-1">
                     <p className="text-xl text-[#858585]">
-                      {" "}
-                      {agent.donor.name}
+                     
+                      {agent.donorName}
                     </p>
                     <p>Donation: ${agent.donationAmount}</p>
                     <span className="text-gray-500 font-medium ">
-                      Thank you for being an agent
+                      Thank you for being a agent
                     </span>
                   </div>
                 </div>

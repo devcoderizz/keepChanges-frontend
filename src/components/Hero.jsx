@@ -49,6 +49,8 @@ const Hero = () => {
           }
         const data = await res.json();
         setAllFundraiser(data.fundraisers)
+
+        console.log(data.fundraisers);
       
     
   

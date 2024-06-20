@@ -19,6 +19,7 @@ import ApproveAdmin from "../components/ApproveAdmin";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import DeleteFundraiserImages from "../components/DeleteFundraiserImages";
 import { MdOutlineMoreVert } from "react-icons/md";
+import Share from "../components/Share";
 const Fundraisers = () => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   // const BASE_DISPLAY_PHOTO = import.meta.env.VITE_FUNDRAISER_DISPLAY;
@@ -64,8 +65,6 @@ const Fundraisers = () => {
   const percentage = Math.floor(
     (fundraiserDetails.raised / fundraiserDetails?.raiseGoal) * 100
   );
-
-  
 
   const showModal2 = () => {
     setIsModalOpen(true);
@@ -164,7 +163,6 @@ const Fundraisers = () => {
     setShowModal(!showModal);
   };
 
-
   useEffect(() => {
     if (localData?.id === currentUser) {
       setIsUser(true);
@@ -183,8 +181,14 @@ const Fundraisers = () => {
           method: "GET",
           headers: {},
         });
+        if (res.status === 404) {
+          navigate("/");
+          
+        }
+
         if (res.status != 200) {
           handleError(res.status);
+
         }
         const data = await res.json();
         // console.log("fundraiser data", data);
@@ -203,9 +207,7 @@ const Fundraisers = () => {
 
         const response = await fetch(`${APIBASEURL}/categories/getall`, {
           method: "GET",
-          headers: {
-           
-          },
+          headers: {},
         });
 
         if (response.status != 200) {
@@ -214,7 +216,6 @@ const Fundraisers = () => {
 
         const data2 = await response.json();
         setCategories(data2);
-       
       } catch (error) {
         console.log(error);
       }
@@ -225,7 +226,6 @@ const Fundraisers = () => {
       if (!isAccessTokenValid()) {
         await fetchAccess();
       }
-      
 
       try {
         const res = await fetch(
@@ -239,7 +239,7 @@ const Fundraisers = () => {
           handleError(res.status);
         }
         const data = await res.json();
-      
+
         setAllAccount(data);
         if (!data.ok) {
           return;
@@ -423,10 +423,16 @@ const Fundraisers = () => {
             <span title="Approved By Admin">✅</span>
           )}
         </div>
-        {isUser && <button className="origin-top-right absolute right-4 md:right-10 md:mt-2 md:top-28" type="button" onClick={toggleDropdown2}>
-          <MdOutlineMoreVert className="text-3xl hover:text-gray-700 hover:scale-105 duration-50" />
-        </button> }
-        
+        {isUser && (
+          <button
+            className="origin-top-right absolute right-4 md:right-10 md:mt-2 md:top-28"
+            type="button"
+            onClick={toggleDropdown2}
+          >
+            <MdOutlineMoreVert className="text-3xl hover:text-gray-700 hover:scale-105 duration-50" />
+          </button>
+        )}
+
         {dropdownOpen2 && (
           <div
             className="origin-top-right absolute right-4 md:right-10 mt-8 md:mt-5 md:w-auto w-[100px] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
@@ -646,10 +652,7 @@ const Fundraisers = () => {
                           </button>
                         </form>
                       </Modal>
-                      <button
-                        className="hover:text-rose-600"
-                        
-                      >
+                      <button className="hover:text-rose-600">
                         <RiDeleteBin6Line title="delete" />
                       </button>
                     </>
@@ -663,20 +666,19 @@ const Fundraisers = () => {
                   )}
                 </div>
               </div>
-              
             </div>
-            
-            
-            
+
             <div className="text-[16px] md:-mt-12 md:ml-[85px] ml-2  ">
               Be a catalyst for change – support our cause and become a{" "}
               <span className="text-red-500"> change agent</span> today.
             </div>
 
             <div className="text-[16px] pt-3 md:ml-[85px] ml-2 text-black  ">
-            Category: <span className="font-bold text-[15px] text-red-500 underline">{fundraiserDetails?.category?.categoryName}</span>
+              Category:{" "}
+              <span className="font-bold text-[15px] text-red-500 underline">
+                {fundraiserDetails?.category?.categoryName}
+              </span>
             </div>
-            
 
             <div className="py-4 md:mx-[84px]">
               <h1 className="text-red-500 text-xl font-extrabold">Narrative</h1>
@@ -951,10 +953,8 @@ const Fundraisers = () => {
                     69 Shares{" "}
                   </span>
                 </div>
-                {/* https://api.whatsapp.com/send?text=Check%20out%20this%20fundraiser!%20https://yourdomain.com/fundraiser/ */}
-                <Link to={`https://api.whatsapp.com/send?text=Check%20out%20this%20fundraiser!%20http://localhost:5173/fundraiser/${id}`} className="bg-[#2E9732] rounded-full text-white text-[25px] mt-6 mx-10 py-1 font-semibold hover:bg-[#42aa46] ">
-                  Share now
-                </Link>
+               
+                <Share fundraiserDetails={fundraiserDetails}  />
               </div>
             )}
 
@@ -1038,6 +1038,8 @@ const Fundraisers = () => {
             <button className="bg-white text-red-500 px-4 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-500 hover:text-white">
               Share
             </button>
+
+            
             <Link
               to={`/donation-page/${fundraiserDetails.id}`}
               className="bg-red-500 flex items-center justify-center text-white px-8 md:px-12 py-2 border-2 border-red-500 rounded-xl font-semibold hover:bg-red-600 "
@@ -1058,10 +1060,7 @@ const Fundraisers = () => {
                 <div className="flex flex-row gap-10 my-2">
                   <FaCircleUser size={40} color="gray" className="mt-4" />
                   <div className="flex flex-col gap-1">
-                    <p className="text-xl text-[#858585]">
-                     
-                      {agent.donorName}
-                    </p>
+                    <p className="text-xl text-[#858585]">{agent.donorName}</p>
                     <p>Donation: ${agent.donationAmount}</p>
                     <span className="text-gray-500 font-medium ">
                       Thank you for being a agent
@@ -1105,8 +1104,8 @@ const Fundraisers = () => {
                 <span className="font-semibold  text-gray-500">Created by</span>
                 <span className="font-semibold hover:text-red-500 underline">
                   <Link to={`/user-profile/${fundraiserDetails?.postedBy?.id}`}>
-                    {fundraiserDetails.postedBy
-                      ? fundraiserDetails.postedBy.name
+                    {fundraiserDetails
+                      ? fundraiserDetails.postedByName
                       : "Anonymous"}
                   </Link>
                 </span>

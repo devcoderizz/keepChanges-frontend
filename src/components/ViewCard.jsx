@@ -14,7 +14,7 @@ const ViewCard = ({...data}) => {
           <img className="w-full md:h-[300px] h-[240px] object-cover  object-center " src={`${VITE_BASE_IMAGE_URL}${data.displayPhoto}`} alt="Donation" />
           <div className="px-6 py-4">
               <h1 className="  flex flex-row font-bold text-sm md:text-lg mb-2 truncate w-[290px] md:w-[400px] text-wrap pr-2  md:pr-0 ">{truncatedTitle}</h1>
-              <span className=' my-1  text-gray-500 font-semibold'>{data?.postedBy ? data?.postedBy.name : 'Anonymous'}</span> <br/>
+              <span className=' my-1  text-gray-500 font-semibold'>{data ? data?.postedByName : 'Anonymous'}</span> <br/>
               <div className='mt-4'>
                 <div className='flex flex-row gap-28 justify-between'>
               <span className='font-semibold text-sm text-red-500'>₹{data.raised ? data.raised : "69656 "}</span>

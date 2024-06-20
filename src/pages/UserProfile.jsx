@@ -84,6 +84,11 @@ const UserProfile = () => {
         const userInfo = await res.json();
         setUserData(userInfo);
 
+        if (res.status === 404) {
+          navigate("/");
+          
+        }
+
         if (res.status != 200) {
           handleError(res.status);
           navigate(`/user-profile/${localData.id}`);

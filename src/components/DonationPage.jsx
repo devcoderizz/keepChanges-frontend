@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import handleError from "../utils/ErrorHandler";
 import toast from "react-hot-toast";
 
@@ -16,6 +16,7 @@ const DonationPage = () => {
   const [phone, setPhone] = useState("");
   const accessToken = localStorage.getItem("accessToken");
   const localData = JSON.parse(localStorage.getItem("UserData"));
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setDonationInput({
@@ -55,6 +56,11 @@ const DonationPage = () => {
 
   useEffect(() => {
     const getFundraiser = async () => {
+
+      
+
+
+
       try {
         const res = await fetch(`${APIBASEURL}/fundraisers/fundraiser_${id}`, {
           method: "GET",
@@ -64,6 +70,16 @@ const DonationPage = () => {
         }
         const data = await res.json();
         setFundraiserDetails(data);
+
+        if (data.approval === "APPROVED") {
+          console.log("hello ");
+        } else {
+          navigate("/");
+        }
+
+
+
+
       } catch (error) {
         console.log(toast.error(error));
       }

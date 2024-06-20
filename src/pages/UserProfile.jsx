@@ -101,7 +101,7 @@ const UserProfile = () => {
           return;
         }
         const fundraiserInfo = await res2.json();
-        setAllFundraisers(fundraiserInfo);
+        setAllFundraisers(fundraiserInfo.fundraisers);
       } catch (error) {
         console.log(error);
       }
@@ -183,7 +183,7 @@ const UserProfile = () => {
       }
     };
     getUserDonations();
-  }, [APIBASEURL]);
+  }, [APIBASEURL,id]);
 
   const showModalAccount = () => {
     setIsModalOpenAccount(true);

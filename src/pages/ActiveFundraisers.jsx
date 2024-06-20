@@ -47,7 +47,7 @@ const ActiveFundraisers = () => {
         return;
       } else {
         const data = await res.json();
-        setMultipleCategoryFundraiser(data);
+        setMultipleCategoryFundraiser(data.fundraisers);
         setShowMultipleCategoryData(true);
       }
     } catch (error) {
@@ -81,7 +81,7 @@ const ActiveFundraisers = () => {
           handleError(res.status);
         }
         const data = await res.json();
-        setActiveFundraiser(data);
+        setActiveFundraiser(data.fundraisers);
       } catch (error) {
         console.log(error);
       }
@@ -100,7 +100,7 @@ const ActiveFundraisers = () => {
             return;
           }
           const data = await res.json();
-          setFundraisersByCategory(data);
+          setFundraisersByCategory(data.fundraisers);
         } catch (error) {
           console.log(error);
         }

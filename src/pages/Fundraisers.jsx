@@ -57,8 +57,8 @@ const Fundraisers = () => {
   // console.log("image1", images1)
   console.log("imagesfundraiser", fundraiserDetails?.photos);
 
-  const currentUser = fundraiserDetails.postedBy
-    ? fundraiserDetails.postedBy.id
+  const currentUser = fundraiserDetails.postedById
+    ? fundraiserDetails.postedById
     : " ";
 
   const percentage = Math.floor(
@@ -192,7 +192,7 @@ const Fundraisers = () => {
 
         if (
           data.approval === "APPROVED" ||
-          localData?.id === data.postedBy?.id ||
+          localData?.id === data.postedById ||
           localData?.roles[1]?.id ||
           localData?.roles[0]?.id === 501
         ) {

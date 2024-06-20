@@ -119,7 +119,7 @@ const AdminFundraisers = () => {
         }
         const data = await res.json();
         console.log("data", data);
-        setAllFundraisers(data);
+        setAllFundraisers(data.fundraisers);
       } catch (error) {
         console.log(error);
       }
@@ -172,7 +172,7 @@ const AdminFundraisers = () => {
               aria-controls="panel1a-content"
               id="panel1a-header"
             >
-              <span className="text-2xl font-semibold text-red-500  ">
+              <span className="text-2xl font-semibold text-black  ">
                 Pending Fundraisers for Approval <span className="text-xl "> ({pendingForAdmin.length})</span>
               </span>
             </AccordionSummary>

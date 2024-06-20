@@ -23,6 +23,12 @@ input::-webkit-inner-spin-button {
 
 }
 
+/* .css-1086bdv-MuiPaper-root-MuiAccordion-root.Mui-expanded {
+  margin: 16px 0;
+  background-color: #ff7373;
+} */
+
+
 ::-webkit-scrollbar{
   width: 12px;
 }

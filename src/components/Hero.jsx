@@ -48,9 +48,7 @@ const Hero = () => {
           handleError(res.status); 
           }
         const data = await res.json();
-        console.log("fundraiser data",data);
-        setAllFundraiser(data)
-        console.log("kajbaskbc",allFundraiser);
+        setAllFundraiser(data.fundraisers)
       
     
   

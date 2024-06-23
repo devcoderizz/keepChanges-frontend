@@ -21,8 +21,10 @@ import handleError from "../utils/ErrorHandler";
 import DonateFund from "../components/modal/DonateFund";
 import EditAndDeleteAccount from "../components/EditAndDeleteAccount";
 import Button from "../components/Button";
+import PancardDetails from "../components/PancardDetails";
 
 const UserProfile = () => {
+  const { id } = useParams();
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   // eslint-disable-next-line no-unused-vars
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -52,9 +54,10 @@ const UserProfile = () => {
   const [allUserDonations, setAllUserDonations] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const currentUser = localData.id == id;
+  console.log("current user", currentUser);
 
   console.log("pandetails state", isPanDetails);
-  const { id } = useParams();
 
   useEffect(() => {
     const open = allFundraisers.filter(
@@ -86,7 +89,6 @@ const UserProfile = () => {
 
         if (res.status === 404) {
           navigate("/");
-          
         }
 
         if (res.status != 200) {
@@ -188,7 +190,7 @@ const UserProfile = () => {
       }
     };
     getUserDonations();
-  }, [APIBASEURL,id]);
+  }, [APIBASEURL, id]);
 
   const showModalAccount = () => {
     setIsModalOpenAccount(true);
@@ -226,7 +228,7 @@ const UserProfile = () => {
       [name]: value,
     });
   };
-  
+
   const handleChangeUpdate = (e) => {
     setUserUpdateForm({
       ...userUpdateForm,
@@ -248,12 +250,12 @@ const UserProfile = () => {
       }
       return;
     }
-  
+
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
     const accessToken = localStorage.getItem("accessToken");
-  
+
     try {
       const res = await fetch(`${APIBASEURL}/accounts/add`, {
         method: "POST",
@@ -263,7 +265,7 @@ const UserProfile = () => {
         },
         body: JSON.stringify(accountFormData),
       });
-  
+
       if (res.status === 201) {
         toast.success("Account Added");
         window.location.reload(false);
@@ -276,7 +278,6 @@ const UserProfile = () => {
       console.log(error);
     }
   };
-  
 
   // const handleDeleteForm = (e) => {
   //   e.preventDefault();
@@ -296,13 +297,10 @@ const UserProfile = () => {
       [name]: value,
     });
   };
-  
-
-  
 
   const handlePanSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Perform validation
     const errors = validatePanFormData(panFormData);
     if (Object.keys(errors).length > 0) {
@@ -312,12 +310,12 @@ const UserProfile = () => {
       }
       return;
     }
-  
+
     if (!isAccessTokenValid()) {
       await fetchAccess();
     }
     const accessToken = localStorage.getItem("accessToken");
-  
+
     try {
       const res = await fetch(`${APIBASEURL}/pans/add`, {
         method: "POST",
@@ -327,12 +325,12 @@ const UserProfile = () => {
         },
         body: JSON.stringify(panFormData),
       });
-  
+
       if (res.status !== 201) {
         handleError(res.status);
         return;
       }
-  
+
       window.location.reload(false);
       if (res.status === 201) {
         toast.success("PAN Added");
@@ -341,7 +339,6 @@ const UserProfile = () => {
       console.log(error);
     }
   };
-  
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
@@ -420,90 +417,88 @@ const UserProfile = () => {
   };
   console.log("User Data", userData);
 
-
-
   // ---------------------------------- VALIDATIONS LOGIC-----------------------------------
   const validatePanFormData = (data) => {
     const errors = {};
-  
+
     // PAN Number validation: assuming a typical PAN number format
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
     if (!data.panNumber || !panRegex.test(data.panNumber)) {
       errors.panNumber = "Invalid PAN Number format.";
     }
-  
+
     // Validate name on PAN (should not be empty)
     if (!data.nameOnPan || data.nameOnPan.trim().length === 0) {
       errors.nameOnPan = "Name on PAN is required.";
     }
-  
+
     // Validate address (should not be empty)
     if (!data.address || data.address.trim().length === 0) {
       errors.address = "Address is required.";
     }
-  
+
     // Validate city (should not be empty)
     if (!data.city || data.city.trim().length === 0) {
       errors.city = "City is required.";
     }
-  
+
     // Validate state (should not be empty)
     if (!data.state || data.state.trim().length === 0) {
       errors.state = "State is required.";
     }
-  
+
     // Validate country (should not be empty)
     if (!data.country || data.country.trim().length === 0) {
       errors.country = "Country is required.";
     }
-  
+
     // Validate pincode (should be a number and not empty)
-    if (!data.pincode || isNaN(data.pincode) || data.pincode.trim().length === 0) {
+    if (
+      !data.pincode ||
+      isNaN(data.pincode) ||
+      data.pincode.trim().length === 0
+    ) {
       errors.pincode = "Pincode is required and should be a valid number.";
     }
-  
+
     return errors;
   };
 
   const validateAccountFormData = (data) => {
     const errors = {};
-  
+
     // Bank Name validation
     if (!data.bankName || data.bankName.trim().length === 0) {
       errors.bankName = "Bank name is required.";
     }
-  
+
     // Account Number validation: must be a number and not empty
-    if (!data.accountNumber || isNaN(data.accountNumber) || data.accountNumber.toString().trim().length === 0) {
+    if (
+      !data.accountNumber ||
+      isNaN(data.accountNumber) ||
+      data.accountNumber.toString().trim().length === 0
+    ) {
       errors.accountNumber = "Valid account number is required.";
     }
-  
+
     // Branch Name validation
     if (!data.branch || data.branch.trim().length === 0) {
       errors.branch = "Branch name is required.";
     }
-  
+
     // IFSC Code validation: assuming a typical IFSC code format
     const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
     if (!data.ifsc || !ifscRegex.test(data.ifsc)) {
       errors.ifsc = "Invalid IFSC code format.";
     }
-  
+
     // Account Holder's Name validation
     if (!data.holderName || data.holderName.trim().length === 0) {
       errors.holderName = "Account holder’s name is required.";
     }
-  
+
     return errors;
   };
-  
-  
-
-
-
-
-
-
 
   return (
     <div className="w-[100%] h-full  flex items-center justify-center ">
@@ -647,7 +642,7 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <div className="w-full h-full mt-48 md:mt-0 flex md:flex-row flex-col items-center md:items-start justify-center md:justify-center   ">
+        <div className="w-full h-full mt-48 md:mt-0 flex md:flex-row flex-col items-center md:items-start justify-center gap-10 md:justify-center   ">
           {localData && localData?.id === userData?.id && (
             <div className="w-[30%] h-[100vh] pt-[52px] flex  flex-col gap-5 items-center justify-start  ">
               <div className="w-[300px] min-h-[300px] max-h-[500px] bg-white flex flex-col items-center py-7 gap-5 rounded-md shadow-lg">
@@ -668,80 +663,94 @@ const UserProfile = () => {
                     footer={null}
                   >
                     <form
-  action=""
-  className="px-5 py-3 flex flex-col items-end gap-2 mb-10"
->
-<div className="flex flex-col gap-3 w-full">
-    <label htmlFor="bankName" className="font-bold text-[#696763]">
-      Bank Name
-    </label>
-    <input
-      type="text"
-      name="bankName"
-      id="bankName"
-      onChange={handleChange}
-      placeholder="Enter bank name"
-      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-    />
+                      action=""
+                      className="px-5 py-3 flex flex-col items-end gap-2 mb-10"
+                    >
+                      <div className="flex flex-col gap-3 w-full">
+                        <label
+                          htmlFor="bankName"
+                          className="font-bold text-[#696763]"
+                        >
+                          Bank Name
+                        </label>
+                        <input
+                          type="text"
+                          name="bankName"
+                          id="bankName"
+                          onChange={handleChange}
+                          placeholder="Enter bank name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
 
-    <label htmlFor="accountNumber" className="font-bold text-[#696763]">
-      Account Number
-    </label>
-    <input
-      type="number"
-      name="accountNumber"
-      id="accountNumber"
-      onChange={handleChange}
-      placeholder="Enter account number"
-      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-    />
+                        <label
+                          htmlFor="accountNumber"
+                          className="font-bold text-[#696763]"
+                        >
+                          Account Number
+                        </label>
+                        <input
+                          type="number"
+                          name="accountNumber"
+                          id="accountNumber"
+                          onChange={handleChange}
+                          placeholder="Enter account number"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
 
-    <label htmlFor="branch" className="font-bold text-[#696763]">
-      Branch Name
-    </label>
-    <input
-      type="text"
-      name="branch"
-      id="branch"
-      onChange={handleChange}
-      placeholder="Enter branch name"
-      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-    />
+                        <label
+                          htmlFor="branch"
+                          className="font-bold text-[#696763]"
+                        >
+                          Branch Name
+                        </label>
+                        <input
+                          type="text"
+                          name="branch"
+                          id="branch"
+                          onChange={handleChange}
+                          placeholder="Enter branch name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
 
-    <label htmlFor="ifsc" className="font-bold text-[#696763]">
-      IFSC Code
-    </label>
-    <input
-      type="text"
-      name="ifsc"
-      id="ifsc"
-      onChange={handleChange}
-      placeholder="Enter IFSC code"
-      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-    />
+                        <label
+                          htmlFor="ifsc"
+                          className="font-bold text-[#696763]"
+                        >
+                          IFSC Code
+                        </label>
+                        <input
+                          type="text"
+                          name="ifsc"
+                          id="ifsc"
+                          onChange={handleChange}
+                          placeholder="Enter IFSC code"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
 
-    <label htmlFor="holderName" className="font-bold text-[#696763]">
-      Account Holder’s Name
-    </label>
-    <input
-      type="text"
-      name="holderName"
-      id="holderName"
-      onChange={handleChange}
-      placeholder="Enter account holder’s name"
-      className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
-    />
-</div>
+                        <label
+                          htmlFor="holderName"
+                          className="font-bold text-[#696763]"
+                        >
+                          Account Holder’s Name
+                        </label>
+                        <input
+                          type="text"
+                          name="holderName"
+                          id="holderName"
+                          onChange={handleChange}
+                          placeholder="Enter account holder’s name"
+                          className="font-bold p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md"
+                        />
+                      </div>
 
-  <button
-    onClick={handleAccountAdd}
-    type="button"
-    className="flex items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
-  >
-    <IoMdAddCircle /> Add
-  </button>
-</form>
-
+                      <button
+                        onClick={handleAccountAdd}
+                        type="button"
+                        className="flex items-center gap-2 p-1.5 bg-[#EF5757] rounded-md text-white text-xl"
+                      >
+                        <IoMdAddCircle /> Add
+                      </button>
+                    </form>
                   </Modal>
 
                   <EditAndDeleteAccount />
@@ -766,44 +775,62 @@ const UserProfile = () => {
                   >
                     {isPanDetails.id ? (
                       <div className="flex flex-col items-center text-lg font-medium gap-6 bg-gray-100 py-4 rounded-lg ">
-                      <div className="flex flex-col  w-full max-w-md">
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">PAN Number</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.panNumber}</span>
+                        <div className="flex flex-col  w-full max-w-md">
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">
+                              PAN Number
+                            </span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.panNumber}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">
+                              Name On PAN
+                            </span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.nameOnPan}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">Address</span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.address}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">City</span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.city}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">State</span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.state}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">Country</span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.country}
+                            </span>
+                          </div>
+                          <div className="border-b-2 px-4 py-2 border-blue-300">
+                            <span className="block text-gray-600">Pincode</span>
+                            <span className="text-blue-600 font-bold">
+                              {isPanDetails.pincode}
+                            </span>
+                          </div>
                         </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">Name On PAN</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.nameOnPan}</span>
-                        </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">Address</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.address}</span>
-                        </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">City</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.city}</span>
-                        </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">State</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.state}</span>
-                        </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">Country</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.country}</span>
-                        </div>
-                        <div className="border-b-2 px-4 py-2 border-blue-300">
-                          <span className="block text-gray-600">Pincode</span>
-                          <span className="text-blue-600 font-bold">{isPanDetails.pincode}</span>
-                        </div>
+
+                        <button
+                          onClick={handleDeletePan}
+                          className="text-sm text-red-500 py-2 px-6 border border-red-500 rounded-md font-semibold hover:bg-red-500 hover:text-white transition duration-300"
+                        >
+                          DELETE PANCARD
+                        </button>
                       </div>
-                
-                      <button
-                        onClick={handleDeletePan}
-                        className="text-sm text-red-500 py-2 px-6 border border-red-500 rounded-md font-semibold hover:bg-red-500 hover:text-white transition duration-300"
-                      >
-                        DELETE PANCARD
-                      </button>
-                    </div>
                     ) : (
                       <form action="" className="p-5 flex flex-col gap-3 ">
                         <div className="flex flex-col ">
@@ -911,6 +938,13 @@ const UserProfile = () => {
               </div>
             </div>
           )}
+
+          {currentUser ? (
+            " "
+          ) : (
+            <div>{admin ? <PancardDetails id={id} /> : ""}</div>
+          )}
+
           <div className="w-full h-full md:w-[70%]">
             <Tabs className="bg-white min-h-[600px] flex flex-col  rounded-md">
               <TabList className="flex flex-row items-center justify-center md:justify-around text-sm md:text-xl font-semibold w-full  bg-red-200 rounded-md">
@@ -924,28 +958,32 @@ const UserProfile = () => {
                 >
                   Fundraisers
                 </Tab>
-               {admin ? <Tab
-                  className={
-                    selectedHeadIndex === 1
-                      ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
-                      : "text-black w-1/2 py-2 rounded-l-md"
-                  }
-                  onClick={() => setSelectedHeadIndex(1)}
-                >
-                  Donated Funds
-                </Tab> : (localData &&
-                          localData?.id === userData?.id && <Tab
-                          className={
-                            selectedHeadIndex === 1
-                              ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
-                              : "text-black w-1/2 py-2 rounded-l-md"
-                          }
-                          onClick={() => setSelectedHeadIndex(1)}
-                        >
-                          Donated Funds
-                        </Tab>)
-
-               } 
+                {admin ? (
+                  <Tab
+                    className={
+                      selectedHeadIndex === 1
+                        ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                        : "text-black w-1/2 py-2 rounded-l-md"
+                    }
+                    onClick={() => setSelectedHeadIndex(1)}
+                  >
+                    Donated Funds
+                  </Tab>
+                ) : (
+                  localData &&
+                  localData?.id === userData?.id && (
+                    <Tab
+                      className={
+                        selectedHeadIndex === 1
+                          ? "text-white underline bg-red-500 py-2 w-1/2 rounded-l-md"
+                          : "text-black w-1/2 py-2 rounded-l-md"
+                      }
+                      onClick={() => setSelectedHeadIndex(1)}
+                    >
+                      Donated Funds
+                    </Tab>
+                  )
+                )}
               </TabList>
               <TabPanels>
                 <TabPanel>
@@ -1057,36 +1095,40 @@ const UserProfile = () => {
                   </div>
                 </TabPanel>
 
-                {admin ?  <TabPanel>
-                  <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
-                    Donation that you have Made
-                  </h1>
-                  <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
-                    {allUserDonations.map((data, index) => (
-                      <div className="" key={index}>
-                        <Link to={`/fundraisers/${data.fundraiserId}`}>
-                          <DonateFund {...data} />
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </TabPanel> : (localData &&
-                          localData?.id === userData?.id &&  <TabPanel>
-                          <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
-                            Donation that you have Made
-                          </h1>
-                          <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
-                            {allUserDonations.map((data, index) => (
-                              <div className="" key={index}>
-                                <Link to={`/fundraisers/${data.fundraiser.id}`}>
-                                  <DonateFund {...data} />
-                                </Link>
-                              </div>
-                            ))}
+                {admin ? (
+                  <TabPanel>
+                    <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
+                      Donation that you have Made
+                    </h1>
+                    <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                      {allUserDonations.map((data, index) => (
+                        <div className="" key={index}>
+                          <Link to={`/fundraisers/${data.fundraiserId}`}>
+                            <DonateFund {...data} />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </TabPanel>
+                ) : (
+                  localData &&
+                  localData?.id === userData?.id && (
+                    <TabPanel>
+                      <h1 className="text-xl underline font-semibold mb-5  text-center mt-5 ">
+                        Donation that you have Made
+                      </h1>
+                      <div className="  grid grid-cols-1 gap-3 md:grid-cols-2  w-full h-[90%] place-items-center p-5  ">
+                        {allUserDonations.map((data, index) => (
+                          <div className="" key={index}>
+                            <Link to={`/fundraisers/${data.fundraiser.id}`}>
+                              <DonateFund {...data} />
+                            </Link>
                           </div>
-                        </TabPanel>)}
-                
-               
+                        ))}
+                      </div>
+                    </TabPanel>
+                  )
+                )}
               </TabPanels>
 
               {/* ........................ */}

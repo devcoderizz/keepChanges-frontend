@@ -1103,7 +1103,7 @@ const Fundraisers = () => {
               <div className="flex flex-col ">
                 <span className="font-semibold  text-gray-500">Created by</span>
                 <span className="font-semibold hover:text-red-500 underline">
-                  <Link to={`/user-profile/${fundraiserDetails?.postedBy?.id}`}>
+                  <Link to={`/user-profile/${fundraiserDetails?.postedById}`}>
                     {fundraiserDetails
                       ? fundraiserDetails.postedByName
                       : "Anonymous"}

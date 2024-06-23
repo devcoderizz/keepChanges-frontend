@@ -12,22 +12,20 @@ import { useMediaQuery } from "react-responsive";
 import ViewCard from "./ViewCard";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import handleError from '../utils/ErrorHandler'; 
+import handleError from "../utils/ErrorHandler";
 const Hero = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-  const APIBASEURL= import.meta.env.VITE_API_BASEURL;
+  const APIBASEURL = import.meta.env.VITE_API_BASEURL;
   const localData = JSON.parse(localStorage.getItem("UserData"));
   const swiperRef = React.useRef(null);
-  const [allFundraiser, setAllFundraiser] = useState([])
-  const [allCategories, setAllCategories] = useState([])
-  
+  const [allFundraiser, setAllFundraiser] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
 
   const goNext = () => {
     if (swiperRef.current) {
       swiperRef.current.slideNext();
     }
   };
-
 
   const goPrev = () => {
     if (swiperRef.current) {
@@ -36,7 +34,7 @@ const Hero = () => {
   };
 
   useEffect(() => {
-    const fundraiserDetails =async()=>{
+    const fundraiserDetails = async () => {
       try {
         const res = await fetch(`${APIBASEURL}/fundraisers/latest`, {
           method: "GET",
@@ -44,23 +42,20 @@ const Hero = () => {
             // "Authorization": `Bearer ${accessToken}`,
           },
         });
-        if(res.status!=200){
-          handleError(res.status); 
-          }
+        if (res.status != 200) {
+          handleError(res.status);
+        }
         const data = await res.json();
-        setAllFundraiser(data.fundraisers)
+        setAllFundraiser(data.fundraisers);
 
         console.log(data.fundraisers);
-      
-    
-  
       } catch (error) {
         console.log(error);
       }
-     }
-     fundraiserDetails()
+    };
+    fundraiserDetails();
 
-     const getAllCategories =async()=>{
+    const getAllCategories = async () => {
       try {
         const res = await fetch(`${APIBASEURL}/categories/getall/`, {
           method: "GET",
@@ -68,27 +63,19 @@ const Hero = () => {
             // "Authorization": `Bearer ${accessToken}`,
           },
         });
-        if(res.status!=200){
-          handleError(res.status); 
-          }
+        if (res.status != 200) {
+          handleError(res.status);
+        }
         const data = await res.json();
-        console.log("get cetegories data",data);
-        setAllCategories(data)
-        console.log("kajbaskbc",allCategories);
-      
-    
-  
+        console.log("get cetegories data", data);
+        setAllCategories(data);
+        console.log("kajbaskbc", allCategories);
       } catch (error) {
         console.log(error);
       }
-     }
-     getAllCategories()
-
-
-
-
-  }, [APIBASEURL])
-  
+    };
+    getAllCategories();
+  }, [APIBASEURL]);
 
   return (
     <div className="w-full">
@@ -162,31 +149,33 @@ const Hero = () => {
         </p>
         <div className="mt-4  ">
           <Swiper
-      className=""
-      modules={[Navigation, Pagination, Scrollbar, A11y]}
-      spaceBetween={50}
-      slidesPerView={6}
-      navigation={{
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      }}
-      onSlideChange={() => console.log("slide change")}
-      onSwiper={(swiper) => console.log(swiper)}
-    >
-      {allCategories.map((data) => (
-        <SwiperSlide key={data.id}>
-          <div className="h-[60px] w-[60px] object-fill overflow-hidden">
-          <Link to={`all-fundraisers/${data.id}`}>
-          <img src={`${VITE_BASE_IMAGE_URL}${data.categorySvg}`} alt=""   />
-          
-          </Link>
-          </div>
-        </SwiperSlide>
-      ))}
+            className=""
+            modules={[Navigation, Pagination, Scrollbar, A11y]}
+            spaceBetween={50}
+            slidesPerView={6}
+            navigation={{
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            }}
+            onSlideChange={() => console.log("slide change")}
+            onSwiper={(swiper) => console.log(swiper)}
+          >
+            {allCategories.map((data) => (
+              <SwiperSlide key={data.id}>
+                <div className="h-[60px] w-[60px] object-fill overflow-hidden">
+                  <Link to={`all-fundraisers/${data.id}`}>
+                    <img
+                      src={`${VITE_BASE_IMAGE_URL}${data.categorySvg}`}
+                      alt=""
+                    />
+                  </Link>
+                </div>
+              </SwiperSlide>
+            ))}
 
-      <div className="swiper-button-next" onClick={goNext}></div>
-      <div className="swiper-button-prev" onClick={goPrev}></div>
-    </Swiper>
+            <div className="swiper-button-next" onClick={goNext}></div>
+            <div className="swiper-button-prev" onClick={goPrev}></div>
+          </Swiper>
         </div>
       </div>
       <div className="flex flex-col ml-5   md:justify-end md:items-end my-10 mr-40">
@@ -216,12 +205,12 @@ const Hero = () => {
           className={`grid grid-cols-1 md:grid-cols-3  gap-y-6  md:ml-8 mr-10 my-16`}
         >
           {allFundraiser.slice(0, 6).map((data) => (
-        <div key={data.id}>
-          <Link to={`/fundraisers/${data.id}`}>
-            <ViewCard {...data} />
-          </Link>
-        </div>
-      ))}
+            <div key={data.id}>
+              <Link to={`/fundraisers/${data.id}`}>
+                <ViewCard {...data} />
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -243,9 +232,24 @@ const Hero = () => {
           alt=""
         />
         <div className="mt-16 ml-4">
-          <button className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]">
-            Start a Fundraiser
-          </button>
+          {localData ? (
+            <Link
+              to={"/startFundraiser"}
+              className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+            >
+              Start a Fundraiser
+            </Link>
+          ) : (
+            <Link
+              to={"/auth"}
+              onClick={() => {
+                toast.error("You have to login first");
+              }}
+              className="px-10 py-4 border-1 text-2xl  border-red-600  font-semibold bg-[#EF5757] text-white rounded-lg hover:bg-[#d84f4f]"
+            >
+              Start a Fundraiser
+            </Link>
+          )}
         </div>
       </div>
 

@@ -17,6 +17,8 @@ import Dashboard from "./components/AdminDashboard/Dashboard"
 import DonationPage from "./components/DonationPage"
 import ForgetPassword from "./components/ForgetPassword"
 import FundraiserOptions from "./components/FundraiserOptions"
+import PaymentSuccess from "./pages/PaymentSuccess"
+import PaymentFailed from "./pages/PaymentFailed"
 
 
 
@@ -45,6 +47,8 @@ function App() {
       <Route path='/donation-page/:id' element={<DonationPage/>} />
       <Route path='/forget-password' element={<ForgetPassword/>} />
       <Route path='/fundraiser-options/:id' element={<FundraiserOptions/>} />
+      <Route path='/fundraiser/payment-success' element={<PaymentSuccess/>} />
+      <Route path='/fundraiser/payment-failed' element={<PaymentFailed/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

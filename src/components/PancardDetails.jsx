@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useAuth from "../utils/IsAuthenticated";
+import handleError from "../utils/ErrorHandler";
 
 const PancardDetails = ({ id }) => {
   const APIBASEURL = import.meta.env.VITE_API_BASEURL;
@@ -23,10 +24,10 @@ const PancardDetails = ({ id }) => {
         const data = await res.json();
         console.log("pan data", data);
         setIsPanDetails(data);
-        // if (res.status != 200) {
-        //   handleError(res.status);
-        //   return;
-        // }
+        if (res.status != 200) {
+          handleError(res.status);
+          return;
+        }
       } catch (error) {
         console.log(error);
       }

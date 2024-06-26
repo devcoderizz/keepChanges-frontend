@@ -58,9 +58,12 @@ const Fundraisers = () => {
   // console.log("image1", images1)
   console.log("imagesfundraiser", fundraiserDetails?.photos);
 
+  
   const currentUser = fundraiserDetails.postedById
-    ? fundraiserDetails.postedById
-    : " ";
+  ? fundraiserDetails.postedById
+  : " ";
+  
+  const onlineUser = localData?.id == currentUser;
 
   const percentage = Math.floor(
     (fundraiserDetails.raised / fundraiserDetails?.raiseGoal) * 100
@@ -205,23 +208,28 @@ const Fundraisers = () => {
           navigate("/");
         }
 
-        const response = await fetch(`${APIBASEURL}/categories/getall`, {
-          method: "GET",
-          headers: {},
-        });
-
-        if (response.status != 200) {
-          handleError(response.status);
+        if(onlineUser){
+          const response = await fetch(`${APIBASEURL}/categories/getall`, {
+            method: "GET",
+            headers: {},
+          });
+  
+          if (response.status != 200) {
+            handleError(response.status);
+          }
+  
+          const data2 = await response.json();
+          setCategories(data2);
+        }
+        } catch (error) {
+          console.log(error);
         }
 
-        const data2 = await response.json();
-        setCategories(data2);
-      } catch (error) {
-        console.log(error);
-      }
+        
     };
     fundraiserDetails();
 
+if(onlineUser){
     const Accounts = async () => {
       if (!isAccessTokenValid()) {
         await fetchAccess();
@@ -249,6 +257,7 @@ const Fundraisers = () => {
       }
     };
     Accounts();
+  }
   }, [APIBASEURL, currentUser, id, setImages]);
 
   const copylink = () => {
@@ -579,7 +588,7 @@ const Fundraisers = () => {
                               id="id"
                               // defaultValue={fundraiserDetails.id}
                               onChange={handleChangeUpdate}
-                              value={fundraiserDetails.category.id}
+                              defaultValue={fundraiserDetails.category.id}
                               placeholder="Select category"
                               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
                             >

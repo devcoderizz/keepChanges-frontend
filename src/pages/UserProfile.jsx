@@ -54,7 +54,7 @@ const UserProfile = () => {
   const [allUserDonations, setAllUserDonations] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const currentUser = localData.id == id;
+  const currentUser = localData?.id == id;
   console.log("current user", currentUser);
 
   console.log("pandetails state", isPanDetails);
@@ -114,6 +114,8 @@ const UserProfile = () => {
       }
     };
     user();
+
+    if(currentUser){
 
     const Accounts = async (e) => {
       e.preventDefault();
@@ -190,6 +192,8 @@ const UserProfile = () => {
       }
     };
     getUserDonations();
+
+  }
   }, [APIBASEURL, id]);
 
   const showModalAccount = () => {
@@ -279,16 +283,7 @@ const UserProfile = () => {
     }
   };
 
-  // const handleDeleteForm = (e) => {
-  //   e.preventDefault();
-  //   setDeleteAccount(!deleteAccount);
-  // };
 
-  // const handleInputChange = (e) => {
-  //   setInputData({
-  //     [e.target.id]: e.target.value,
-  //   });
-  // };
 
   const handleInputPanChange = (e) => {
     const { name, value } = e.target;

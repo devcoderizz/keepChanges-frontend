@@ -148,17 +148,18 @@ const AdminCategories = () => {
       if (res.status !== 200) {
         handleError(res.status);
       } else {
-        // setAllCategories(
-        //   allCategories.filter((category) => category.id !== category.id)
-        // );
-        window.location.reload(false)
+      
+        setAllCategories(
+          allCategories.filter((cat) => cat.id !== category.id)
+        );
+        
         message.success("Category deleted successfully");
-
       }
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   const handleEditButtonClick = (category) => {
     setSelectedCategory(category);

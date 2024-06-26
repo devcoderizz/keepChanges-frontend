@@ -16,10 +16,6 @@ const ActiveFundraisers = () => {
   const [multipleCategoryFundraiser, setMultipleCategoryFundraiser] = useState([]);
   const [showMultipleCategoryData, setShowMultipleCategoryData] = useState(false);
 
-  const [pageNo, setPageNo] = useState(0); // Current page number
-  const [totalPages, setTotalPages] = useState(0); // Total number of pages
-  const [pageSize, setPageSize] = useState(3); // Number of items per page
-
   const handleInputChange = (event) => {
     setQuery(event.target.value);
   };
@@ -37,7 +33,7 @@ const ActiveFundraisers = () => {
 
   const handleCategoriesSubmit = async (e) => {
     e.preventDefault();
-    setQuery("");
+    setQuery("")
     try {
       const queryParams = new URLSearchParams();
       selectedCategory.forEach((id) => queryParams.append('categoryIds', id));
@@ -76,9 +72,9 @@ const ActiveFundraisers = () => {
     };
     getAllCategories();
 
-    const fundraiserDetails = async (page) => {
+    const fundraiserDetails = async () => {
       try {
-        const res = await fetch(`${APIBASEURL}/fundraisers/active?pageNumber=${page}&pageSize=${pageSize}`, {
+        const res = await fetch(`${APIBASEURL}/fundraisers/active`, {
           method: "GET",
         });
         if (res.status !== 200) {
@@ -86,12 +82,11 @@ const ActiveFundraisers = () => {
         }
         const data = await res.json();
         setActiveFundraiser(data.fundraisers);
-        setTotalPages(data.totalPages);
       } catch (error) {
         console.log(error);
       }
     };
-    fundraiserDetails(pageNo);
+    fundraiserDetails();
 
     if (id) {
       const getFundraiserById = async () => {
@@ -112,7 +107,7 @@ const ActiveFundraisers = () => {
       };
       getFundraiserById();
     }
-  }, [APIBASEURL, id, navigate, pageNo, pageSize]);
+  }, [APIBASEURL, id, navigate]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -126,8 +121,7 @@ const ActiveFundraisers = () => {
         return;
       }
       const data = await res.json();
-  
-      setActiveFundraiser(data.fundraisers);
+      setActiveFundraiser(data);
       setShowMultipleCategoryData(false);
     } catch (error) {
       console.log(error);
@@ -136,7 +130,7 @@ const ActiveFundraisers = () => {
 
   const renderFundraisers = () => {
     if (query) {
-      return activeFundraiser?.map((data, index) => (
+      return activeFundraiser.map((data, index) => (
         <div key={index} className="min-h-[400px] h-auto md:h-full">
           <Link to={`/fundraisers/${data.id}`}>
             <ViewCard {...data} />
@@ -167,18 +161,6 @@ const ActiveFundraisers = () => {
           </Link>
         </div>
       ));
-    }
-  };
-
-  const handleNextPage = () => {
-    if (pageNo < totalPages - 1) {
-      setPageNo(pageNo + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (pageNo > 0) {
-      setPageNo(pageNo - 1);
     }
   };
 
@@ -230,23 +212,6 @@ const ActiveFundraisers = () => {
 
           <div className="w-full h-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-6 my-16">
             {renderFundraisers()}
-          </div>
-
-          {/* Pagination controls */}
-          <div className="flex justify-center items-center my-4">
-            <button 
-              onClick={handlePrevPage} 
-              disabled={pageNo === 0} 
-              className={`px-4 py-2 rounded-l-md ${pageNo === 0 ? 'bg-gray-300' : 'bg-red-500 hover:bg-red-600 text-white'}`}>
-              Previous
-            </button>
-            <span className="px-4 py-2 bg-white border-t border-b">{pageNo + 1} / {totalPages}</span>
-            <button 
-              onClick={handleNextPage} 
-              disabled={pageNo === totalPages - 1} 
-              className={`px-4 py-2 rounded-r-md ${pageNo === totalPages - 1 ? 'bg-gray-300' : 'bg-red-500 hover:bg-red-600 text-white'}`}>
-              Next
-            </button>
           </div>
         </div>
       </div>

@@ -1,10 +1,21 @@
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { BsCheckCircle } from 'react-icons/bs';
 
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
 const PaymentSuccess = () => {
-  const location = useLocation();
-  const { paymentId, amount, date } = location.state || {};
+  const query = useQuery();
+  const totalAmount = query.get("totalAmount");
+  const tipAmount = query.get("tipAmount");
+  const paymentId = query.get("paymentId");
+  const donationAmount = query.get("donationAmount");
+
+
+
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -16,9 +27,10 @@ const PaymentSuccess = () => {
 
         <div className="bg-gray-100 p-4 rounded-lg mb-4">
           <h2 className="text-lg font-semibold mb-2">Payment Details</h2>
-          <p className="text-gray-800"><strong>Payment ID:</strong> {paymentId}</p>
-          <p className="text-gray-800"><strong>Amount:</strong> ₹{amount}</p>
-          <p className="text-gray-800"><strong>Date:</strong> {date}</p>
+          <p className="text-gray-800"><strong>Payment ID:  &nbsp;</strong> {paymentId}</p>
+          <p className="text-gray-800"><strong>Donation Amount:&nbsp; &nbsp; </strong> ₹{donationAmount}</p>
+          <p className="text-gray-800"><strong>total Amount: &nbsp; &nbsp; </strong> ₹{totalAmount}</p>
+          <p className="text-gray-800"><strong> Tip Amount &nbsp; &nbsp;</strong> ₹{tipAmount}</p>
         </div>
 
         <div className='flex gap-3'>

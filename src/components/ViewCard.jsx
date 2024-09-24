@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { MdPeopleAlt } from "react-icons/md";
 
 const ViewCard = ({...data}) => {
+  console.log("data", data)
   const VITE_BASE_IMAGE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
-  const completionPercentage = (300005 / data.raiseGoal) * 100;
+  const completionPercentage = (data.raised / data.raiseGoal) * 100;
 
   const truncatedTitle = data.fundraiserTitle?.length > 70 ? data.fundraiserTitle.substring(0, 80) + ' ...' : data.fundraiserTitle;
 
@@ -17,7 +18,7 @@ const ViewCard = ({...data}) => {
               <span className=' my-1  text-gray-500 font-semibold'>{data ? data?.postedByName : 'Anonymous'}</span> <br/>
               <div className='mt-4'>
                 <div className='flex flex-row gap-28 justify-between'>
-              <span className='font-semibold text-sm text-red-500'>₹{data.raised ? data.raised : "69656 "}</span>
+              <span className='font-semibold text-sm text-red-500'>₹{data.raised ? data.raised : ""}</span>
               <p className="text-gray-500 text-xs md:text-sm  "> Raised of ₹{data.raiseGoal}</p>
               </div>
               <div className="w-full h-1 bg-gray-200 rounded-full mt-2">

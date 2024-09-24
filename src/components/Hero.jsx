@@ -20,7 +20,7 @@ const Hero = () => {
   const swiperRef = React.useRef(null);
   const [allFundraiser, setAllFundraiser] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
-
+  console.log("allfundraiser", allFundraiser)
   const goNext = () => {
     if (swiperRef.current) {
       swiperRef.current.slideNext();

@@ -51,6 +51,20 @@ const Fundraisers = () => {
   const [error, setError] = useState(null);
   const [dropdownOpen2, setDropdownOpen2] = useState(false);
 
+  const [isImageModalVisible, setImageModalVisible] = useState(false);
+    const [currentImage, setCurrentImage] = useState(null);
+
+    const handleImageClick = (image) => {
+        setCurrentImage(image);
+        setImageModalVisible(true);
+    };
+
+    const closeImageModal = () => {
+        setImageModalVisible(false);
+        setCurrentImage(null);
+    };
+
+
   const toggleDropdown2 = () => {
     setDropdownOpen2(!dropdownOpen2);
   };
@@ -360,12 +374,13 @@ if(onlineUser){
       fundraiserTitle,
       raiseGoal,
       endDate,
-      id,
       email,
       phone,
       fundraiserDescription,
       beneficiary,
+      id
     } = formDataUpdate;
+    console.log("FormDataUpdate", formDataUpdate)
 
     const fundraiserData = {
       fundraiserTitle,
@@ -375,6 +390,7 @@ if(onlineUser){
       phone,
       fundraiserDescription,
       beneficiary,
+   
     };
 
     const payload = new FormData();
@@ -384,9 +400,8 @@ if(onlineUser){
       payload.append("displayImage", displayImageUpdate);
     }
 
-    payload.append("categoryId", id);
 
-    console.log("payload", payload);
+    payload.append("categoryId", id || null);
 
     try {
       const response = await fetch(
@@ -586,13 +601,12 @@ if(onlineUser){
                             <select
                               name="id"
                               id="id"
-                              // defaultValue={fundraiserDetails.id}
                               onChange={handleChangeUpdate}
-                              defaultValue={fundraiserDetails.category.id}
+                             value={fundraiserDetails.categoryId || ''}
                               placeholder="Select category"
                               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
                             >
-                              <option>Select category</option>
+                              <option value="" disabled>Select category</option>
                               {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
                                   {category.categoryName}
@@ -1002,17 +1016,34 @@ if(onlineUser){
 
                 <TabPanel>
                   <div className="flex items-center justify-center p-2">
-                    <div className="grid md:grid-cols-2 grid-cols-1 gap-2  ">
-                      {" "}
-                      {fundraiserDetails?.photos?.map((image) => (
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+                {fundraiserDetails?.photos?.map((image) => (
+                    <img
+                        key={image.id}
+                        className="w-[75vw] md:w-[25vw] md:h-[30vh] object-cover cursor-pointer"
+                        src={`${VITE_BASE_IMAGE_URL}${image.photoUrl}`}
+                        alt=""
+                        onClick={() => handleImageClick(image)}
+                    />
+                ))}
+            </div>
+                    {isImageModalVisible && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+                    <div className="relative">
                         <img
-                          key={image.id}
-                          className="w-[75vw] md:w-[25vw] md:h-[30vh] object-cover"
-                          src={`${VITE_BASE_IMAGE_URL}${image.photoUrl}`}
-                          alt=""
+                            className="max-w-full max-h-svh"
+                            src={`${VITE_BASE_IMAGE_URL}${currentImage.photoUrl}`}
+                            alt=""
                         />
-                      ))}
+                        <button
+                            className="absolute top-0 right-0 p-2 text-white"
+                            onClick={closeImageModal}
+                        >
+                            Close
+                        </button>
                     </div>
+                </div>
+            )}
                   </div>
                 </TabPanel>
                 <TabPanel>
@@ -1069,8 +1100,8 @@ if(onlineUser){
                 <div className="flex flex-row gap-10 my-2">
                   <FaCircleUser size={40} color="gray" className="mt-4" />
                   <div className="flex flex-col gap-1">
-                    <p className="text-xl text-[#858585]">{agent.donorName}</p>
-                    <p>Donation: ${agent.donationAmount}</p>
+                    <p className="text-xl text-[#858585]">{agent.name}</p>
+                    <p>Donation: ₹{agent.donationAmount}</p>
                     <span className="text-gray-500 font-medium ">
                       Thank you for being a agent
                     </span>

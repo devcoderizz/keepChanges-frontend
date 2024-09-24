@@ -90,11 +90,13 @@ const DonationPage = () => {
   const checkOutHandler = async () => {
     const payload = {
       totalAmount: total,
-      // name: localData?.name || name,
-      // email: localData?.email || email,
-      // phone: localData?.phone || phone,
+      name: localData?.name || name,
+      email: localData?.email || email,
+      phone: localData?.phone || phone,
       currency: "INR",
-      // fundraiserId: id
+      donationAmount: donationInput.Donation ,
+      tipAmount: tip,
+      fundraiserId: id
     };
 
     try {

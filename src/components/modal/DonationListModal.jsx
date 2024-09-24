@@ -31,8 +31,8 @@ const DonationListModal = ({onClose, fundraiserDetails}) => {
       <div key={index} className="my-4 p-4 bg-white rounded-lg shadow-md flex flex-row items-center gap-4">
         <FaCircleUser size={40} color="gray" className="mt-1" />
         <div className="flex flex-col">
-          <p className="text-xl text-[#858585] font-semibold">{agent.donorName}</p>
-          <p className="text-lg text-gray-700">Donation: ${agent.donationAmount}</p>
+          <p className="text-xl text-[#858585] font-semibold">{agent.name}</p>
+          <p className="text-lg text-gray-700">Donation: ₹{agent.donationAmount}</p>
           <span className="text-gray-500 font-medium">Thank you for being a agent</span>
         </div>
       </div>

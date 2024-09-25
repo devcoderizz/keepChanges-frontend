@@ -19,6 +19,8 @@ import ForgetPassword from "./components/ForgetPassword"
 import FundraiserOptions from "./components/FundraiserOptions"
 import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentFailed from "./pages/PaymentFailed"
+import FAQs from "./pages/FAQ"
+import About from "./pages/About"
 
 
 
@@ -49,6 +51,8 @@ function App() {
       <Route path='/fundraiser-options/:id' element={<FundraiserOptions/>} />
       <Route path='/fundraiser/payment-success' element={<PaymentSuccess/>} />
       <Route path='/fundraiser/payment-failed' element={<PaymentFailed/>} />
+      <Route path='/faqs' element={<FAQs/>} />
+      <Route path='/about-us' element={<About/>} />
       
       <Route path="*" element={ <Navigate to="/" /> }  />
 

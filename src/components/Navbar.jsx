@@ -31,19 +31,7 @@ const items = [
     ),
     disabled: true,
   },
-  {
-    key: "3",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.luohanacademy.com"
-      >
-        Be an Agent
-      </a>
-    ),
-    disabled: true,
-  },
+ 
 ];
 
 const Navbar = () => {
@@ -149,8 +137,8 @@ const Navbar = () => {
                 </Space>
               </a>
             </Dropdown>
-            <Link className="text-black font-semibold mx-4">Gallery</Link>
-            <Link className="text-black font-semibold mx-4">About</Link>
+            <Link to="faqs" className="text-black font-semibold mx-4">FAQs</Link>
+            <Link   to="/about-us" className="text-black font-semibold mx-4">About</Link>
           </ul>
         </div>
 
@@ -179,7 +167,7 @@ const Navbar = () => {
               </a>
             </Dropdown>
             <Link className="text-black font-semibold">Gallery</Link>
-            <Link className="text-black font-semibold">About</Link>
+            <Link  to="/about-us" className="text-black font-semibold">About</Link>
           </ul>
         </div>
 

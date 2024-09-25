@@ -1,40 +1,43 @@
 import React from 'react';
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
-
+import { Link } from 'react-router-dom';
 const Footer = () => {
+
+
+
   return (
     <footer className="bg-gray-800 text-white mt-36 pt-16 pb-6 px-6">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start md:items-center">
         <div className="flex flex-col justify-start items-start mb-8 md:mb-0">
           <h4 className="text-lg font-semibold mb-2">About</h4>
           <ul>
-            <li><a href="/about" className="text-white hover:text-blue-500">About Us</a></li>
-            <li><a href="/blog" className="text-white hover:text-blue-500">Blog</a></li>
-            <li><a href="/faq" className="text-white hover:text-blue-500">FAQ</a></li>
+            <li><Link to="/about-us"  className="text-white hover:text-blue-500">About Us</Link></li>
+            <li><a  className="text-white hover:text-blue-500">Blog</a></li>
+            <li><Link  to="/faqs" className="text-white hover:text-blue-500">FAQ</Link></li>
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start mb-8 md:mb-0">
           <h4 className="text-lg font-semibold mb-2">Fundraiser Support</h4>
           <ul className="text-md">
-            <li><a href="/reach-out" className="text-white hover:text-blue-500">Reach Out</a></li>
-            <li><a href="/social-causes" className="text-white hover:text-blue-500">Social Causes</a></li>
-            <li><a href="/ngo" className="text-white hover:text-blue-500">NGO</a></li>
+            <li><a className="text-white hover:text-blue-500">Reach Out</a></li>
+            <li><a  className="text-white hover:text-blue-500">Social Causes</a></li>
+            <li><a  className="text-white hover:text-blue-500">NGO</a></li>
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start mb-8 md:mb-0">
           <h4 className="text-lg font-semibold mb-2">Start a Fundraiser for</h4>
           <ul className="text-md">
-            <li><a href="/ngo" className="text-white hover:text-blue-500">NGO</a></li>
-            <li><a href="/ngo" className="text-white hover:text-blue-500">Blog</a></li>
-            <li><a href="/ngo" className="text-white hover:text-blue-500">FAQ</a></li>
+            <li><a  className="text-white hover:text-blue-500">NGO</a></li>
+            <li><a  className="text-white hover:text-blue-500">Blog</a></li>
+            <li><Link  to="/faqs" className="text-white hover:text-blue-500">FAQ</Link></li>
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start mb-8 md:mb-0">
           <h4 className="text-lg font-semibold mb-2">Donate to</h4>
           <ul className="text-md">
-          <li><a href="/about" className="text-white hover:text-blue-500">About Us</a></li>
-            <li><a href="/blog" className="text-white hover:text-blue-500">Blog</a></li>
-            <li><a href="/faq" className="text-white hover:text-blue-500">FAQ</a></li>
+          <li><Link to="/about-us"  className="text-white hover:text-blue-500">About Us</Link></li>
+            <li><a  className="text-white hover:text-blue-500">Blog</a></li>
+            <li><Link  to="/faqs" className="text-white hover:text-blue-500">FAQ</Link></li>
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start mb-8 md:mb-14">

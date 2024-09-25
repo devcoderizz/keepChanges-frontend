@@ -328,7 +328,7 @@ if(onlineUser){
       [e.target.id]: e.target.value,
     });
   };
-  console.log(inputData);
+
 
   const handleAccountSelect = async () => {
     if (!isAccessTokenValid()) {
@@ -602,7 +602,7 @@ if(onlineUser){
                               name="id"
                               id="id"
                               onChange={handleChangeUpdate}
-                             value={fundraiserDetails.categoryId || ''}
+                             defaultValue={fundraiserDetails.categoryId || ''}
                               placeholder="Select category"
                               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
                             >

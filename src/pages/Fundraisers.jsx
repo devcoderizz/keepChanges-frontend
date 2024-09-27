@@ -69,8 +69,9 @@ const Fundraisers = () => {
     setDropdownOpen2(!dropdownOpen2);
   };
 
-  // console.log("image1", images1)
-  console.log("imagesfundraiser", fundraiserDetails?.photos);
+  
+  console.log("account54354", allAccount);
+  console.log("id33", fundraiserDetails?.categoryId);
 
   
   const currentUser = fundraiserDetails.postedById
@@ -378,9 +379,9 @@ if(onlineUser){
       phone,
       fundraiserDescription,
       beneficiary,
-      id
+      categoryId
     } = formDataUpdate;
-    console.log("FormDataUpdate", formDataUpdate)
+    console.log(formDataUpdate,"formDataUpdate")
 
     const fundraiserData = {
       fundraiserTitle,
@@ -400,8 +401,9 @@ if(onlineUser){
       payload.append("displayImage", displayImageUpdate);
     }
 
-
-    payload.append("categoryId", id || null);
+  
+    payload.append("categoryId", categoryId);
+    
 
     try {
       const response = await fetch(
@@ -599,10 +601,10 @@ if(onlineUser){
                               Category*
                             </label>
                             <select
-                              name="id"
-                              id="id"
+                              name="categoryId"
+                              id="categoryId"
                               onChange={handleChangeUpdate}
-                             defaultValue={fundraiserDetails.categoryId || ''}
+                            defaultValue={fundraiserDetails?.categoryId}
                               placeholder="Select category"
                               className="p-2.5 w-full border-2 border-[#FF5C5C] border-opacity-55 rounded-md focus:outline-none"
                             >
@@ -752,16 +754,11 @@ if(onlineUser){
                             <select
                               name="id"
                               id="id"
-                              value={allAccount.id}
+                              defaultValue={allAccount.id}
                               onChange={handleInputChange}
                               className="p-2 border-[#EF5757] border-2 border-opacity-45 focus:outline-none rounded-md  "
                             >
-                              <option
-                                value=""
-                                className="font-bold text-[#696763]"
-                              >
-                                select an account
-                              </option>
+                             
 
                               {allAccount.map((accounts) => (
                                 <option key={accounts.id} value={accounts.id}>
